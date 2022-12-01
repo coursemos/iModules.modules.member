@@ -1,0 +1,27 @@
+{
+    "id": "tools.moimz.imodules.modules.member",
+    "icon": "xi-crown",
+    "title": {
+        "ko": "회원"
+    },
+    "version": "4.0.0",
+    "description": {
+        "ko": "사이트 통합 회원관리를 위한 모듈입니다."
+    },
+    "author": {
+        "name": "Arzz",
+        "email": "arzz@arzz.com"
+    },
+    "homepage": "https://www.imodules.io",
+    "versionChecker": "https://api.moimz.com/download/latest",
+    "dependencies": {
+        "core": "4.0.0"
+    },
+    "language": "ko",
+    "configs": {
+        "templet": {
+            "type": "templet",
+            "default": "default"
+        }
+    }
+}
