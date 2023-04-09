@@ -7,7 +7,7 @@
  * @file /modules/member/dto/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2022. 12. 1.
+ * @modified 2023. 4. 10.
  */
 namespace modules\member\dto;
 class Member
@@ -49,6 +49,16 @@ class Member
     public function getId(): int
     {
         return $this->_id;
+    }
+
+    /**
+     * 회원사진 URL을 가져온다.
+     *
+     * @return string $url
+     */
+    public function getPhotoUrl(): string
+    {
+        return \Configs::dir() . '/members/' . $this->_id . '/photo.jpg';
     }
 
     /**
