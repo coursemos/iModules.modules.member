@@ -7,14 +7,9 @@
  * @file /modules/member/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2022. 12. 1.
+ * @modified 2023. 4. 10.
  */
 namespace modules\member;
-use \Html;
-use \Modules;
-use \ErrorData;
-use \ErrorHandler;
-use \Request;
 class Member extends \Module
 {
     /**
