@@ -1,6 +1,6 @@
 {
     "id": "tools.moimz.imodules.modules.member",
-    "icon": "xi-crown",
+    "icon": "xi xi-users",
     "title": {
         "ko": "회원"
     },
@@ -18,9 +18,12 @@
         "core": "4.0.0"
     },
     "language": "ko",
+    "global": true,
+    "admin": true,
+    "context": true,
     "configs": {
-        "templet": {
-            "type": "templet",
+        "template": {
+            "type": "template",
             "default": "default"
         }
     }
