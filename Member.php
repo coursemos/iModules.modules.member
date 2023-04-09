@@ -35,7 +35,8 @@ class Member extends \Module
      */
     public function getLogged(): int
     {
-        return 0; //$this->logged == null ? 0 : $this->logged->idx;
+        // todo: 로그인 처리
+        return 1;
     }
 
     /**
@@ -46,16 +47,18 @@ class Member extends \Module
     function isLogged(): bool
     {
         // todo: 로그인 처리
-        return false;
+        return true;
     }
 
     /**
      * 회원정보를 가져온다.
      *
+     * @param ?int $member_id 회원고유값
      * @return dto\Member $member
      */
-    public function getMember(int $member_id = 0): dto\Member
+    public function getMember(?int $member_id = null): dto\Member
     {
+        $member_id ??= $this->getLogged();
         if ($member_id != 0 && isset(self::$_members[$member_id]) == true) {
             return self::$_members[$member_id];
         }
