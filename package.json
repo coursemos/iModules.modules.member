@@ -24,6 +24,13 @@
     "configs": {
         "template": {
             "type": "template",
+            "label": {
+                "ko": "템플릿"
+            },
+            "component": {
+                "type": "module",
+                "name": "member"
+            },
             "default": "default"
         }
     }
