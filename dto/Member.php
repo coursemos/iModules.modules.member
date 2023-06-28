@@ -7,20 +7,45 @@
  * @file /modules/member/dto/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 4. 10.
+ * @modified 2023. 6. 24.
  */
 namespace modules\member\dto;
 class Member
 {
     /**
-     * @var object $_member 회원정보
-     */
-    private object $_member;
-
-    /**
      * @var int $_id 회원고유값
      */
     private int $_id;
+
+    /**
+     * @var string $_email 이메일
+     */
+    private string $_email;
+
+    /**
+     * @var ?string $_code 회원추가코드
+     */
+    private ?string $_code = null;
+
+    /**
+     * @var string $_name 이름
+     */
+    private string $_name;
+
+    /**
+     * @var string $_nickname 닉네임
+     */
+    private string $_nickname;
+
+    /**
+     * @var string $_status 상태
+     */
+    private string $_status;
+
+    /**
+     * @var ?object $_extras 추가정보
+     */
+    private ?object $_extras = null;
 
     /**
      * 회원 구조체를 정의한다.
@@ -32,13 +57,21 @@ class Member
         /**
          * 비회원인 경우
          */
-        if ($member == null) {
-            $member = new \stdClass();
-            $member->member_id = 0;
+        if ($member === null) {
+            $this->_id = 0;
+            $this->_email = '';
+            $this->_name = 'Unknown';
+            $this->_nickname = 'Unknown';
+            $this->_status = 'DEACTIVATED';
+        } else {
+            $this->_member = $member;
+            $this->_id = intval($member->member_id);
+            $this->_email = $member->email;
+            $this->_name = $member->name;
+            $this->_nickname = $member->nickname;
+            $this->_status = $member->status;
+            $this->_extras = json_decode($member->extras ?? 'null');
         }
-
-        $this->_member = $member;
-        $this->_id = intval($member->member_id);
     }
 
     /**
@@ -49,6 +82,16 @@ class Member
     public function getId(): int
     {
         return $this->_id;
+    }
+
+    /**
+     * 이메일주소를 가져온다.
+     *
+     * @return string $email
+     */
+    public function getEmail(): string
+    {
+        return $this->_email;
     }
 
     /**

@@ -6,12 +6,21 @@
  * @file /modules/member/scripts/Member.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 4. 10.
+ * @modified 2023. 6. 25.
  */
 namespace modules {
     export namespace member {
         export class Member extends Module {
-            //
+            /**
+             * 로그아웃을 처리한다.
+             *
+             * @return {Promise<boolean>} success - 로그아웃 성공여부
+             */
+            async logout(): Promise<boolean> {
+                const results = await Ajax.post(this.getProcessUrl('logout'));
+                console.log(results);
+                return results.success;
+            }
         }
     }
 }

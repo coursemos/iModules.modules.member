@@ -33,5 +33,280 @@
             },
             "default": "default"
         }
+    },
+    "databases": {
+        "members": {
+            "columns": {
+                "member_id": {
+                    "type": "int",
+                    "comment": "회원고유값"
+                },
+                "email": {
+                    "type": "varchar",
+                    "length": 100,
+                    "comment": "이메일"
+                },
+                "password": {
+                    "type": "char",
+                    "length": 65,
+                    "is_null": true,
+                    "comment": "패스워드"
+                },
+                "code": {
+                    "type": "varchar",
+                    "length": 50,
+                    "is_null": true,
+                    "comment": "회원추가코드"
+                },
+                "name": {
+                    "type": "varchar",
+                    "length": 50,
+                    "comment": "이름"
+                },
+                "nickname": {
+                    "type": "varchar",
+                    "length": 20,
+                    "comment": "닉네임"
+                },
+                "homepage": {
+                    "type": "varchar",
+                    "length": 100,
+                    "is_null": true,
+                    "comment": "홈페이지"
+                },
+                "telephone": {
+                    "type": "varchar",
+                    "length": 20,
+                    "is_null": true,
+                    "comment": "전화번호"
+                },
+                "cellphone": {
+                    "type": "varchar",
+                    "length": 20,
+                    "is_null": true,
+                    "comment": "휴대전화번호"
+                },
+                "gender": {
+                    "type": "enum",
+                    "length": "'MALE','FEMALE'",
+                    "is_null": true,
+                    "comment": "성별"
+                },
+                "birthday": {
+                    "type": "char",
+                    "length": 10,
+                    "is_null": true,
+                    "comment": "생일(월-일-년)"
+                },
+                "zipcode": {
+                    "type": "varchar",
+                    "length": 10,
+                    "is_null": true,
+                    "comment": "우편번호"
+                },
+                "address": {
+                    "type": "text",
+                    "is_null": true,
+                    "comment": "주소"
+                },
+                "joined_at": {
+                    "type": "int",
+                    "comment": "가입일시"
+                },
+                "leaved_at": {
+                    "type": "int",
+                    "is_null": true,
+                    "comment": "탈퇴일시"
+                },
+                "logged_at": {
+                    "type": "int",
+                    "is_null": true,
+                    "comment": "최종로그인일시"
+                },
+                "logged_ip": {
+                    "type": "varchar",
+                    "length": 39,
+                    "is_null": true,
+                    "comment": "최종로그인IP"
+                },
+                "verified": {
+                    "type": "enum",
+                    "length": "'TRUE','FALSE'",
+                    "default": "FALSE",
+                    "comment": "인증여부"
+                },
+                "status": {
+                    "type": "enum",
+                    "length": "'ACTIVATED','WAITING','LEAVE','DEACTIVATED'",
+                    "default": "ACTIVATED",
+                    "comment": "상태"
+                },
+                "extras": {
+                    "type": "json",
+                    "is_null": true,
+                    "comment": "추가정보"
+                }
+            },
+            "indexes": {
+                "member_id": "primary_key",
+                "email": "unique"
+            },
+            "auto_increment": "member_id",
+            "comment": "아이모듈 회원"
+        },
+        "labels": {
+            "columns": {
+                "label_id": {
+                    "type": "varchar",
+                    "length": 36,
+                    "comment": "라벨고유값"
+                },
+                "parent": {
+                    "type": "char",
+                    "length": 36,
+                    "is_null": true,
+                    "comment": "상위라벨"
+                },
+                "title": {
+                    "type": "varchar",
+                    "length": 30,
+                    "comment": "명칭"
+                },
+                "members": {
+                    "type": "int",
+                    "default": 0,
+                    "comment": "소속인원수"
+                }
+            },
+            "indexes": {
+                "label_id": "primary_key",
+                "parent": "index"
+            },
+            "comment": "아이모듈 회원 라벨"
+        },
+        "member_labels": {
+            "columns": {
+                "member_id": {
+                    "type": "int",
+                    "length": 11,
+                    "comment": "회원고유값"
+                },
+                "label_id": {
+                    "type": "char",
+                    "length": 36,
+                    "comment": "라벨고유값"
+                },
+                "position": {
+                    "type": "varchar",
+                    "length": 20,
+                    "is_null": true,
+                    "comment": "라벨직급"
+                }
+            },
+            "indexes": {
+                "member_id,label_id": "primary_key",
+                "member_id": "index",
+                "label_id": "index"
+            },
+            "comment": "아이모듈 회원 소속라벨"
+        },
+        "logins": {
+            "columns": {
+                "login_id": {
+                    "type": "char",
+                    "length": 36,
+                    "comment": "자동로그인 고유값"
+                },
+                "member_id": {
+                    "type": "int",
+                    "comment": "회원고유값"
+                },
+                "created_at": {
+                    "type": "int",
+                    "comment": "자동로그인 생성일시"
+                },
+                "created_ip": {
+                    "type": "varchar",
+                    "length": 39,
+                    "comment": "자동로그인 생성IP"
+                },
+                "logged_at": {
+                    "type": "int",
+                    "comment": "최종로그인일시"
+                },
+                "logged_ip": {
+                    "type": "varchar",
+                    "length": 39,
+                    "is_null": true,
+                    "comment": "최종로그인IP"
+                },
+                "agent": {
+                    "type": "varchar",
+                    "length": 255,
+                    "comment": "접속디바이스"
+                }
+            },
+            "indexes": {
+                "login_id": "primary_key",
+                "member_id": "index"
+            },
+            "comment": "아이모듈 회원 자동로그인"
+        },
+        "logs": {
+            "columns": {
+                "member_id": {
+                    "type": "int",
+                    "length": 11,
+                    "comment": "회원고유값"
+                },
+                "logged_at": {
+                    "type": "varchar",
+                    "length": 15,
+                    "comment": "기록일시(마이크로타임)"
+                },
+                "component_type": {
+                    "type": "varchar",
+                    "length": 10,
+                    "comment": "기록이 발생한 컴포넌트종류"
+                },
+                "component_name": {
+                    "type": "varchar",
+                    "length": 50,
+                    "comment": "기록이 발생한 컴포넌트명"
+                },
+                "log_type": {
+                    "type": "varchar",
+                    "length": 50,
+                    "comment": "기록종류"
+                },
+                "log_id": {
+                    "type": "varchar",
+                    "length": 50,
+                    "comment": "기록고유값"
+                },
+                "details": {
+                    "type": "longtext",
+                    "is_null": true,
+                    "comment": "상세기록"
+                },
+                "ip": {
+                    "type": "varchar",
+                    "length": 39,
+                    "comment": "IP"
+                },
+                "agent": {
+                    "type": "varchar",
+                    "length": 255,
+                    "comment": "접속디바이스"
+                }
+            },
+            "indexes": {
+                "member_id,logged_at": "primary_key",
+                "member_id": "index",
+                "component_type,component_name": "index",
+                "ip": "index"
+            },
+            "comment": "아이모듈 회원 기록"
+        }
     }
 }
