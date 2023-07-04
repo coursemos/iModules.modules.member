@@ -6,5 +6,10 @@
     "errors": {
         "LOGIN_FAILED": "이메일 또는 패스워드가 일치하지 않습니다.",
         "LOGIN_LOCKED": "일정시간내 로그인시도횟수를 초과하였습니다.<br>${second}초 동안 로그인할 수 없습니다."
+    },
+    "admin": {
+        "contexts": {
+            "members": "회원관리"
+        }
     }
 }

@@ -56,7 +56,10 @@ class MemberAdmin extends \modules\admin\admin\Admin
     {
         switch ($path) {
             case '/members':
-                return true;
+                return $this->checkPermission('members');
+
+            case '/labels':
+                return $this->checkPermission('labels');
 
             default:
                 return false;
