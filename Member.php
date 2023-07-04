@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 4. 10.
+ * @modified 2023. 7. 3.
  */
 namespace modules\member;
 class Member extends \Module
@@ -89,6 +89,19 @@ class Member extends \Module
 
         self::$_members[$member_id] = new \modules\member\dto\Member($member);
         return self::$_members[$member_id];
+    }
+
+    /**
+     * 회원사진 URL 을 가져온다.
+     *
+     * @param ?int $member_id 회원고유값 (NULL 인 경우 현재 로그인한 사용자)
+     * @param bool $is_full_url 도메인을 포함한 전체 URL 여부
+     * @return string $url
+     */
+    public function getMemberPhotoUrl(?int $member_id = null, bool $is_full_url = false): string
+    {
+        $member_id ??= $this->getLogged();
+        return \iModules::getUrl($is_full_url) . '/members/' . $member_id . '/photo.jpg';
     }
 
     /**
@@ -332,13 +345,13 @@ class Member extends \Module
             \ErrorHandler::print($this->error('NOT_FOUND_FILE', $route->getUrl()));
         }
 
-        if (is_file(\Configs::attachment() . '/member/' . $type . '/' . $member_id . '.' . $extension) == true) {
-            $path = \Configs::attachment() . '/member/' . $type . '/' . $member_id . '.' . $extension;
+        if (is_file(\Configs::attachment() . '/member/' . $type . 's/' . $member_id . '.' . $extension) == true) {
+            $path = \Configs::attachment() . '/member/' . $type . 's/' . $member_id . '.' . $extension;
         } else {
             $path = $this->getPath() . '/images/' . $type . '.' . $extension;
         }
 
-        session_write_close();
+        \iModules::session_stop();
 
         header('Content-Type: images/' . $extension);
         header('Content-Length: ' . filesize($path));
@@ -385,6 +398,9 @@ class Member extends \Module
     {
         $success = parent::install($previous);
         if ($success == true) {
+            \File::createDirectory(\Configs::attachment() . '/member/photos');
+            \File::createDirectory(\Configs::attachment() . '/member/nickcons');
+
             if (\Request::get('token') !== null) {
                 $token = json_decode(\Password::decode(\Request::get('token')));
                 if (
