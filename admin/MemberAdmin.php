@@ -9,7 +9,9 @@
  * @license MIT License
  * @modified 2023. 6. 28.
  */
+
 namespace modules\member\admin;
+
 class MemberAdmin extends \modules\admin\admin\Admin
 {
     /**
@@ -20,8 +22,12 @@ class MemberAdmin extends \modules\admin\admin\Admin
         /**
          * 관리자 메뉴를 추가한다.
          */
-        $this->addContext('/members', $this->getText('admin.contexts.members'), 'xi xi-users', true);
-        $this->addContext('/labels', $this->getText('admin.contexts.labels'), 'xi xi-tags');
+        if ($this->checkPermission('members') == true) {
+            $this->addContext('/members', $this->getText('admin.contexts.members'), 'xi xi-users', true);
+        }
+        if ($this->checkPermission('members', 'label') == true) {
+            $this->addContext('/labels', $this->getText('admin.contexts.labels'), 'xi xi-tags');
+        }
     }
 
     /**
@@ -43,26 +49,5 @@ class MemberAdmin extends \modules\admin\admin\Admin
         }
 
         return '';
-    }
-
-    /**
-     * 관리자 컨텍스트의 접근권한을 확인한다.
-     *
-     * @param string $path 컨텍스트경로
-     * @param ?int $member_id 회원고유값 (NULL 인 경우 현재 로그인한 사용자)
-     * @return bool $has_permission
-     */
-    public function hasContextPermission(string $path, ?int $member_id = null): bool
-    {
-        switch ($path) {
-            case '/members':
-                return $this->checkPermission('members');
-
-            case '/labels':
-                return $this->checkPermission('labels');
-
-            default:
-                return false;
-        }
     }
 }
