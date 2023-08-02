@@ -9,7 +9,9 @@
  * @license MIT License
  * @modified 2023. 6. 24.
  */
+
 namespace modules\member\dto;
+
 class Member
 {
     /**
@@ -95,6 +97,37 @@ class Member
     }
 
     /**
+     * 실명을 가져온다.
+     *
+     * @return string $name
+     */
+    public function getName(): string
+    {
+        return $this->_name;
+    }
+
+    /**
+     * 닉네임을 가져온다.
+     *
+     * @return string $nickname
+     */
+    public function getNickname(): string
+    {
+        return $this->_nickname;
+    }
+
+    /**
+     * 사이트설정에 따라 표시될 회원이름을 가져온다.
+     *
+     * @param bool $is_nickcon 닉이미지가 존재할 경우 닉이미지를 가져올지 여부 (기본값 true)
+     * @return string $display_name
+     */
+    public function getDisplayName(bool $is_nickcon = true): string
+    {
+        return $this->_name;
+    }
+
+    /**
      * 회원사진 URL을 가져온다.
      *
      * @return string $url
@@ -129,18 +162,6 @@ class Member
         }
 
         return $this->_photo;
-    }
-
-    /**
-     * 사이트설정에 따라 표시될 회원이름을 가져온다.
-     *
-     * @param bool $is_nickcon 닉이미지가 존재할 경우 닉이미지를 가져올지 여부 (기본값 true)
-     * @param string $force 가져올 이름종류 (realname : 실명, nickname : 닉네임, NULL 인 경우 사이트설정)
-     * @return string $display_name
-     */
-    public function getDisplayName(bool $is_nickcon = true, ?string $force = null): string
-    {
-        return '아무개';
     }
 
     /**
