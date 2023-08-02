@@ -10,6 +10,13 @@
     "admin": {
         "contexts": {
             "members": "회원관리"
+        },
+        "members": {
+            "email": "이메일",
+            "name": "이름",
+            "nickname": "닉네임",
+            "joined_at": "가입일시",
+            "logged_at": "마지막로그인일시"
         }
     }
 }
