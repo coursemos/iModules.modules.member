@@ -4,7 +4,7 @@
  *
  * 관리자 로그인을 처리한다.
  *
- * @file /modules/member/process/login.post.php
+ * @file /modules/member/processes/login.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
  * @modified 2023. 8. 21.
@@ -14,6 +14,12 @@
  */
 if (defined('__IM_PROCESS__') == false) {
     exit();
+}
+
+if ($me->isLogged() == true) {
+    $results->success = false;
+    $results->message = $me->getErrorText('ALREADY_LOGGED');
+    return;
 }
 
 $errors = [];

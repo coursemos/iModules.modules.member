@@ -4,7 +4,7 @@
  *
  * 로그아웃을 처리한다.
  *
- * @file /modules/member/process/logout.post.php
+ * @file /modules/member/processes/logout.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
  * @modified 2023. 6. 24.

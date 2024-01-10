@@ -4,7 +4,7 @@
  *
  * 회원목록을 가져온다.
  *
- * @file /modules/member/process/members.get.php
+ * @file /modules/member/processes/members.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
  * @modified 2023. 6. 24.
@@ -57,21 +57,29 @@ $start = Request::getInt('start') ?? 0;
 $limit = Request::getInt('limit') ?? 50;
 $filters = Request::getJson('filters');
 $keyword = Request::get('keyword');
+$group_id = Request::get('group_id');
 
 $is_photo = in_array('photo', $fields);
 if ($is_photo == true && in_array('member_id', $fields) == false) {
     $fields[] = 'member_id';
 }
 
+$columns = array_map(function ($column) {
+    return 'm.' . $column;
+}, Format::filter($fields, $columns));
+
 $records = $me
     ->db()
-    ->select(Format::filter($fields, $columns))
-    ->from($me->table('members'));
+    ->select($columns)
+    ->from($me->table('members'), 'm');
+if ($group_id !== null && $group_id !== 'all') {
+    $records->join($me->table('group_members'), 'gm', 'gm.member_id=m.member_id')->where('gm.group_id', $group_id);
+}
 
 if ($filters !== null) {
     foreach ($filters as $field => $filter) {
         if ($filter->operator == '=') {
-            $records->where($field, $filter->value);
+            $records->where('m.' . $field, $filter->value);
         }
     }
 }
