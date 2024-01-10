@@ -290,40 +290,6 @@ class Member extends \Module
     }
 
     /**
-     * 특정 회원으로 로그인한다.
-     *
-     * @param int $member_id 로그인할 회원고유값
-     * @param bool $log 로그기록여부
-     * @return bool $success
-     */
-    public function loginTo(int $member_id, bool $log = true): bool
-    {
-        $ip = \Format::ip();
-        $time = time();
-
-        \Request::setSession(
-            'MODULE_MEMBER_LOGGED',
-            json_encode([
-                'member_id' => $member_id,
-                'ip' => $ip,
-                'time' => $time,
-            ])
-        );
-
-        self::$_logged = $member_id;
-
-        if ($log === true) {
-            $this->db()
-                ->update($this->table('members'), ['logged_at' => $time, 'logged_ip' => $ip])
-                ->where('member_id', $member_id)
-                ->execute();
-            $this->storeLog($this, 'login', 'success');
-        }
-
-        return true;
-    }
-
-    /**
      * 자동로그인을 통해 로그인한다.
      */
     private function loginByAutoLogin(): void
@@ -367,6 +333,40 @@ class Member extends \Module
             ->where('member_id', $member_id)
             ->execute();
         $this->storeLog($this, 'login', 'success', ['login_id' => $login_id]);
+    }
+
+    /**
+     * 특정 회원으로 로그인한다.
+     *
+     * @param int $member_id 로그인할 회원고유값
+     * @param bool $log 로그기록여부
+     * @return bool $success
+     */
+    public function loginTo(int $member_id, bool $log = true): bool
+    {
+        $ip = \Format::ip();
+        $time = time();
+
+        \Request::setSession(
+            'MODULE_MEMBER_LOGGED',
+            json_encode([
+                'member_id' => $member_id,
+                'ip' => $ip,
+                'time' => $time,
+            ])
+        );
+
+        self::$_logged = $member_id;
+
+        if ($log === true) {
+            $this->db()
+                ->update($this->table('members'), ['logged_at' => $time, 'logged_ip' => $ip])
+                ->where('member_id', $member_id)
+                ->execute();
+            $this->storeLog($this, 'login', 'success');
+        }
+
+        return true;
     }
 
     /**
@@ -552,14 +552,6 @@ class Member extends \Module
     public function error(string $code, ?string $message = null, ?object $details = null): \ErrorData
     {
         switch ($code) {
-            /**
-             * 관리자 컨텍스트 URL 이 이미 정의된 경우
-             */
-            case 'LOGIN_FAILED':
-                $error = \ErrorHandler::data();
-                $error->message = $this->getErrorText('LOGIN_FAILED');
-                return $error;
-
             default:
                 return parent::error($code, $message, $details);
         }
