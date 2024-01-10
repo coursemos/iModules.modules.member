@@ -1,22 +1,102 @@
 {
+    "text": {
+        "selected_members": "${count}명 선택됨"
+    },
     "buttons": {
         "login": "로그인",
         "logout": "로그아웃"
     },
     "errors": {
         "LOGIN_FAILED": "이메일 또는 패스워드가 일치하지 않습니다.",
-        "LOGIN_LOCKED": "일정시간내 로그인시도횟수를 초과하였습니다.<br>${second}초 동안 로그인할 수 없습니다."
+        "LOGIN_LOCKED": "일정시간내 로그인시도횟수를 초과하였습니다.<br>${second}초 동안 로그인할 수 없습니다.",
+        "NOT_FOUND_OAUTH_CLIENT": "OAuth 클라이언트를 찾을 수 없습니다.",
+        "OAUTH_AUTHENTICATION_FAILED": "OAuth 인증을 취소하거나 인증에 실패하였습니다."
     },
     "admin": {
         "contexts": {
-            "members": "회원관리"
+            "members": "회원관리",
+            "oauth": "OAuth관리"
+        },
+        "permissions": {
+            "members": {
+                "title": "회원관리",
+                "view": "회원목록/회원조회",
+                "edit": "회원정보수정",
+                "groups": "회원그룹관리"
+            }
+        },
+        "actions": {
+            "unselected_members": "먼저 회원을 선택하여 주십시오."
         },
         "members": {
+            "add": "회원추가",
+            "id": "고유값",
             "email": "이메일",
+            "password": "패스워드",
             "name": "이름",
             "nickname": "닉네임",
+            "groups": "소속그룹",
+            "groups_help": "선택한 그룹의 상위그룹은 자동으로 포함됩니다.",
+            "nogroups": "소속그룹 없음",
             "joined_at": "가입일시",
             "logged_at": "마지막로그인일시"
+        },
+        "groups": {
+            "add": "그룹추가",
+            "add_child": "하위그룹추가",
+            "edit": "그룹수정",
+            "delete": "그룹삭제",
+            "title": "그룹명",
+            "members": "인원",
+            "all": "전체그룹",
+            "parent": "상위그룹",
+            "add_member": "그룹구성원 추가"
+        },
+        "oauth": {
+            "clients": {
+                "add": "OAuth추가",
+                "edit": "OAuth수정",
+                "provider": "OAuth서비스 제공자",
+                "preset": "불러오기",
+                "preset_help": "서비스제공자를 선택하면, 해당 서비스제공자에 따른 기본설정이 자동으로 입력됩니다.<br>또는, 서비스제공자를 선택하지 않고 직접 설정할 수도 있습니다.",
+                "client": "OAuth클라이언트",
+                "oauth_id": "고유아이디",
+                "oauth_id_help": "현재 OAuth클라이언트를 구분하기 위한 고유값을 영어 소문자로만 입력하여 주십시오.<br>해당 고유아이디는 OAuth 인증을 위한 URL 및 콜백 URL 에 사용됩니다.",
+                "custom": "사용자정의",
+                "auth_url": "인증URL",
+                "token_url": "토큰URL",
+                "callback_url": "콜백URL",
+                "callback_url_help": "OAuth 연동시 콜백 URL 인증이 필요한 OAuth제공자의 경우 OAuth 제공자에게 위의 URL을 허용리스트에 추가하여 주시기 바랍니다.",
+                "scope": "요청범위",
+                "scope_help": "OAuth 제공자에서 제공하는 정보접근 scope 를 한줄당 한개씩 입력하여 주십시오.",
+                "scope_separator": "범위구분자",
+                "scope_separator_help": "다중 요청범위를 구분하기 위한 구분자를 선택하여 주십시오.<br>해당 구분자는 OAuth제공자에 따라 다릅니다.",
+                "scope_separators": {
+                    "COMMA": "콤마(,)",
+                    "SPACE": "공백( )",
+                    "COLONS": "콜론(:)",
+                    "SEMICOLONS": "세미콜론(;)",
+                    "PLUS": "플러스(+)"
+                },
+                "client_id": "클라이언트ID",
+                "client_secret": "비밀키",
+                "client_secret_help": "OAuth제공자로부터 발급받은 클라이언트ID 및 비밀키를 입력하여 주십시오.",
+                "user": "유저정보",
+                "user_url": "유저정보URL",
+                "user_url_help": "OAuth제공자의 유저정보를 요청하기 위한 API 주소를 입력하여 주십시오.",
+                "user_id_path": "유저고유값",
+                "user_id_path_help": "유저정보 API 데이터에서 유저의 고유값 데이터가 존재하는 JSON 경로를 점(.)으로 구분하여 입력하여 주십시오.",
+                "user_email_path": "유저이메일",
+                "user_email_path_help": "유저정보 API 데이터에서 유저의 이메일 데이터가 존재하는 JSON 경로를 점(.)으로 구분하여 입력하여 주십시오.",
+                "user_name_path": "유저이름",
+                "user_name_path_help": "유저정보 API 데이터에서 유저 이름으로 사용할 데이터가 존재하는 JSON 경로를 점(.)으로 구분하여 입력하여 주십시오.",
+                "user_nickname_path": "유저닉네임",
+                "user_nickname_path_help": "유저정보 API 데이터에서 유저 닉네임으로 사용할 데이터가 존재하는 JSON 경로를 점(.)으로 구분하여 입력하여 주십시오.",
+                "user_photo_path": "유저이미지",
+                "user_photo_path_help": "유저정보 API 데이터에서 유저 프로필 이미지로 사용할 이미지 URL 데이터가 존재하는 JSON 경로를 점(.)으로 구분하여 입력하여 주십시오.",
+                "allow_signup": "회원가입허용",
+                "allow_signup_help": "회원이 아닌 경우 유저정보를 이용하여 신규회원으로 등록합니다."
+            }
         }
     }
 }
