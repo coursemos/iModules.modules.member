@@ -353,11 +353,9 @@ class Member extends \Module
 
         \iModules::session_stop();
 
-        header('Content-Type: images/' . $extension);
-        header('Content-Length: ' . filesize($path));
-        header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600) . ' GMT', true);
-        header('Cache-Control: max-age=3600', true);
-        header('Pragma: public', true);
+        \Header::type($extension);
+        \Header::length(filesize($path));
+        \Header::cache(3600);
 
         readfile($path);
         exit();
