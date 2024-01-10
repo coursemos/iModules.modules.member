@@ -18,6 +18,11 @@ class Member extends \Module
     private static array $_members;
 
     /**
+     * @var \modules\member\dtos\Group[] $_groups 그룹정보
+     */
+    private static array $_groups;
+
+    /**
      *
      * @var int $_logged 로그인정보
      */
@@ -62,6 +67,106 @@ class Member extends \Module
     public function isLogged(): bool
     {
         return $this->getLogged() > 0;
+    }
+
+    /**
+     * 그룹정보를 가져온다.
+     *
+     * @param string $group_id 그룹고유값
+     * @return /\modules\member\dtos\Group $group
+     */
+    public function getGroup(string $group_id): ?\modules\member\dtos\Group
+    {
+        if (isset(self::$_groups[$group_id]) == true) {
+            return self::$_groups[$group_id];
+        }
+
+        $group = $this->db()
+            ->select()
+            ->from($this->table('groups'))
+            ->where('group_id', $group_id)
+            ->getOne();
+        if ($group == null) {
+            return null;
+        }
+
+        self::$_groups[$group_id] = new \modules\member\dtos\Group($group);
+        return self::$_groups[$group_id];
+    }
+
+    /**
+     * 전체 회원그룹을 가져온다.
+     *
+     * @param string $mode 가져올 방식 (tree, list)
+     * @return array $groups
+     */
+    public function getGroups(string $mode = 'tree'): array
+    {
+        $groups = $this->db()
+            ->select()
+            ->from($this->table('groups'))
+            ->where('parent', null)
+            ->get();
+
+        $sort = 0;
+        if ($mode == 'tree') {
+            foreach ($groups as &$group) {
+                $group->sort = $sort++;
+                $group->children = $this->getGroupChildren($group, $mode, $sort);
+                if (count($group->children) == 0) {
+                    unset($group->children);
+                }
+            }
+
+            return $groups;
+        } else {
+            $items = [];
+            foreach ($groups as $group) {
+                $group->sort = $sort++;
+                $items[] = $group;
+                $items = [...$items, ...$this->getGroupChildren($group, $mode, $sort)];
+            }
+
+            return $items;
+        }
+    }
+
+    /**
+     * 특정 그룹의 자식그룹목록을 재귀적으로 가져온다.
+     *
+     * @param string $mode 가져올 방식 (tree, list)
+     * @param object $parent 부모그룹
+     * @param int $sort 정렬순서
+     * @return array $children
+     */
+    private function getGroupChildren(object $parent, string $mode = 'tree', int &$sort = 0): array
+    {
+        $children = $this->db()
+            ->select()
+            ->from($this->table('groups'))
+            ->where('parent', $parent->group_id)
+            ->get();
+
+        if ($mode == 'tree') {
+            foreach ($children as &$child) {
+                $child->sort = $sort++;
+                $child->children = $this->getGroupChildren($child, $mode, $sort);
+                if (count($child->children) == 0) {
+                    unset($child->children);
+                }
+            }
+
+            return $children;
+        } else {
+            $items = [];
+            foreach ($children as $child) {
+                $child->sort = $sort++;
+                $items[] = $child;
+                $items = [...$items, ...$this->getGroupChildren($child, $mode, $sort)];
+            }
+
+            return $items;
+        }
     }
 
     /**
@@ -290,6 +395,81 @@ class Member extends \Module
             \Request::setCookie('MODULE_MEMBER_AUTO_LOGIN_ID', null);
             $this->storeLog($this, 'logout', 'success', ['auto_login' => $login_id]);
         }
+    }
+
+    /**
+     * 그룹 구성원으로 추가한다.
+     *
+     * @param string $group_id 구성원으로 추가할 그룹고유값
+     * @param ?int $member_id 회원고유값
+     * @return bool $success
+     */
+    public function joinGroup(string $group_id, ?int $member_id = null): bool
+    {
+        $member_id ??= $this->getLogged();
+        if ($member_id === 0) {
+            return false;
+        }
+
+        /**
+         * @var \modules\member\admin\MemberAdmin $mAdmin
+         */
+        $mAdmin = $this->getAdmin();
+        $group_ids = [];
+        $time = time();
+        while (true) {
+            $group = $this->db()
+                ->select()
+                ->from($this->table('groups'))
+                ->where('group_id', $group_id)
+                ->getOne();
+            if ($group === null) {
+                if (count($group_ids) > 0) {
+                    $this->db()
+                        ->delete($this->table('group_members'))
+                        ->where('group_id', $group_ids, 'in')
+                        ->where('member_id', $member_id)
+                        ->execute();
+
+                    foreach ($group_ids as $group_id) {
+                        $mAdmin->updateGroup($group_id);
+                    }
+                }
+                return false;
+            }
+
+            $group_ids[] = $group_id;
+
+            $joined = $this->db()
+                ->select()
+                ->from($this->table('group_members'))
+                ->where('group_id', $group_id)
+                ->where('member_id', $member_id)
+                ->getOne();
+            if ($joined === null) {
+                $this->db()
+                    ->insert($this->table('group_members'), [
+                        'group_id' => $group_id,
+                        'member_id' => $member_id,
+                        'joined_at' => $time,
+                    ])
+                    ->execute();
+            } else {
+                $time = $joined->joined_at;
+            }
+
+            if ($group->parent === null) {
+                break;
+            } else {
+                $group_id = $group->parent;
+            }
+        }
+
+        foreach ($group_ids as $group_id) {
+            $mAdmin->updateGroup($group_id);
+        }
+
+        return true;
     }
 
     /**
