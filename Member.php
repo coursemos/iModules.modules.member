@@ -13,7 +13,7 @@ namespace modules\member;
 class Member extends \Module
 {
     /**
-     * @var Member[] $_members 회원정보
+     * @var \modules\member\Member[] $_members 회원정보
      */
     private static array $_members;
 
@@ -59,7 +59,7 @@ class Member extends \Module
      *
      * @return bool $is_logged
      */
-    function isLogged(): bool
+    public function isLogged(): bool
     {
         return $this->getLogged() > 0;
     }
@@ -68,9 +68,9 @@ class Member extends \Module
      * 회원정보를 가져온다.
      *
      * @param ?int $member_id 회원고유값
-     * @return \modules\member\dto\Member $member
+     * @return \modules\member\dtos\Member $member
      */
-    public function getMember(?int $member_id = null): \modules\member\dto\Member
+    public function getMember(?int $member_id = null): \modules\member\dtos\Member
     {
         $member_id ??= $this->getLogged();
         if ($member_id !== 0 && isset(self::$_members[$member_id]) == true) {
@@ -87,7 +87,7 @@ class Member extends \Module
             ->where('member_id', $member_id)
             ->getOne();
 
-        self::$_members[$member_id] = new \modules\member\dto\Member($member);
+        self::$_members[$member_id] = new \modules\member\dtos\Member($member);
         return self::$_members[$member_id];
     }
 

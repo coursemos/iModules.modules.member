@@ -4,14 +4,12 @@
  *
  * 회원 구조체를 정의한다.
  *
- * @file /modules/member/dto/Member.php
+ * @file /modules/member/dtos/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
  * @modified 2023. 6. 24.
  */
-
-namespace modules\member\dto;
-
+namespace modules\member\dtos;
 class Member
 {
     /**
@@ -48,6 +46,13 @@ class Member
      * @var ?object $_extras 추가정보
      */
     private ?object $_extras = null;
+
+    /**
+     * 회원정보
+     *
+     * @var ?object $_member
+     */
+    private ?object $_member = null;
 
     /**
      * 회원 구조체를 정의한다.
