@@ -97,7 +97,7 @@ if ($sorters !== null) {
 $records = $records->limit($start, $limit)->get();
 foreach ($records as &$record) {
     if ($is_photo == true) {
-        $record->photo = $me->getMemberPhotoUrl($record->member_id);
+        $record->photo = $me->getMemberPhoto($record->member_id);
     }
 }
 
