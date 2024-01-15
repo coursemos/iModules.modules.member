@@ -183,7 +183,7 @@ class Member extends \Module
         }
 
         if ($member_id === 0) {
-            return new dto\Member();
+            return new \modules\member\dtos\Member();
         }
 
         $member = $this->db()
@@ -203,9 +203,13 @@ class Member extends \Module
      * @param bool $is_full_url 도메인을 포함한 전체 URL 여부
      * @return string $url
      */
-    public function getMemberPhotoUrl(?int $member_id = null, bool $is_full_url = false): string
+    public function getMemberPhoto(?int $member_id = null, bool $is_full_url = false): string
     {
         $member_id ??= $this->getLogged();
+        if ($member_id === 0) {
+            return $this->getDir() . '/images/photo.jpg';
+        }
+
         return \iModules::getUrl($is_full_url) . '/members/' . $member_id . '/photo.jpg';
     }
 

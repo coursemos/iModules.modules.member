@@ -43,6 +43,11 @@ class Member
     private string $_status;
 
     /**
+     * @var ?string $_photo 회원사진 URL
+     */
+    private ?string $_photo = null;
+
+    /**
      * @var ?object $_extras 추가정보
      */
     private ?object $_extras = null;
@@ -133,40 +138,22 @@ class Member
     }
 
     /**
-     * 회원사진 URL을 가져온다.
-     *
-     * @return string $url
-     */
-    public function getPhotoUrl(): string
-    {
-        return \Configs::dir() . '/members/' . $this->_id . '/photo.jpg';
-    }
-
-    /**
      * 회원사진을 가져온다.
      *
-     * @param bool $is_html_tag HTML 태그로 가져올지 여부 (false 인 경우 사진 URL 만 가져온다.)
+     * @param bool $is_full_url 도메인을 포함한 전체 URL 여부
      * @return string $_photo
      */
-    public function getPhoto(bool $is_html_tag = true): string
+    public function getPhoto(bool $is_full_url = false): string
     {
-        if (isset($this->_photo) == false) {
-            $this->_photo = 'abcd.jpg';
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        if ($this->isMember() == true) {
+            return $mMember->getMemberPhoto($this->_id, $is_full_url);
+        } else {
+            return $this->_photo ?? $mMember->getMemberPhoto(0, $is_full_url);
         }
-
-        if ($is_html_tag == true) {
-            return \Html::element(
-                'i',
-                [
-                    'data-module' => 'member',
-                    'data-role' => 'photo',
-                    'style' => 'background-image(' . $this->_photo . ')',
-                ],
-                $this->getDisplayName(false)
-            );
-        }
-
-        return $this->_photo;
     }
 
     /**
@@ -176,6 +163,48 @@ class Member
      */
     public function isMember(): bool
     {
-        return $this->_id !== 0;
+        return $this->_id !== 0 || $this->_status !== 'LEAVE';
+    }
+
+    /**
+     * 회원이 아닌 경우 이메일 표시정보를 수정한다.
+     *
+     * @param string $email 표시할 이메일주소
+     * @return \modules\member\dtos\Member $member
+     */
+    public function setEmailPlaceHolder(string $email): \modules\member\dtos\Member
+    {
+        if ($this->isMember() === false) {
+            $this->_email = $email;
+        }
+        return $this;
+    }
+
+    /**
+     * 회원이 아닌 경우 닉네임 표시정보를 수정한다.
+     *
+     * @param string $nickname 표시할 닉네임
+     * @return \modules\member\dtos\Member $member
+     */
+    public function setNicknamePlaceHolder(string $nickname): \modules\member\dtos\Member
+    {
+        if ($this->isMember() === false) {
+            $this->_nickname = $nickname;
+        }
+        return $this;
+    }
+
+    /**
+     * 회원이 아닌 경우 이메일 표시정보를 수정한다.
+     *
+     * @param string $photo_url 표시할 사진 URL
+     * @return \modules\member\dtos\Member $member
+     */
+    public function setPhotoPlaceHolder(string $photo_url): \modules\member\dtos\Member
+    {
+        if ($this->isMember() === false) {
+            $this->_photo = $photo_url;
+        }
+        return $this;
     }
 }
