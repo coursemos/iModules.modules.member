@@ -18,9 +18,9 @@ class Group
     private string $_id;
 
     /**
-     * @var ?string $_parent 부모그룹고유값
+     * @var ?string $_parent_id 부모그룹고유값
      */
-    private ?string $_parent;
+    private ?string $_parent_id;
 
     /**
      * @var int $_depth 단계
@@ -45,7 +45,7 @@ class Group
     public function __construct(object $group)
     {
         $this->_id = 0;
-        $this->_parent = $group->parent;
+        $this->_parent_id = $group->parent_id;
         $this->_depth = $group->depth;
         $this->_title = $group->title;
         $this->_members = $group->members;
@@ -69,5 +69,25 @@ class Group
     public function getDepth(): int
     {
         return $this->_depth;
+    }
+
+    /**
+     * 상위그룹 아이디를 가져온다.
+     *
+     * @return ?string $parent_id
+     */
+    public function getParentId(): ?string
+    {
+        return $this->_parent_id;
+    }
+
+    /**
+     * 그룹명을 가져온다.
+     *
+     * @return string $title
+     */
+    public function getTitle(): string
+    {
+        return $this->_title;
     }
 }
