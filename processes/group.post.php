@@ -7,24 +7,18 @@
  * @file /modules/member/processes/group.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 7. 17.
+ * @modified 2024. 1. 26.
  *
  * @var \modules\member\Member $me
- * @var Input $input
  */
 if (defined('__IM_PROCESS__') == false) {
     exit();
 }
 
 /**
- * @var \modules\member\admin\MemberAdmin $mAdmin
- */
-$mAdmin = $me->getAdmin();
-
-/**
  * 관리자권한이 존재하는지 확인한다.
  */
-if ($mAdmin->checkPermission('members', 'groups') == false) {
+if ($me->getAdmin()->checkPermission('members', ['groups']) == false) {
     $results->success = false;
     $results->message = $me->getErrorText('FORBIDDEN');
     return;
@@ -49,9 +43,9 @@ if ($group_id !== null) {
 }
 
 $errors = [];
-$group_id = $input->get('group_id');
-$parent = $input->get('parent') ?? 'all';
-$title = $input->get('title', $errors);
+$group_id = Input::get('group_id');
+$parent_id = Input::get('parent_id') ?? 'all';
+$title = Input::get('title', $errors);
 if ($title !== null) {
     $checked = $me
         ->db()
@@ -76,11 +70,14 @@ if (count($errors) == 0) {
     $me->db()
         ->insert(
             $me->table('groups'),
-            ['group_id' => $group_id, 'parent' => $parent, 'title' => $title],
-            ['parent', 'title']
+            ['group_id' => $group_id, 'parent_id' => $parent_id, 'title' => $title],
+            ['parent_id', 'title']
         )
         ->execute();
 
+    /**
+     * @var \modules\member\admin\Member $mAdmin
+     */
     $mAdmin->updateGroup($group_id);
 
     $results->success = true;

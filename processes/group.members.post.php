@@ -7,30 +7,24 @@
  * @file /modules/member/processes/group.members.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 7. 17.
+ * @modified 2024. 1. 26.
  *
  * @var \modules\member\Member $me
- * @var Input $input
  */
 if (defined('__IM_PROCESS__') == false) {
     exit();
 }
 
 /**
- * @var \modules\member\admin\MemberAdmin $mAdmin
- */
-$mAdmin = $me->getAdmin();
-
-/**
  * 관리자권한이 존재하는지 확인한다.
  */
-if ($mAdmin->checkPermission('members', 'groups') == false) {
+if ($me->getAdmin()->checkPermission('members', ['groups']) == false) {
     $results->success = false;
     $results->message = $me->getErrorText('FORBIDDEN');
     return;
 }
 
-$group_id = $input->get('group_id');
+$group_id = Input::get('group_id');
 $group = $me
     ->db()
     ->select()
@@ -43,7 +37,7 @@ if ($group === null) {
     return;
 }
 
-$member_ids = $input->get('member_ids');
+$member_ids = Input::get('member_ids');
 foreach ($member_ids as $member_id) {
     $me->joinGroup($group_id, $member_id);
 }

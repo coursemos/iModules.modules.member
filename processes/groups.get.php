@@ -16,14 +16,9 @@ if (defined('__IM_PROCESS__') == false) {
 }
 
 /**
- * @var \modules\member\admin\MemberAdmin $mAdmin 관리자모듈
- */
-$mAdmin = $me->getAdmin();
-
-/**
  * 관리자권한이 존재하는지 확인한다.
  */
-if ($mAdmin->checkPermission('members', 'groups') == false) {
+if ($me->getAdmin()->checkPermission('members', ['groups']) == false) {
     $results->success = false;
     $results->message = $me->getErrorText('FORBIDDEN');
     return;
@@ -38,7 +33,13 @@ $parent_id = $parent?->group_id ?? null;
 $child = Request::getJson('child');
 $child_id = $child?->group_id ?? null;
 
+/**
+ * @var \modules\member\admin\Member $mAdmin
+ */
+$mAdmin = $me->getAdmin();
+
 if ($is_update == true) {
+    /*
     foreach (
         $mAdmin
             ->db()
@@ -49,6 +50,7 @@ if ($is_update == true) {
     ) {
         $mAdmin->updateGroup($group->group_id);
     }
+    */
 }
 
 if ($parent_id === null && $child_id === null) {
@@ -63,17 +65,20 @@ if ($parent_id === null && $child_id === null) {
         'children' => false,
     ];
 
-    if (($filters?->title?->value ?? null) === null) {
-        $groups['children'] = $mAdmin->getGroups();
-    } else {
-        $groups['children'] = $mAdmin->getGroupsWithFilter($filters->title->value);
-    }
+    $groups['children'] = $mAdmin->getGroupTree(null, $filters?->title?->value ?? null);
 
     $results->success = true;
+    $results->filter = $filters?->title?->value ?? null;
     $results->records = [$groups];
 } elseif ($parent_id !== null) {
+    $parent = $me->getGroup($parent_id);
+
+    if ($parent === null) {
+        $results->success = false;
+        return;
+    }
     $results->success = true;
-    $results->records = $mAdmin->getGroupChildren($parent_id);
+    $results->records = $mAdmin->getGroupTree($parent_id, $filters?->title?->value ?? null, $parent->getDepth() + 1);
 } elseif ($child_id !== null) {
     $results->success = true;
     $results->records = $mAdmin->getGroupParents($child_id);

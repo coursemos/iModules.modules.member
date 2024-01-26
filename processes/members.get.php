@@ -7,7 +7,7 @@
  * @file /modules/member/processes/members.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 6. 24.
+ * @modified 2024. 1. 26.
  *
  * @var \modules\member\Member $me
  */
@@ -16,14 +16,9 @@ if (defined('__IM_PROCESS__') == false) {
 }
 
 /**
- * @var \modules\admin\Admin $mAdmin 관리자모듈
- */
-$mAdmin = Modules::get('admin');
-
-/**
  * 관리자권한이 존재하는지 확인한다.
  */
-if ($mAdmin->isAdministrator() == false) {
+if ($me->getAdmin()->checkPermission('members') == false) {
     $results->success = false;
     $results->message = $me->getErrorText('FORBIDDEN');
     return;
