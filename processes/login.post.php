@@ -7,10 +7,9 @@
  * @file /modules/member/processes/login.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 8. 21.
+ * @modified 2024. 1. 26.
  *
  * @var \modules\member\Member $me
- * @var Input $input
  */
 if (defined('__IM_PROCESS__') == false) {
     exit();
@@ -23,9 +22,9 @@ if ($me->isLogged() == true) {
 }
 
 $errors = [];
-$email = $input->get('email', $errors);
-$password = $input->get('password', $errors);
-$auto_login = $input->get('auto_login') === 'true';
+$email = Input::get('email', $errors);
+$password = Input::get('password', $errors);
+$auto_login = Input::get('auto_login') === 'true';
 
 if (count($errors) == 0) {
     $login = $me->login($email, $password, $auto_login);
