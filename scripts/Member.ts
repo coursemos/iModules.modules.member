@@ -12,6 +12,39 @@ namespace modules {
     export namespace member {
         export class Member extends Module {
             /**
+             * 모듈의 DOM 이벤트를 초기화한다.
+             *
+             * @param {Dom} $dom - 모듈 DOM 객체
+             */
+            init($dom: Dom): void {
+                const context = $dom.getData('context');
+
+                switch (context) {
+                    case 'oauth.link':
+                        this.initOAuthLink($dom);
+                        break;
+                }
+
+                super.init($dom);
+            }
+
+            /**
+             * OAuth 계정연결 컴포넌트 이벤트를 초기화한다.
+             *
+             * @param {Dom} $dom - 모듈 DOM 객체
+             */
+            initOAuthLink($dom: Dom): void {
+                Html.all('form', $dom).forEach(($form) => {
+                    const form = Form.get($form);
+
+                    form.onSubmit(async () => {
+                        const results = await form.submit(this.getProcessUrl('oauth'));
+                        console.log(results);
+                    });
+                });
+            }
+
+            /**
              * 로그아웃을 처리한다.
              *
              * @return {Promise<boolean>} success - 로그아웃 성공여부
