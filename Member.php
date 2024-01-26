@@ -44,6 +44,33 @@ class Member extends \Module
     }
 
     /**
+     * 컨텍스트를 가져온다.
+     *
+     * @param string $context 컨텍스트명
+     * @param ?object $configs 컨텍스트 설정
+     * @return string $html
+     */
+    public function getContext(string $context, ?object $configs = null): string
+    {
+        /**
+         * 컨텍스트 템플릿을 설정한다.
+         */
+        if (isset($configs?->template) == true && $configs->template->name !== '#') {
+            $this->setTemplate($configs->template);
+        } else {
+            $this->setTemplate($this->getConfigs('template'));
+        }
+
+        $content = '';
+        switch ($context) {
+            default:
+                $content = \ErrorHandler::get(\ErrorHandler::error('NOT_FOUND_URL'));
+        }
+
+        return $this->getTemplate()->getLayout($content);
+    }
+
+    /**
      * 현재 로그인중인 회원고유번호를 가져온다.
      *
      * @return int $member_id 회원고유값 (로그인되어 있지 않은 경우 0)
@@ -980,8 +1007,12 @@ class Member extends \Module
     {
         $success = parent::install($previous);
         if ($success === true) {
-            \File::createDirectory(\Configs::attachment() . '/member/photos');
-            \File::createDirectory(\Configs::attachment() . '/member/nickcons');
+            if (
+                \File::createDirectory(\Configs::attachment() . '/member/photos', 0707) === false ||
+                \File::createDirectory(\Configs::attachment() . '/member/nickcons', 0707) === false
+            ) {
+                return false;
+            }
 
             if (\Request::get('token') !== null) {
                 $token = json_decode(\Password::decode(\Request::get('token')));
