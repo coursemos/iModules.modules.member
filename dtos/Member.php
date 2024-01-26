@@ -13,6 +13,13 @@ namespace modules\member\dtos;
 class Member
 {
     /**
+     * 회원정보
+     *
+     * @var ?object $_member
+     */
+    private ?object $_member = null;
+
+    /**
      * @var int $_id 회원고유값
      */
     private int $_id;
@@ -48,16 +55,19 @@ class Member
     private ?string $_photo = null;
 
     /**
+     * @var int $_logged_at 마지막로그인시각
+     */
+    private int $_logged_at = 0;
+
+    /**
+     * @var \modules\member\dtos\MemberGroup[] $_groups
+     */
+    private array $_groups;
+
+    /**
      * @var ?object $_extras 추가정보
      */
     private ?object $_extras = null;
-
-    /**
-     * 회원정보
-     *
-     * @var ?object $_member
-     */
-    private ?object $_member = null;
 
     /**
      * 회원 구조체를 정의한다.
@@ -82,6 +92,7 @@ class Member
             $this->_name = $member->name;
             $this->_nickname = $member->nickname;
             $this->_status = $member->status;
+            $this->_logged_at = $member->logged_at ?? 0;
             $this->_extras = json_decode($member->extras ?? 'null');
         }
     }
@@ -138,6 +149,73 @@ class Member
     }
 
     /**
+     * 회원이 속한 그룹을 가져온다.
+     *
+     * @param bool $is_edge 가장 하위 그룹만 가져올지 여부
+     * @return \modules\member\dtos\MemberGroup[] $groups
+     */
+    public function getGroups(bool $is_edge = false): array
+    {
+        if (isset($this->_groups) == false) {
+            /**
+             * @var \modules\members\Member $mMember
+             */
+            $mMember = \Modules::get('member');
+            $groups = $mMember
+                ->db()
+                ->select()
+                ->from($mMember->table('group_members'))
+                ->where('member_id', $this->_id)
+                ->get();
+            $this->_groups = [];
+            foreach ($groups as $group) {
+                $this->_groups[$group->group_id] = new \modules\member\dtos\MemberGroup($group);
+            }
+        }
+
+        if ($is_edge == true) {
+            $parents_id = [];
+            foreach ($this->_groups as $group) {
+                $parent_id = $group->getGroup()->getParentId();
+                if ($parent_id !== null) {
+                    $parents_id[] = $parent_id;
+                }
+            }
+
+            $edges = [];
+            foreach ($this->_groups as $group) {
+                if (in_array($group->getGroupId(), $parents_id) == false) {
+                    $edges[] = $group;
+                }
+            }
+            return $edges;
+        }
+
+        return array_values($this->_groups);
+    }
+
+    /**
+     * 회원이 그룹에 속해있는지 확인한다.
+     *
+     * @param string $group_id
+     * @return bool $is_assigned
+     */
+    public function isAssignedGroup(string $group_id): bool
+    {
+        /**
+         * @var \modules\members\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        return $mMember
+            ->db()
+            ->select()
+            ->from($mMember->table('group_members'))
+            ->where('member_id', $this->_id)
+            ->where('group_id', $group_id)
+            ->has();
+    }
+
+    /**
      * 회원사진을 가져온다.
      *
      * @param bool $is_full_url 도메인을 포함한 전체 URL 여부
@@ -154,6 +232,16 @@ class Member
         } else {
             return $this->_photo ?? $mMember->getMemberPhoto(0, $is_full_url);
         }
+    }
+
+    /**
+     * 마지막 로그인 시각을 가져온다.
+     *
+     * @return int $logged_at
+     */
+    public function getLoggedAt(): int
+    {
+        return $this->_logged_at;
     }
 
     /**
