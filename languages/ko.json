@@ -1,6 +1,25 @@
 {
-    "text": {
-        "selected_members": "${count}명 선택됨"
+    "email": "이메일주소",
+    "password": "패스워드",
+    "name": "성명",
+    "nickname": "닉네임",
+    "oauth": {
+        "label": {
+            "password": "최초연동을 위한 패스워드 확인",
+            "signup": {
+                "signup": "신규계정 생성",
+                "login": "또는 기존 계정으로 로그인"
+            },
+            "login": {
+                "login": "기존 계정으로 로그인",
+                "signup": "또는 신규계정 생성"
+            }
+        },
+        "button": {
+            "password": "패스워드 확인",
+            "signup": "신규계정 생성하기",
+            "login": "로그인하여 계정연결하기"
+        }
     },
     "buttons": {
         "login": "로그인",
@@ -9,26 +28,35 @@
     "errors": {
         "LOGIN_FAILED": "이메일 또는 패스워드가 일치하지 않습니다.",
         "LOGIN_LOCKED": "일정시간내 로그인시도횟수를 초과하였습니다.<br>${second}초 동안 로그인할 수 없습니다.",
+        "LOGOUTED": "로그인이 되어 있지 않습니다.",
+        "INVALID_PASSWORD": "패스워드가 일치하지 않습니다.",
+        "NOT_FOUND_MEMBER": "회원정보를 찾을 수 없습니다.",
         "NOT_FOUND_OAUTH_CLIENT": "OAuth 클라이언트를 찾을 수 없습니다.",
-        "OAUTH_AUTHENTICATION_FAILED": "OAuth 인증을 취소하거나 인증에 실패하였습니다."
+        "OAUTH_AUTHENTICATION_FAILED": "OAuth 인증을 취소하거나 인증에 실패하였습니다.",
+        "OAUTH_AUTHENTICATION_REQUEST_FAILED": "OAuth 인증요청이 실패하였습니다.<br>OAuth 서비스제공자의 매뉴얼을 참고하여 OAuth 클라이언트 설정을 확인하여 주시기 바랍니다.",
+        "OAUTH_INVALID_ACCOUNT": "OAuth 계정을 확인할 수 없습니다.",
+        "OAUTH_NOT_ALLOWED_SIGNUP": "해당 OAuth 계정으로 회원가입을 할 수 없습니다."
     },
     "admin": {
         "contexts": {
             "members": "회원관리",
             "oauth": "OAuth관리"
         },
-        "permissions": {
+        "scopes": {
             "members": {
                 "title": "회원관리",
                 "view": "회원목록/회원조회",
                 "edit": "회원정보수정",
-                "groups": "회원그룹관리"
+                "groups": "회원그룹관리",
+                "levels": "회원레벨관리",
+                "logs": "회원활동로그"
             }
         },
         "actions": {
             "unselected_members": "먼저 회원을 선택하여 주십시오."
         },
         "members": {
+            "title": "회원목록",
             "add": "회원추가",
             "id": "고유값",
             "email": "이메일",
@@ -39,7 +67,11 @@
             "groups_help": "선택한 그룹의 상위그룹은 자동으로 포함됩니다.",
             "nogroups": "소속그룹 없음",
             "joined_at": "가입일시",
-            "logged_at": "마지막로그인일시"
+            "logged_at": "마지막로그인일시",
+            "lists": {
+                "group": "그룹별",
+                "level": "레벨별"
+            }
         },
         "groups": {
             "add": "그룹추가",
@@ -51,6 +83,16 @@
             "all": "전체그룹",
             "parent": "상위그룹",
             "add_member": "그룹구성원 추가"
+        },
+        "levels": {
+            "add": "레벨추가",
+            "title": "레벨명",
+            "members": "인원"
+        },
+        "logs": {
+            "title": "회원활동기록",
+            "component": "컴포넌트",
+            "message": "로그메시지"
         },
         "oauth": {
             "clients": {
