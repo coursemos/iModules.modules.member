@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 7. 3.
+ * @modified 2024. 1. 26.
  */
 namespace modules\member;
 class Member extends \Module
@@ -67,6 +67,28 @@ class Member extends \Module
     public function isLogged(): bool
     {
         return $this->getLogged() > 0;
+    }
+
+    /**
+     * 패스워드 검증이 된 경우 30분 이내 패스워드 재검증을 하지 않기 위해 검증상태를 기억한다.
+     *
+     * @param bool $is_confirmed 검증여부 (기본값 : true)
+     */
+    public function setPasswordConfirmed(bool $is_confirmed = true): void
+    {
+        $_SESSION['MODULE_MEMBER_PASSWORD_CONFIRMED'] = $is_confirmed === true ? time() : 0;
+    }
+
+    /**
+     * 패스워드 검증이 되어 있는 상태인지 확인한다.
+     *
+     * @return bool $confirmed
+     */
+    public function isPasswordConfirmed(): bool
+    {
+        $confirmed = \Request::session('MODULE_MEMBER_PASSWORD_CONFIRMED') ?? 0;
+
+        return $confirmed > time() - 60 * 30;
     }
 
     /**
@@ -214,6 +236,28 @@ class Member extends \Module
     }
 
     /**
+     * OAuth 클라이언트정보를 가져온다.
+     *
+     * @param string $oauth_id
+     * @return ?\modules\member\dtos\OAuthClient $client
+     */
+    public function getOAuthClient(string $oauth_id): ?\modules\member\dtos\OAuthClient
+    {
+        $client = $this->db()
+            ->select()
+            ->from($this->table('oauth_clients'))
+            ->where('oauth_id', $oauth_id)
+            ->getOne();
+        if ($client === null) {
+            return null;
+        }
+
+        $client = new \modules\member\dtos\OAuthClient($client);
+
+        return $client;
+    }
+
+    /**
      * 이메일 및 패스워드로 로그인을 처리한다.
      *
      * @param string $email 이메일주소
@@ -270,6 +314,8 @@ class Member extends \Module
                 \Request::setCookie('MODULE_MEMBER_AUTO_LOGIN_ID', \Password::encode($login_id), 60 * 60 * 24 * 365);
             }
 
+            $this->setPasswordConfirmed();
+
             return $this->loginTo($member_id);
         } else {
             /**
@@ -291,6 +337,79 @@ class Member extends \Module
         }
 
         return $success;
+    }
+
+    /**
+     * OAuth 클라이언트를 통해 로그인을 처리한다.
+     *
+     * @param \modules\member\dtos\OAuthAccount $account OAuth계정 객체
+     */
+    public function loginByOAuth(\modules\member\dtos\OAuthAccount $account): void
+    {
+        if ($account->isValid() == false) {
+            \ErrorHandler::print($this->error('OAUTH_ACCESS_TOKEN_FAILED'));
+        }
+
+        $member_ids = $account->getLinkedMemberIds();
+
+        /**
+         * 현재 로그인상태여부에 따라 OAuth 로그인을 처리한다.
+         */
+        if ($this->isLogged() == true) {
+            if (count($member_ids) === 0) {
+                /**
+                 * OAuth 계정이 회원계정과 연동되어 있지 않은 경우,
+                 * 패스워드 검증을 하거나, 검증이 되어 있다면 바로 연동을 처리한다.
+                 */
+                if ($this->isPasswordConfirmed() === true) {
+                    $success = $this->setOAuthAccount($account, $this->getLogged());
+                    if ($success == true) {
+                        $account->getOAuth()->redirect();
+                    } else {
+                        \ErrorHandler::print($this->error('OAUTH_ACCESS_TOKEN_FAILED'));
+                    }
+                } else {
+                    $this->printOAuthLinkComponent('password', $account);
+                }
+            } else {
+                /**
+                 * 현재 로그인한 계정과, 다른 계정으로 OAuth 계정이 연동된 경우 에러메시지를 출력한다.
+                 */
+                if (in_array($this->getLogged(), $member_ids) == false) {
+                    \ErrorHandler::print($this->error('OAUTH_LINKED_OTHER_ACCOUNT'));
+                }
+
+                $success = $this->setOAuthAccount($account, $this->getLogged());
+                if ($success == true) {
+                    $account->getOAuth()->redirect();
+                } else {
+                    \ErrorHandler::print($this->error('OAUTH_ACCESS_TOKEN_FAILED'));
+                }
+            }
+        } else {
+            /**
+             * OAuth 계정으로 회원고유값을 파악하지 못한 경우 (첫 연동인 경우)
+             */
+            if (count($member_ids) === 0) {
+                $this->printOAuthLinkComponent('link', $account);
+            } else {
+                /**
+                 * OAuth 계정과 연동된 회원계정이 다수인 경우
+                 */
+                if (count($member_ids) > 1) {
+                    $this->printOAuthLinkComponent('select', $account);
+                } else {
+                    $success = $this->setOAuthAccount($account, $member_ids[0]);
+                    if ($success == true) {
+                        $account->getOAuth()->redirect();
+                    } else {
+                        \ErrorHandler::print($this->error('OAUTH_ACCESS_TOKEN_FAILED'));
+                    }
+                }
+            }
+        }
+
+        exit();
     }
 
     /**
@@ -397,8 +516,83 @@ class Member extends \Module
                     ->execute();
             }
             \Request::setCookie('MODULE_MEMBER_AUTO_LOGIN_ID', null);
+            $this->setPasswordConfirmed(false);
             $this->storeLog($this, 'logout', 'success', ['auto_login' => $login_id]);
         }
+    }
+
+    /**
+     * OAuth 계정정보를 가져온다.
+     *
+     * @param string $oauth_id 가져올 OAuth 클라이언트 고유값
+     * @param ?int $member_id 가져올 회원고유값
+     * @return ?\modules\member\dtos\OAuthAccount $account
+     */
+    public function getOAuthAccount(string $oauth_id, ?int $member_id = null): ?\modules\member\dtos\OAuthAccount
+    {
+        $client = $this->getOAuthClient($oauth_id);
+        if ($client === null) {
+            return null;
+        }
+
+        $token = $this->db()
+            ->select()
+            ->from($this->table('oauth_tokens'))
+            ->where('oauth_id', $oauth_id)
+            ->where('member_id', $member_id)
+            ->getOne();
+        if ($token === null) {
+            return null;
+        }
+
+        $oauth = new \OAuthClient($client->getClientId(), $client->getClientSecret());
+        $oauth->setScope($client->getScope());
+        $oauth->setAccessToken($token->access_token, $token->access_token_expired_at, $token->scope);
+        $oauth->setRefreshToken($token->refresh_token, $client->getTokenUrl());
+
+        $account = new \modules\member\dtos\OAuthAccount($client, $oauth);
+        return $account;
+    }
+
+    /**
+     * OAuth 계정정보를 특정 회원에게 등록한다.
+     *
+     * @param \modules\member\dtos\OAuthAccount $oauth OAuth 계정객체
+     * @param ?int $member_id 토큰을 등록할 회원고유값
+     * @return bool $success
+     */
+    public function setOAuthAccount(\modules\member\dtos\OAuthAccount $account, ?int $member_id = null): bool
+    {
+        $member_id ??= $this->getLogged();
+        if ($member_id === 0) {
+            return false;
+        }
+
+        $insert = [
+            'oauth_id' => $account->getClient()->getId(),
+            'member_id' => $member_id,
+            'user_id' => $account->getId(),
+            'scope' => $account->getAccessTokenScope(),
+            'access_token' => $account->getAccessToken(),
+            'refresh_token' => $account->getRefreshToken(),
+            'access_token_expired_at' => $account->getAccessTokenExpiredAt(),
+            'latest_access' => time(),
+        ];
+
+        $duplicated = ['access_token', 'scope', 'access_token', 'access_token_expired_at', 'latest_access'];
+        if ($account->getRefreshToken() !== null) {
+            $duplicated[] = 'refresh_token';
+        }
+
+        $results = $this->db()
+            ->insert($this->table('oauth_tokens'), $insert, $duplicated)
+            ->execute();
+
+        if ($results->success == true) {
+            $account->getOAuth()->clear();
+        }
+
+        return $results->success;
     }
 
     /**
@@ -498,8 +692,8 @@ class Member extends \Module
 
         $this->db()
             ->replace($this->table('logs'), [
+                'time' => \Format::microtime(3),
                 'member_id' => $member_id,
-                'logged_at' => \Format::microtime(3),
                 'component_type' => $component->getType(),
                 'component_name' => $component->getName(),
                 'log_type' => $log_type,
@@ -510,6 +704,213 @@ class Member extends \Module
             ])
             ->execute();
         return $this->db()->getLastError() === null;
+    }
+
+    /**
+     * 회원을 추가한다.
+     *
+     * @param array $member 회원정보 배열 (필드명 => 값)
+     * @return int|array|bool $member_id 추가된 회원의 고유값 (array 인 경우 에러필드 정보, false 인 경우 추가실패)
+     */
+    public function addMember(array $member): int|array|bool
+    {
+        $requires = ['email', 'password', 'nickname'];
+        foreach ($requires as $require) {
+            if (array_key_exists($require, $member) == false) {
+                return false;
+            }
+        }
+
+        $errors = [];
+        if (\Format::checkEmail($member['email']) == false) {
+            $errors['email'] = $this->getErrorText('INVALID_EMAIL');
+        }
+        if (isset($errors['email']) == false) {
+            if ($this->hasActiveMember('email', $member['email']) == true) {
+                $errors['email'] = $this->getErrorText('DUPLICATED');
+            }
+        }
+
+        if (\Format::checkNickname($member['nickname']) == false) {
+            $errors['nickname'] = $this->getErrorText('INVALID_NICKNAME');
+        }
+        if (isset($errors['nickname']) == false) {
+            if ($this->hasActiveMember('nickname', $member['nickname']) == true) {
+                $errors['nickname'] = $this->getErrorText('DUPLICATED');
+            }
+        }
+
+        if (array_key_exists('name', $member) == false) {
+            $member['name'] = $member['nickname'];
+        }
+
+        if (array_key_exists('joined_at', $member) == false) {
+            $member['joined_at'] = time();
+        }
+
+        if (array_key_exists('status', $member) == false) {
+            // @todo 기본값 확인
+            $member['status'] = 'ACTIVATED';
+        }
+
+        if (array_key_exists('verified', $member) == false) {
+            // @todo 기본값 확인
+            $member['verified'] = 'TRUE';
+        }
+
+        $member['password'] = \Password::hash($member['password']);
+
+        $results = $this->db()
+            ->insert($this->table('members'), $member)
+            ->execute();
+
+        return $results->insert_id > 0 ? $results->insert_id : false;
+    }
+
+    /**
+     * 특정정보를 가진 활성화된 회원계정이 존재하는지 확인한다.
+     *
+     * @param string $field 중복체크할 필드명
+     * @param string $value 중복체크할 값
+     * @param int $exclude_member_id 검색에서 제외할 회원아이디
+     * @return bool $duplicated 중복여부
+     */
+    public function hasActiveMember(string $field, string $value, int $exclude_member_id = 0): bool
+    {
+        $check = $this->db()
+            ->select()
+            ->from($this->table('members'))
+            ->where($field, $value);
+        if ($exclude_member_id > 0) {
+            $check->where('member_id', $exclude_member_id, '!=');
+        }
+
+        return $check->has();
+    }
+
+    /**
+     * OAuth 계정 연동을 위한 컴포넌트를 출력한다.
+     *
+     * @param string $type 컴포넌트타입
+     * @param \modules\member\dtos\OAuthAccount $account OAuth 게정정보
+     */
+    public function printOAuthLinkComponent(string $type, \modules\member\dtos\OAuthAccount $account)
+    {
+        $template = $this->setTemplate($this->getConfigs('template'))->getTemplate();
+        $template->assign('type', $type);
+        $template->assign('account', $account);
+        $template->assign('photo', $account->getPhoto() ?? $this->getMemberPhoto(0));
+
+        $forms = [];
+
+        $code = [
+            'oauth_id' => $account->getClient()->getId(),
+            'access_token' => $account->getAccessToken(),
+            'access_token_expired_at' => $account->getAccessTokenExpiredAt(),
+            'refresh_token' => $account->getRefreshToken(),
+            'scope' => $account->getAccessTokenScope(),
+            'user' => $account->getUser(),
+        ];
+        $code = \Password::encode(json_encode($code));
+
+        switch ($type) {
+            case 'password':
+                $member = $this->getMember();
+
+                $password = new \stdClass();
+                $password->title = $this->getText('oauth.label.password');
+                $password->element = \Html::tag(
+                    \Html::element('input', ['type' => 'hidden', 'name' => 'mode', 'value' => 'password']),
+                    \Html::element('input', ['type' => 'hidden', 'name' => 'code', 'value' => $code]),
+                    \Form::input('mode', 'hidden')
+                        ->value('password')
+                        ->getLayout(),
+                    \Form::input('password', 'password')
+                        ->placeholder($this->getText('password'))
+                        ->getLayout()
+                );
+                $password->buttonText = $this->getText('oauth.button.password');
+
+                $forms[] = $password;
+                break;
+
+            case 'link':
+                $member = $this->getMember($account->getSuggestedMemberId());
+
+                $signup = new \stdClass();
+                $signup->title = $this->getText('oauth.label.signup.signup');
+                $signup->element = \Html::tag(
+                    \Html::element('input', ['type' => 'hidden', 'name' => 'mode', 'value' => 'signup']),
+                    \Html::element('input', ['type' => 'hidden', 'name' => 'code', 'value' => $code]),
+                    \Form::input('email', 'email')
+                        ->placeholder($this->getText('email'))
+                        ->value($account->getEmail())
+                        ->getLayout(),
+                    \Form::input('password', 'text')
+                        ->placeholder($this->getText('password'))
+                        ->getLayout(),
+                    \Form::input('nickname', 'text')
+                        ->placeholder($this->getText('nickname'))
+                        ->value($account->getNickname())
+                        ->getLayout()
+                );
+                $signup->buttonText = $this->getText('oauth.button.signup');
+
+                $login = new \stdClass();
+                $login->title = $this->getText('oauth.label.signup.signup');
+                $login->element = \Html::tag(
+                    \Html::element('input', ['type' => 'hidden', 'name' => 'mode', 'value' => 'login']),
+                    \Html::element('input', ['type' => 'hidden', 'name' => 'code', 'value' => $code]),
+                    \Form::input('email', 'email')
+                        ->placeholder($this->getText('email'))
+                        ->value($member->getId() == 0 ? $account->getEmail() : $member->getEmail())
+                        ->getLayout(),
+                    \Form::input('password', 'password')
+                        ->placeholder($this->getText('password'))
+                        ->getLayout()
+                );
+                $login->buttonText = $this->getText('oauth.button.login');
+
+                if ($member->getId() == 0 && $account->getClient()->isAllowSignup() == true) {
+                    $signup->title = $this->getText('oauth.label.signup.signup');
+                    $login->title = $this->getText('oauth.label.signup.login');
+                    $forms = [$signup, $login];
+                } else {
+                    $login->title = $this->getText('oauth.label.login.login');
+                    $signup->title = $this->getText('oauth.label.login.signup');
+
+                    if ($account->getClient()->isAllowSignup() == true) {
+                        $forms = [$login, $signup];
+                    } else {
+                        $forms = [$login];
+                    }
+                }
+                break;
+
+            default:
+                $member = $this->getMember(0);
+                $forms = [];
+        }
+
+        $template->assign('forms', $forms);
+        $template->assign('member', $this->getMember($account->getSuggestedMemberId()));
+
+        $attributes = [
+            'data-role' => 'module',
+            'data-module' => $this->getName(),
+            'data-context' => 'oauth.link',
+            'data-template' => $template->getName(),
+        ];
+
+        $content = \Html::element('div', $attributes, $template->getContext('oauth.link'));
+
+        /**
+         * 기본 리소스를 불러온다.
+         */
+        \iModules::resources();
+
+        \Html::print(\Html::header(), $content, \Html::footer());
+        exit();
     }
 
     /**
@@ -556,6 +957,13 @@ class Member extends \Module
     public function error(string $code, ?string $message = null, ?object $details = null): \ErrorData
     {
         switch ($code) {
+            case 'OAUTH_AUTHENTICATION_REQUEST_FAILED':
+                $error = \ErrorHandler::data($code);
+                $error->message = $this->getErrorText($code);
+                $error->prefix = $details?->error ?? null;
+                $error->suffix = $details?->description ?? null;
+                return $error;
+
             default:
                 return parent::error($code, $message, $details);
         }
@@ -571,7 +979,7 @@ class Member extends \Module
     public function install(string $previous = null, object $configs = null): bool
     {
         $success = parent::install($previous);
-        if ($success == true) {
+        if ($success === true) {
             \File::createDirectory(\Configs::attachment() . '/member/photos');
             \File::createDirectory(\Configs::attachment() . '/member/nickcons');
 
