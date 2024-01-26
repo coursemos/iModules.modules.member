@@ -162,11 +162,11 @@
                     "length": 36,
                     "comment": "그룹고유값"
                 },
-                "parent": {
+                "parent_id": {
                     "type": "char",
                     "length": 36,
                     "is_null": true,
-                    "comment": "상위그룹"
+                    "comment": "상위그룹고유값"
                 },
                 "depth": {
                     "type": "int",
@@ -186,7 +186,7 @@
             },
             "indexes": {
                 "group_id": "primary_key",
-                "parent": "index"
+                "parent_id": "index"
             },
             "comment": "아이모듈 회원 그룹"
         },
@@ -202,7 +202,7 @@
                     "length": 11,
                     "comment": "회원고유값"
                 },
-                "joined_at": {
+                "assigned_at": {
                     "type": "int",
                     "comment": "그룹할당일시"
                 }
@@ -258,15 +258,13 @@
         },
         "logs": {
             "columns": {
+                "time": {
+                    "type": "double",
+                    "comment": "기록일시(마이크로타임)"
+                },
                 "member_id": {
                     "type": "int",
-                    "length": 11,
                     "comment": "회원고유값"
-                },
-                "logged_at": {
-                    "type": "varchar",
-                    "length": 15,
-                    "comment": "기록일시(마이크로타임)"
                 },
                 "component_type": {
                     "type": "varchar",
@@ -296,7 +294,7 @@
                 "ip": {
                     "type": "varchar",
                     "length": 39,
-                    "comment": "IP"
+                    "comment": "접근IP"
                 },
                 "agent": {
                     "type": "varchar",
@@ -305,12 +303,155 @@
                 }
             },
             "indexes": {
-                "member_id,logged_at": "primary_key",
+                "time,member_id": "primary_key",
                 "member_id": "index",
                 "component_type,component_name": "index",
                 "ip": "index"
             },
             "comment": "아이모듈 회원 기록"
+        },
+        "oauth_clients": {
+            "columns": {
+                "oauth_id": {
+                    "type": "varchar",
+                    "length": 20,
+                    "comment": "제공자고유값"
+                },
+                "client_id": {
+                    "type": "varchar",
+                    "length": 255,
+                    "comment": "OAuth client_id"
+                },
+                "client_secret": {
+                    "type": "varchar",
+                    "length": 255,
+                    "comment": "OAuth client_secret"
+                },
+                "auth_url": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "인증요청 URL"
+                },
+                "token_url": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "토큰요청 URL"
+                },
+                "scope": {
+                    "type": "text",
+                    "is_null": true,
+                    "comment": "OAuth 요청범위"
+                },
+                "scope_separator": {
+                    "type": "enum",
+                    "length": "'COMMA','SPACE','COLONS','SEMICOLONS','PLUS'",
+                    "default": "COMMA",
+                    "comment": "OAuth 범위구분자"
+                },
+                "user_url": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "유저정보요청 URL"
+                },
+                "user_id_path": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "유저고유값경로"
+                },
+                "user_email_path": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "유저이메일경로"
+                },
+                "user_name_path": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "유저이름경로"
+                },
+                "user_nickname_path": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "유저닉네임경로"
+                },
+                "user_photo_path": {
+                    "type": "varchar",
+                    "length": 200,
+                    "is_null": true,
+                    "comment": "유저프로필이미지경로"
+                },
+                "allow_signup": {
+                    "type": "enum",
+                    "length": "'TRUE','FALSE'",
+                    "default": "TRUE",
+                    "comment": "회원가입허용여부"
+                },
+                "sort": {
+                    "type": "int",
+                    "length": 11,
+                    "default": 0,
+                    "comment": "정렬"
+                }
+            },
+            "indexes": {
+                "oauth_id": "primary_key"
+            },
+            "comment": "아이모듈 OAuth 클라이언트"
+        },
+        "oauth_tokens": {
+            "columns": {
+                "oauth_id": {
+                    "type": "varchar",
+                    "length": 20,
+                    "comment": "제공자고유값"
+                },
+                "member_id": {
+                    "type": "int",
+                    "length": 11,
+                    "comment": "회원고유값"
+                },
+                "user_id": {
+                    "type": "varchar",
+                    "length": 100,
+                    "comment": "OAuth 유저고유값"
+                },
+                "scope": {
+                    "type": "text",
+                    "is_null": true,
+                    "comment": "OAuth 요청범위"
+                },
+                "access_token": {
+                    "type": "text",
+                    "comment": "OAuth 엑세스토큰"
+                },
+                "access_token_expired_at": {
+                    "type": "int",
+                    "length": 11,
+                    "default": 0,
+                    "comment": "엑세스토큰만료일시"
+                },
+                "refresh_token": {
+                    "type": "text",
+                    "is_null": true,
+                    "comment": "OAuth 리프레시토큰"
+                },
+                "latest_access": {
+                    "type": "int",
+                    "length": 11,
+                    "default": 0,
+                    "comment": "최종활성화시각"
+                }
+            },
+            "indexes": {
+                "oauth_id,member_id,user_id": "primary_key"
+            },
+            "comment": "아이모듈 OAuth 토큰"
         }
     }
 }
