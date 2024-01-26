@@ -1,52 +1,39 @@
 /**
  * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
- * 회원관리화면을 구성한다.
+ * OAuth관리화면을 구성한다.
  *
- * @file /modules/member/admin/scripts/members.ts
+ * @file /modules/member/admin/scripts/contexts/oauth.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 6. 28.
+ * @modified 2024. 1. 26.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
-    return new Admin.Panel({
-        iconClass: 'xi xi-users',
-        title: (await me.getText('admin.contexts.members')),
+    return new Aui.Panel({
+        iconClass: 'xi xi-user-lock',
+        title: (await me.getText('admin.contexts.oauth')),
         layout: 'column',
         border: false,
         scrollable: true,
         items: [
-            new Admin.Tree.Panel({
-                id: 'groups',
+            new Aui.Grid.Panel({
+                id: 'clients',
                 border: [false, true, false, false],
                 width: 320,
                 selection: { selectable: true, keepable: true },
                 expandedDepth: 1,
                 topbar: [
-                    new Admin.Form.Field.Search({
-                        flex: 1,
-                        emptyText: (await me.getText('keyword')),
-                        handler: async (keyword) => {
-                            const groups = Admin.getComponent('groups');
-                            if (keyword.length > 0) {
-                                groups.getStore().setFilter('title', keyword, 'like');
-                            }
-                            else {
-                                groups.getStore().resetFilter();
-                            }
-                        },
-                    }),
-                    new Admin.Button({
+                    new Aui.Button({
                         iconClass: 'mi mi-plus',
-                        text: (await me.getText('admin.groups.add')),
+                        text: (await me.getText('admin.oauth.clients.add')),
                         handler: () => {
-                            me.groups.add();
+                            me.oauth.clients.add();
                         },
                     }),
                 ],
                 bottombar: [
-                    new Admin.Button({
+                    new Aui.Button({
                         iconClass: 'mi mi-refresh',
                         handler: (button) => {
                             const grid = button.getParent().getParent();
@@ -54,15 +41,9 @@ Admin.ready(async () => {
                         },
                     }),
                 ],
-                store: new Admin.TreeStore.Ajax({
-                    url: me.getProcessUrl('groups'),
-                    primaryKeys: ['group_id'],
-                    fields: ['group_id', 'title', { name: 'members', type: 'int' }, { name: 'sort', type: 'int' }],
-                    params: {
-                        mode: 'tree',
-                    },
-                    remoteExpand: true,
-                    remoteFilter: true,
+                store: new Aui.Store.Ajax({
+                    url: me.getProcessUrl('oauth.clients'),
+                    primaryKeys: ['oauth_id'],
                     sorters: { sort: 'ASC' },
                 }),
                 columns: [
@@ -73,11 +54,18 @@ Admin.ready(async () => {
                         flex: 1,
                     },
                     {
+                        text: (await me.getText('admin.oauth.clients.scope')),
+                        dataIndex: 'scope',
+                        sortable: true,
+                        width: 80,
+                        renderer: Aui.Grid.Renderer.Number(),
+                    },
+                    {
                         text: (await me.getText('admin.groups.members')),
                         dataIndex: 'members',
                         sortable: true,
                         width: 80,
-                        renderer: Admin.Tree.Renderer.Number(),
+                        renderer: Aui.Grid.Renderer.Number(),
                     },
                 ],
                 listeners: {
@@ -90,47 +78,33 @@ Admin.ready(async () => {
                         }
                     },
                     openItem: (record) => {
-                        if (record.get('group_id') != 'all') {
-                            me.groups.add(record.get('group_id'));
-                        }
+                        me.oauth.clients.add(record.get('oauth_id'));
                     },
                     openMenu: (menu, record) => {
                         menu.setTitle(record.data.title);
                         menu.add({
-                            text: me.printText('admin.groups.add_child'),
-                            iconClass: 'mi mi-plus',
+                            text: me.printText('admin.oauth.clients.edit'),
+                            iconClass: 'xi xi-form',
                             handler: () => {
-                                me.groups.add(null, record.data.group_id);
+                                me.oauth.clients.add(record.get('oauth_id'));
                             },
                         });
-                        if (record.get('group_id') != 'all') {
-                            menu.add({
-                                text: me.printText('admin.groups.edit'),
-                                iconClass: 'xi xi-form-checkout',
-                                handler: () => {
-                                    me.groups.add(record.get('group_id'));
-                                },
-                            });
-                            menu.add({
-                                text: me.printText('admin.groups.delete'),
-                                iconClass: 'mi mi-trash',
-                                handler: () => {
-                                    me.groups.delete(record.get('group_id'));
-                                },
-                            });
-                        }
+                        menu.add({
+                            text: me.printText('admin.oauth.clients.delete'),
+                            iconClass: 'mi mi-trash',
+                            handler: () => {
+                                me.oauth.clients.delete(record.get('oauth_id'));
+                            },
+                        });
                     },
                     selectionChange: (selections) => {
-                        const members = Admin.getComponent('members');
+                        const members = Aui.getComponent('members');
                         const button = members.getToolbar('top').getItemAt(3);
                         if (selections.length == 1) {
                             const group_id = selections[0].get('group_id');
                             members.getStore().setParam('group_id', group_id);
                             members.getStore().loadPage(1);
                             members.enable();
-                            if (Admin.getContextSubTree().at(0) !== group_id) {
-                                Admin.setContextUrl(Admin.getContextUrl('/' + group_id));
-                            }
                             if (group_id == 'all') {
                                 button.hide();
                             }
@@ -145,7 +119,7 @@ Admin.ready(async () => {
                     },
                 },
             }),
-            new Admin.Grid.Panel({
+            new Aui.Grid.Panel({
                 id: 'members',
                 border: [false, false, false, true],
                 minWidth: 300,
@@ -154,11 +128,11 @@ Admin.ready(async () => {
                 autoLoad: false,
                 disabled: true,
                 topbar: [
-                    new Admin.Form.Field.Search({
+                    new Aui.Form.Field.Search({
                         width: 200,
                         emptyText: (await me.getText('keyword')),
                         handler: async (keyword) => {
-                            const members = Admin.getComponent('members');
+                            const members = Aui.getComponent('members');
                             if (keyword?.length > 0) {
                                 members.getStore().setParam('keyword', keyword);
                             }
@@ -169,19 +143,19 @@ Admin.ready(async () => {
                         },
                     }),
                     '->',
-                    new Admin.Button({
+                    new Aui.Button({
                         iconClass: 'mi mi-plus',
                         text: (await me.getText('admin.members.add')),
                         handler: () => {
                             me.members.add();
                         },
                     }),
-                    new Admin.Button({
+                    new Aui.Button({
                         iconClass: 'mi mi-group-o',
                         text: (await me.getText('admin.groups.add_member')),
                         handler: () => {
-                            const groups = Admin.getComponent('groups');
-                            const members = Admin.getComponent('members');
+                            const groups = Aui.getComponent('groups');
+                            const members = Aui.getComponent('members');
                             const group_id = members.getStore().getParam('group_id');
                             if (group_id === null || group_id === 'all') {
                                 return;
@@ -191,8 +165,8 @@ Admin.ready(async () => {
                         },
                     }),
                 ],
-                bottombar: new Admin.Grid.Pagination([
-                    new Admin.Button({
+                bottombar: new Aui.Grid.Pagination([
+                    new Aui.Button({
                         iconClass: 'mi mi-refresh',
                         handler: (button) => {
                             const grid = button.getParent().getParent();
@@ -200,7 +174,7 @@ Admin.ready(async () => {
                         },
                     }),
                 ]),
-                store: new Admin.Store.Ajax({
+                store: new Aui.Store.Ajax({
                     url: me.getProcessUrl('members'),
                     fields: [
                         'member_id',
@@ -250,23 +224,19 @@ Admin.ready(async () => {
                         dataIndex: 'joined_at',
                         width: 160,
                         sortable: true,
-                        renderer: Admin.Grid.Renderer.DateTime(),
+                        renderer: Aui.Grid.Renderer.DateTime(),
                     },
                     {
                         text: (await me.getText('admin.members.logged_at')),
                         dataIndex: 'logged_at',
                         width: 160,
                         sortable: true,
-                        renderer: Admin.Grid.Renderer.DateTime(),
+                        renderer: Aui.Grid.Renderer.DateTime(),
                     },
                 ],
                 listeners: {
-                    openItem: (record) => {
-                        //
-                    },
-                    openMenu: (menu, record) => {
-                        //
-                    },
+                    openItem: (record) => { },
+                    openMenu: (menu, record) => { },
                 },
             }),
         ],
