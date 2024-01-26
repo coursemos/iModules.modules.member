@@ -1,0 +1,15 @@
+{
+    "title": {
+        "ko": "회원 기본 템플릿"
+    },
+    "version": "4.0.0",
+    "author": {
+        "name": "Arzz",
+        "email": "arzz@arzz.com"
+    },
+    "homepage": "https://www.imodules.io",
+    "language": "ko",
+    "styles": [
+        "/styles/style.css"
+    ]
+}

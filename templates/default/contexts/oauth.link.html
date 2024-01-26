@@ -1,0 +1,45 @@
+<?php
+/**
+ * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
+ *
+ * 기본 템플릿 - OAuth 계정연결
+ *
+ * @file /modules/member/templates/default/oauth.link.html
+ * @author Arzz (arzz@arzz.com)
+ * @license MIT License
+ * @modified 2023. 5. 25.
+ *
+ * @var Theme $theme 현재 테마 클래스
+ * @var \modules\member\Member $owner 회원 모듈 클래스
+ * @var Site $site 현재 사이트
+ * @var Context $context 현재 컨텍스트
+ * @var Route $route 현재 경로
+ * @var \modules\member\dtos\OAuthClient $client OAuth 클라이언트 정보
+ * @var \modules\member\dtos\Member $member 회원정보
+ * @var object[] $forms OAuth 연결을 위한 FORM 태그 배열
+ */
+if (defined('__IM__') == false) {
+    exit();
+}
+
+Html::font('XEIcon');
+Html::font('SUIT');
+
+?>
+<section class="box">
+    <ul class="connect">
+        <li class="photo" style="background-image:url(<?php echo $photo; ?>);"><i data-social="<?php //echo $logged->site->site; ?>"></i></li>
+        <li class="icon"><i class="xi xi-link"></i></li>
+        <li class="photo" style="background-image:url(<?php echo $member->getPhoto(); ?>);"><i style="background-image:url(<?php echo $site->getEmblem()->getUrl('view'); ?>);"></i></li>
+    </ul>
+    
+    <?php foreach ($forms as $form) { ?>
+        <label><b><?php echo $form->title; ?></b></label>
+        
+        <form>
+            <?php echo $form->element; ?>
+            
+            <button type="submit" data-role="button" class="confirm"><?php echo $form->buttonText; ?></button>
+        </form>
+    <?php } ?>
+</section>

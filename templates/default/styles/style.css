@@ -1,0 +1,125 @@
+/**
+ * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
+ *
+ * 기본 템플릿 - 스타일시트
+ *
+ * @file /modules/member/templates/default/styles/style.css
+ * @author Arzz <arzz@arzz.com>
+ * @license MIT License
+ * @modified 2023. 3. 6.
+ */
+div[data-role='module'][data-module='member'][data-template='default'] {
+    /**
+     * OAuth 계정연결
+     */
+    &[data-context='oauth.link'] {
+        width: 100%;
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-background-400);
+
+        > section {
+            width: 90%;
+            max-width: 400px;
+            background: var(--color-background-500);
+            border-top: 2px solid var(--color-primary-500);
+            padding: 20px;
+
+            > ul {
+                list-style: none;
+                height: 80px;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                margin: 20px auto;
+                gap: 20px;
+                font-size: 0;
+
+                > li {
+                    &.photo {
+                        width: 80px;
+                        height: 80px;
+                        position: relative;
+                        font-size: 20px;
+                        border-radius: 50%;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        background-position: 50% 50%;
+                        box-sizing: border-box;
+                        border: 1px solid var(--color-text-100);
+
+                        > i {
+                            display: block;
+                            width: 30px;
+                            height: 30px;
+                            position: absolute;
+                            font-size: 20px;
+                            border-radius: 50%;
+                            top: -5px;
+                            left: -5px;
+                            text-align: center;
+                            line-height: 28px;
+                            background-color: var(--color-background-500);
+                            background-size: contain;
+                            background-position: 50% 50%;
+                            background-repeat: no-repeat;
+                            border: 1px solid #ccc;
+                            box-sizing: border-box;
+                            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+                            font-family: moimz;
+                            font-style: normal;
+                        }
+                    }
+
+                    &.icon {
+                        font-size: 20px;
+                    }
+                }
+            }
+
+            > label {
+                display: flex;
+                font-size: var(--font-size-default);
+                color: var(--color-text-200);
+                height: 41px;
+                line-height: 41px;
+                position: relative;
+                justify-content: center;
+                z-index: 0;
+                margin: var(--input-gap) 0px;
+
+                &::before {
+                    position: absolute;
+                    left: 0;
+                    top: 20px;
+                    width: 100%;
+                    height: 1px;
+                    background: var(--color-background-300);
+                    content: ' ';
+                    z-index: -1;
+                }
+
+                > b {
+                    height: 40px;
+                    line-height: 40px;
+                    background: var(--color-background-500);
+                    padding: 0px 8px;
+                }
+            }
+
+            > form {
+                > button {
+                    width: 100%;
+                    margin-top: var(--input-gap);
+                }
+            }
+
+            > form + label {
+                margin-top: 20px;
+            }
+        }
+    }
+}
