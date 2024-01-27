@@ -1001,17 +1001,21 @@ class Member extends \Module
      *
      * @param string $previous 이전설치버전 (NULL 인 경우 신규설치)
      * @param object $configs 모듈설정
-     * @return bool $success 설치성공여부
+     * @return bool|string $success 설치성공여부
      */
-    public function install(string $previous = null, object $configs = null): bool
+    public function install(string $previous = null, object $configs = null): bool|string
     {
-        $success = parent::install($previous);
+        $success = parent::install($previous, $configs);
         if ($success === true) {
-            if (
-                \File::createDirectory(\Configs::attachment() . '/member/photos', 0707) === false ||
-                \File::createDirectory(\Configs::attachment() . '/member/nickcons', 0707) === false
-            ) {
-                return false;
+            if (\File::createDirectory(\Configs::attachment() . '/member/photos', 0707) === false) {
+                return $this->getErrorText('CREATE_DIRECTORY_FAILED', [
+                    'name' => \Configs::attachment() . '/member/photos',
+                ]);
+            }
+            if (\File::createDirectory(\Configs::attachment() . '/member/nickcons', 0707) === false) {
+                return $this->getErrorText('CREATE_DIRECTORY_FAILED', [
+                    'name' => \Configs::attachment() . '/member/nickcons',
+                ]);
             }
 
             if (\Request::get('token') !== null) {
