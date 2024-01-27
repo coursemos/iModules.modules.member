@@ -11,6 +11,7 @@
 Admin.ready(async () => {
     const me = Admin.getModule('member');
     return new Aui.Panel({
+        id: 'oauth-context',
         iconClass: 'xi xi-user-lock',
         title: (await me.getText('admin.contexts.oauth')),
         layout: 'column',
@@ -70,11 +71,8 @@ Admin.ready(async () => {
                 ],
                 listeners: {
                     update: (grid) => {
-                        if (Admin.getContextSubTree().at(0) !== undefined && grid.getSelections().length == 0) {
-                            grid.select({ group_id: Admin.getContextSubTree().at(0) });
-                        }
-                        else if (grid.getSelections().length == 0) {
-                            grid.select({ group_id: 'all' });
+                        if (Admin.getContextSubUrl(0) !== null && grid.getSelections().length == 0) {
+                            grid.select({ oauth_id: Admin.getContextSubUrl(0) });
                         }
                     },
                     openItem: (record) => {
@@ -105,6 +103,7 @@ Admin.ready(async () => {
                             members.getStore().setParam('group_id', group_id);
                             members.getStore().loadPage(1);
                             members.enable();
+                            Aui.getComponent('oauth-context').properties.setUrl();
                             if (group_id == 'all') {
                                 button.hide();
                             }
@@ -240,5 +239,12 @@ Admin.ready(async () => {
                 },
             }),
         ],
+        setUrl: () => {
+            const clients = Aui.getComponent('clients');
+            const oauth_id = clients.getSelections().at(0)?.get('oauth_id') ?? null;
+            if (oauth_id !== null && Admin.getContextSubUrl(0) !== oauth_id) {
+                Admin.setContextSubUrl('/' + oauth_id);
+            }
+        },
     });
 });

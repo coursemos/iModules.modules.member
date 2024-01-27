@@ -89,14 +89,14 @@ Admin.ready(async () => {
                                 listeners: {
                                     update: (grid) => {
                                         if (
-                                            Admin.getContextSubTree().at(0) == 'lists' &&
-                                            Admin.getContextSubTree().at(1) == 'groups'
+                                            Admin.getContextSubUrl(0) == 'lists' &&
+                                            Admin.getContextSubUrl(1) == 'groups'
                                         ) {
                                             if (
                                                 grid.getSelections().length == 0 &&
-                                                Admin.getContextSubTree().at(2) !== undefined
+                                                Admin.getContextSubUrl(2) !== null
                                             ) {
-                                                grid.select({ group_id: Admin.getContextSubTree().at(2) });
+                                                grid.select({ group_id: Admin.getContextSubUrl(2) });
                                             } else if (grid.getSelections().length == 0) {
                                                 grid.select({ group_id: 'all' });
                                             }
@@ -255,8 +255,8 @@ Admin.ready(async () => {
                         ],
                         listeners: {
                             render: (tab) => {
-                                if (Admin.getContextSubTree().at(0) == 'lists') {
-                                    const type = Admin.getContextSubTree().at(1) ?? null;
+                                if (Admin.getContextSubUrl(0) == 'lists') {
+                                    const type = Admin.getContextSubUrl(1);
                                     if (type !== null) {
                                         tab.active(type);
                                     }
@@ -491,7 +491,7 @@ Admin.ready(async () => {
         ],
         listeners: {
             render: (tab) => {
-                const panel = Admin.getContextSubTree().at(0) ?? null;
+                const panel = Admin.getContextSubUrl(0);
                 if (panel !== null) {
                     tab.active(panel);
                 }
@@ -508,23 +508,23 @@ Admin.ready(async () => {
             },
         },
         setUrl: () => {
-            const contexts = Aui.getComponent('members-context') as Aui.Tab.Panel;
-            if (Admin.getContextSubTree().at(0) !== contexts.getActiveTab().getId()) {
-                Admin.setContextUrl(Admin.getContextUrl('/' + contexts.getActiveTab().getId()));
+            const context = Aui.getComponent('members-context') as Aui.Tab.Panel;
+            if (Admin.getContextSubUrl(0) !== context.getActiveTab().getId()) {
+                Admin.setContextSubUrl('/' + context.getActiveTab().getId());
             }
 
-            if (Admin.getContextSubTree().at(0) == 'lists') {
+            if (Admin.getContextSubUrl(0) == 'lists') {
                 const types = Aui.getComponent('types') as Aui.Tab.Panel;
 
-                if (Admin.getContextSubTree().at(1) !== types.getActiveTab().getId()) {
-                    Admin.setContextUrl(Admin.getContextUrl('/lists/' + types.getActiveTab().getId()));
+                if (Admin.getContextSubUrl(1) !== types.getActiveTab().getId()) {
+                    Admin.setContextSubUrl('/lists/' + types.getActiveTab().getId());
                 }
 
-                if (Admin.getContextSubTree().at(1) == 'groups') {
+                if (Admin.getContextSubUrl(1) == 'groups') {
                     const groups = Aui.getComponent('groups') as Aui.Tree.Panel;
                     const group_id = groups.getSelections().at(0)?.get('group_id') ?? null;
-                    if (group_id !== null && Admin.getContextSubTree().at(1) !== group_id) {
-                        Admin.setContextUrl(Admin.getContextUrl('/lists/groups/' + group_id));
+                    if (group_id !== null && Admin.getContextSubUrl(1) !== group_id) {
+                        Admin.setContextSubUrl('/lists/groups/' + group_id);
                     }
                 }
             }
