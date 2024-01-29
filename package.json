@@ -52,6 +52,11 @@
                     "is_null": true,
                     "comment": "패스워드"
                 },
+                "level_id": {
+                    "type": "int",
+                    "default": 0,
+                    "comment": "레벨고유값"
+                },
                 "code": {
                     "type": "varchar",
                     "length": 50,
@@ -150,7 +155,9 @@
             },
             "indexes": {
                 "member_id": "primary_key",
-                "email": "unique"
+                "email": "unique",
+                "code": "index",
+                "level_id": "index"
             },
             "auto_increment": "member_id",
             "comment": "아이모듈 회원"
@@ -212,7 +219,29 @@
                 "group_id": "index",
                 "member_id": "index"
             },
-            "comment": "아이모듈 그룹 소속회원"
+            "comment": "아이모듈 회원 그룹 소속회원"
+        },
+        "levels": {
+            "columns": {
+                "level_id": {
+                    "type": "int",
+                    "comment": "레벨고유값"
+                },
+                "title": {
+                    "type": "varchar",
+                    "length": 30,
+                    "comment": "레벨명"
+                },
+                "members": {
+                    "type": "int",
+                    "default": 0,
+                    "comment": "인원수"
+                }
+            },
+            "indexes": {
+                "level_id": "primary_key"
+            },
+            "comment": "아이모듈 회원레벨"
         },
         "logins": {
             "columns": {
