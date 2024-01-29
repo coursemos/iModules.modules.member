@@ -79,8 +79,8 @@ var modules;
                                         });
                                         if (results.success == true) {
                                             Aui.Message.show({
-                                                title: (await Admin.getText('info')),
-                                                message: (await Admin.getText('actions.saved')),
+                                                title: Aui.getErrorText('INFO'),
+                                                message: Aui.printText('actions.saved'),
                                                 icon: Aui.Message.INFO,
                                                 buttons: Aui.Message.OK,
                                                 handler: async () => {
@@ -251,7 +251,7 @@ var modules;
                                         });
                                         if (member_ids.length == 0) {
                                             Aui.Message.show({
-                                                title: (await Admin.getText('info')),
+                                                title: Aui.getErrorText('INFO'),
                                                 message: (await Admin.getText('admin.actions.unselected_members')),
                                                 icon: Aui.Message.INFO,
                                                 buttons: Aui.Message.OK,
@@ -264,8 +264,8 @@ var modules;
                                         });
                                         if (results.success == true) {
                                             Aui.Message.show({
-                                                title: (await Admin.getText('info')),
-                                                message: (await Admin.getText('actions.saved')),
+                                                title: Aui.getErrorText('INFO'),
+                                                message: Aui.printText('actions.saved'),
                                                 icon: Aui.Message.INFO,
                                                 buttons: Aui.Message.OK,
                                                 handler: async () => {
@@ -290,6 +290,112 @@ var modules;
                      */
                     delete: (group_id) => {
                         //
+                    },
+                };
+                levels = {
+                    /**
+                     * 그룹을 추가한다.
+                     *
+                     * @param {number} level_id - 그룹정보를 수정할 경우 수정할 group_id
+                     */
+                    add: (level_id = null) => {
+                        new Aui.Window({
+                            title: this.printText('admin.levels.' + (level_id === null ? 'add' : 'edit')),
+                            width: 300,
+                            modal: true,
+                            resizable: false,
+                            items: [
+                                new Aui.Form.Panel({
+                                    border: false,
+                                    layout: 'fit',
+                                    items: [
+                                        new Aui.Form.Field.Number({
+                                            name: 'level_id',
+                                            inputAlign: 'left',
+                                            allowBlank: false,
+                                            emptyText: this.printText('admin.levels.level_id'),
+                                            helpText: this.printText('admin.levels.level_id_help'),
+                                        }),
+                                        new Aui.Form.Field.Text({
+                                            name: 'title',
+                                            allowBlank: false,
+                                            emptyText: this.printText('admin.levels.title'),
+                                        }),
+                                    ],
+                                }),
+                            ],
+                            buttons: [
+                                new Aui.Button({
+                                    text: this.printText('buttons.cancel'),
+                                    tabIndex: -1,
+                                    handler: (button) => {
+                                        const window = button.getParent();
+                                        window.close();
+                                    },
+                                }),
+                                new Aui.Button({
+                                    text: this.printText('buttons.ok'),
+                                    buttonClass: 'confirm',
+                                    handler: async (button) => {
+                                        const window = button.getParent();
+                                        const form = button.getParent().getItemAt(0);
+                                        const results = await form.submit({
+                                            url: this.getProcessUrl('level'),
+                                            params: { level_id: level_id },
+                                        });
+                                        if (results.success == true) {
+                                            Aui.Message.show({
+                                                title: Aui.getErrorText('INFO'),
+                                                message: Aui.printText('actions.saved'),
+                                                icon: Aui.Message.INFO,
+                                                buttons: Aui.Message.OK,
+                                                handler: async () => {
+                                                    const levels = Aui.getComponent('levels');
+                                                    await levels.getStore().reload();
+                                                    levels.select({ level_id: results.level_id });
+                                                    window.close();
+                                                    Aui.Message.close();
+                                                },
+                                            });
+                                        }
+                                    },
+                                }),
+                            ],
+                            listeners: {
+                                show: async (window) => {
+                                    const form = window.getItemAt(0);
+                                    if (level_id !== null) {
+                                        const results = await form.load({
+                                            url: this.getProcessUrl('level'),
+                                            params: { level_id: level_id },
+                                        });
+                                        if (results.success == true) {
+                                        }
+                                        else {
+                                            window.close();
+                                        }
+                                    }
+                                },
+                            },
+                        }).show();
+                    },
+                    /**
+                     * 레벨을 삭제한다.
+                     *
+                     * @param {number} level_id - 삭제할 레벨고유값
+                     */
+                    delete: (level_id) => {
+                        Aui.Message.delete({
+                            message: this.printText('admin.levels.actions.delete'),
+                            url: this.getProcessUrl('level'),
+                            params: {
+                                level_id: level_id,
+                            },
+                            handler: async () => {
+                                const levels = Aui.getComponent('levels');
+                                levels.getStore().reload();
+                            },
+                        });
                     },
                 };
                 members = {
@@ -364,8 +470,8 @@ var modules;
                                         });
                                         if (results.success == true) {
                                             Aui.Message.show({
-                                                title: (await Admin.getText('info')),
-                                                message: (await Admin.getText('actions.saved')),
+                                                title: Aui.getErrorText('INFO'),
+                                                message: Aui.printText('actions.saved'),
                                                 icon: Aui.Message.INFO,
                                                 buttons: Aui.Message.OK,
                                                 handler: async () => {
@@ -572,8 +678,8 @@ var modules;
                                             });
                                             if (results.success == true) {
                                                 Aui.Message.show({
-                                                    title: (await Admin.getText('info')),
-                                                    message: (await Admin.getText('actions.saved')),
+                                                    title: Aui.getErrorText('INFO'),
+                                                    message: Aui.printText('actions.saved'),
                                                     icon: Aui.Message.INFO,
                                                     buttons: Aui.Message.OK,
                                                     handler: async () => {

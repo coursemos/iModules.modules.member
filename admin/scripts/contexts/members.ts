@@ -24,6 +24,15 @@ Admin.ready(async () => {
                 title: (await me.getText('admin.members.title')) as string,
                 layout: 'column',
                 border: false,
+                topbar: [
+                    new Aui.Button({
+                        iconClass: 'mi mi-plus',
+                        text: (await me.getText('admin.members.add')) as string,
+                        handler: () => {
+                            me.members.add();
+                        },
+                    }),
+                ],
                 items: [
                     new Aui.Tab.Panel({
                         id: 'types',
@@ -87,18 +96,20 @@ Admin.ready(async () => {
                                     },
                                 ],
                                 listeners: {
-                                    update: (grid) => {
+                                    update: (tree) => {
                                         if (
                                             Admin.getContextSubUrl(0) == 'lists' &&
                                             Admin.getContextSubUrl(1) == 'groups'
                                         ) {
                                             if (
-                                                grid.getSelections().length == 0 &&
+                                                tree.getSelections().length == 0 &&
                                                 Admin.getContextSubUrl(2) !== null
                                             ) {
-                                                grid.select({ group_id: Admin.getContextSubUrl(2) });
-                                            } else if (grid.getSelections().length == 0) {
-                                                grid.select({ group_id: 'all' });
+                                                tree.select({ group_id: Admin.getContextSubUrl(2) });
+                                            }
+
+                                            if (tree.getSelections().length == 0) {
+                                                tree.select({ group_id: 'all' });
                                             }
                                         }
                                     },
@@ -108,7 +119,7 @@ Admin.ready(async () => {
                                         }
                                     },
                                     openMenu: (menu, record) => {
-                                        menu.setTitle(record.data.title);
+                                        menu.setTitle(record.get('title'));
 
                                         menu.add({
                                             text: me.printText('admin.groups.add_child'),
@@ -138,23 +149,24 @@ Admin.ready(async () => {
                                     },
                                     selectionChange: (selections) => {
                                         const members = Aui.getComponent('members') as Aui.Grid.Panel;
-                                        const button = members.getToolbar('top').getItemAt(3);
+                                        const assign = members.getToolbar('top').getItemAt(2);
                                         if (selections.length == 1) {
                                             const group_id = selections[0].get('group_id');
                                             members.getStore().setParam('group_id', group_id);
+                                            members.getStore().setParam('level_id', null);
                                             members.getStore().loadPage(1);
                                             members.enable();
 
                                             Aui.getComponent('members-context').properties.setUrl();
 
                                             if (group_id == 'all') {
-                                                button.hide();
+                                                assign.hide();
                                             } else {
-                                                button.show();
+                                                assign.show();
                                             }
                                         } else {
                                             members.disable();
-                                            button.hide();
+                                            assign.hide();
                                         }
                                     },
                                 },
@@ -182,27 +194,29 @@ Admin.ready(async () => {
                                         iconClass: 'mi mi-plus',
                                         text: (await me.getText('admin.levels.add')) as string,
                                         handler: () => {
-                                            me.groups.add();
+                                            me.levels.add();
                                         },
                                     }),
                                 ],
                                 store: new Aui.Store.Ajax({
                                     url: me.getProcessUrl('levels'),
-                                    primaryKeys: ['level'],
+                                    primaryKeys: ['level_id'],
                                     fields: [
-                                        'level',
+                                        { name: 'level_id', type: 'int' },
                                         'title',
                                         { name: 'members', type: 'int' },
-                                        { name: 'sort', type: 'int' },
                                     ],
-                                    sorters: { level: 'ASC' },
+                                    sorters: { level_id: 'ASC' },
                                 }),
                                 columns: [
                                     {
                                         text: (await me.getText('admin.levels.title')) as string,
                                         dataIndex: 'title',
-                                        sortable: 'sort',
+                                        sortable: 'level_id',
                                         flex: 1,
+                                        renderer: (value, record) => {
+                                            return '<b class="level">' + record.get('level_id') + '</b>' + value;
+                                        },
                                     },
                                     {
                                         text: (await me.getText('admin.levels.members')) as string,
@@ -213,11 +227,58 @@ Admin.ready(async () => {
                                     },
                                 ],
                                 listeners: {
+                                    update: (grid) => {
+                                        if (
+                                            Admin.getContextSubUrl(0) == 'lists' &&
+                                            Admin.getContextSubUrl(1) == 'levels'
+                                        ) {
+                                            if (
+                                                grid.getSelections().length == 0 &&
+                                                Admin.getContextSubUrl(2) !== null
+                                            ) {
+                                                grid.select({ level_id: parseInt(Admin.getContextSubUrl(2), 10) });
+                                            }
+
+                                            if (grid.getSelections().length == 0) {
+                                                grid.select({ level_id: 0 });
+                                            }
+                                        }
+                                    },
                                     openItem: (record) => {
-                                        //
+                                        me.levels.add(record.get('level_id'));
                                     },
                                     openMenu: (menu, record) => {
-                                        //
+                                        menu.setTitle(record.get('title'));
+
+                                        menu.add({
+                                            text: me.printText('admin.levels.edit'),
+                                            iconClass: 'xi xi-form-checkout',
+                                            handler: () => {
+                                                me.levels.add(record.get('level_id'));
+                                            },
+                                        });
+
+                                        menu.add({
+                                            text: me.printText('admin.levels.delete'),
+                                            iconClass: 'mi mi-trash',
+                                            handler: () => {
+                                                me.levels.delete(record.get('level_id'));
+                                            },
+                                        });
+                                    },
+                                    selectionChange: (selections) => {
+                                        const members = Aui.getComponent('members') as Aui.Grid.Panel;
+                                        if (selections.length == 1) {
+                                            const level_id = selections[0].get('level_id');
+                                            members.getStore().setParam('group_id', null);
+                                            members.getStore().setParam('level_id', level_id);
+                                            members.getStore().loadPage(1);
+                                            members.enable();
+
+                                            Aui.getComponent('members-context').properties.setUrl();
+                                        } else {
+                                            members.disable();
+                                        }
                                     },
                                 },
                             }),
@@ -265,6 +326,10 @@ Admin.ready(async () => {
                             active: (panel, tab) => {
                                 const buttons = tab.getToolbar('bottom').getItemAt(2) as Aui.SegmentedButton;
                                 buttons.setValue('groups');
+
+                                const members = Aui.getComponent('members') as Aui.Grid.Panel;
+                                const assign = members.getToolbar('top').getItemAt(2);
+
                                 if (panel.getId() == 'groups') {
                                     buttons.setValue('groups');
 
@@ -272,8 +337,19 @@ Admin.ready(async () => {
                                     if (groups.getStore().isLoaded() == false) {
                                         groups.getStore().load();
                                     }
+
+                                    groups.fireEvent('selectionChange', [groups.getSelections()]);
                                 } else {
                                     buttons.setValue('levels');
+
+                                    const levels = panel as Aui.Grid.Panel;
+                                    if (levels.getStore().isLoaded() == false) {
+                                        levels.getStore().load();
+                                    } else {
+                                        levels.fireEvent('selectionChange', [levels.getSelections()]);
+                                    }
+
+                                    assign.hide();
                                 }
 
                                 Aui.getComponent('members-context').properties.setUrl();
@@ -303,13 +379,6 @@ Admin.ready(async () => {
                                 },
                             }),
                             '->',
-                            new Aui.Button({
-                                iconClass: 'mi mi-plus',
-                                text: (await me.getText('admin.members.add')) as string,
-                                handler: () => {
-                                    me.members.add();
-                                },
-                            }),
                             new Aui.Button({
                                 iconClass: 'mi mi-group-o',
                                 text: (await me.getText('admin.groups.add_member')) as string,
@@ -525,6 +594,14 @@ Admin.ready(async () => {
                     const group_id = groups.getSelections().at(0)?.get('group_id') ?? null;
                     if (group_id !== null && Admin.getContextSubUrl(1) !== group_id) {
                         Admin.setContextSubUrl('/lists/groups/' + group_id);
+                    }
+                }
+
+                if (Admin.getContextSubUrl(1) == 'levels') {
+                    const levels = Aui.getComponent('levels') as Aui.Tree.Panel;
+                    const level_id = levels.getSelections().at(0)?.get('level_id') ?? null;
+                    if (level_id !== null && Admin.getContextSubUrl(1) !== level_id) {
+                        Admin.setContextSubUrl('/lists/levels/' + level_id);
                     }
                 }
             }

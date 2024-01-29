@@ -3,6 +3,8 @@
     "password": "패스워드",
     "name": "성명",
     "nickname": "닉네임",
+    "level": "레벨",
+    "default_level": "기본레벨",
     "oauth": {
         "label": {
             "password": "최초연동을 위한 패스워드 확인",
@@ -31,6 +33,7 @@
         "LOGOUTED": "로그인이 되어 있지 않습니다.",
         "INVALID_PASSWORD": "패스워드가 일치하지 않습니다.",
         "NOT_FOUND_MEMBER": "회원정보를 찾을 수 없습니다.",
+        "DEFAULT_LEVEL_EDIT_FAILED": "기본레벨(0)은 레벨고유값을 수정하거나 삭제할 수 없습니다.",
         "NOT_FOUND_OAUTH_CLIENT": "OAuth 클라이언트를 찾을 수 없습니다.",
         "OAUTH_AUTHENTICATION_FAILED": "OAuth 인증을 취소하거나 인증에 실패하였습니다.",
         "OAUTH_AUTHENTICATION_REQUEST_FAILED": "OAuth 인증요청이 실패하였습니다.<br>OAuth 서비스제공자의 매뉴얼을 참고하여 OAuth 클라이언트 설정을 확인하여 주시기 바랍니다.",
@@ -86,8 +89,15 @@
         },
         "levels": {
             "add": "레벨추가",
+            "edit": "레벨수정",
+            "delete": "레벨삭제",
+            "level_id": "레벨고유값",
+            "level_id_help": "레벨고유값은 숫자로만 입력가능하며,<br>높은 숫자가 더 높은 권한을 가질 수 있음을 의미합니다.",
             "title": "레벨명",
-            "members": "인원"
+            "members": "인원",
+            "actions": {
+                "delete": "선택한 레벨을 삭제하시겠습니까?<br>해당 레벨을 가진 회원이 모두 기본레벨(0)으로 변경됩니다."
+            }
         },
         "logs": {
             "title": "회원활동기록",

@@ -211,6 +211,33 @@ class Member extends \modules\admin\admin\Component
     }
 
     /**
+     * 레벨정보를 갱신한다.
+     *
+     * @param int $level_id 레벨고유값
+     */
+    public function updateLevel(int $level_id): void
+    {
+        $level = $this->db()
+            ->select()
+            ->from($this->table('levels'))
+            ->where('level_id', $level_id)
+            ->getOne();
+        if ($level == null) {
+            return;
+        }
+
+        $members = $this->db()
+            ->select()
+            ->from($this->table('members'))
+            ->where('level_id', $level_id)
+            ->count();
+        $this->db()
+            ->update($this->table('levels'), ['members' => $members])
+            ->where('level_id', $level_id)
+            ->execute();
+    }
+
+    /**
      * OAuth 클라이언트 프리셋 목록을 가져온다.
      *
      * @return array $presets

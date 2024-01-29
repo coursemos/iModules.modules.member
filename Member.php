@@ -23,6 +23,11 @@ class Member extends \Module
     private static array $_groups;
 
     /**
+     * @var \modules\member\dtos\Level[] $_levels 레벨정보
+     */
+    private static array $_levels;
+
+    /**
      *
      * @var int $_logged 로그인정보
      */
@@ -216,6 +221,32 @@ class Member extends \Module
 
             return $items;
         }
+    }
+
+    /**
+     * 레벨정보를 가져온다.
+     *
+     * @param int $level_id 레벨고유값
+     * @return /\modules\member\dtos\Level $level
+     */
+    public function getLevel(int $level_id): ?\modules\member\dtos\Level
+    {
+        if (isset(self::$_levels[$level_id]) == true) {
+            return self::$_levels[$level_id];
+        }
+
+        $level = $this->db()
+            ->select()
+            ->from($this->table('levels'))
+            ->where('level_id', $level_id)
+            ->getOne();
+
+        if ($level == null) {
+            return null;
+        }
+
+        self::$_levels[$level_id] = new \modules\member\dtos\Level($level);
+        return self::$_levels[$level_id];
     }
 
     /**
@@ -1038,6 +1069,18 @@ class Member extends \Module
                                 'joined_at' => time(),
                             ],
                             ['email', 'password', 'name', 'nickname']
+                        )
+                        ->execute();
+
+                    $this->db()
+                        ->insert(
+                            $this->table('levels'),
+                            [
+                                'level_id' => 0,
+                                'title' => $this->getText('texts.default_level'),
+                                'members' => -1,
+                            ],
+                            ['members']
                         )
                         ->execute();
                 }
