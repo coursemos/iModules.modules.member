@@ -381,7 +381,7 @@ Admin.ready(async () => {
                             '->',
                             new Aui.Button({
                                 iconClass: 'mi mi-group-o',
-                                text: (await me.getText('admin.groups.add_member')) as string,
+                                text: (await me.getText('admin.groups.assign')) as string,
                                 handler: () => {
                                     const groups = Aui.getComponent('groups') as Aui.Grid.Panel;
                                     const members = Aui.getComponent('members') as Aui.Grid.Panel;
@@ -391,7 +391,7 @@ Admin.ready(async () => {
                                     }
 
                                     const title = groups.getStore().find({ group_id: group_id })?.get('title') ?? null;
-                                    me.groups.addMembers(group_id, title);
+                                    me.groups.assign(group_id, title);
                                 },
                             }),
                         ],
@@ -452,7 +452,20 @@ Admin.ready(async () => {
                                 text: (await me.getText('admin.members.nickname')) as string,
                                 dataIndex: 'nickname',
                                 sortable: true,
-                                width: 150,
+                                width: 140,
+                            },
+                            {
+                                text: (await me.getText('admin.members.groups')) as string,
+                                dataIndex: 'groups',
+                                width: 160,
+                                renderer: (value) => {
+                                    return value.join(', ');
+                                },
+                            },
+                            {
+                                text: (await me.getText('admin.members.level')) as string,
+                                dataIndex: 'level',
+                                width: 80,
                             },
                             {
                                 text: (await me.getText('admin.members.joined_at')) as string,

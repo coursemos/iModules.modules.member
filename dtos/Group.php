@@ -2,12 +2,12 @@
 /**
  * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
- * 회원 구조체를 정의한다.
+ * 그룹 구조체를 정의한다.
  *
  * @file /modules/member/dtos/Group.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 6. 24.
+ * @modified 2024. 1. 29.
  */
 namespace modules\member\dtos;
 class Group
@@ -28,7 +28,7 @@ class Group
     private int $_depth = 0;
 
     /**
-     * @var string $_name 그룹명
+     * @var string $_title 그룹명
      */
     private string $_title;
 
@@ -54,7 +54,7 @@ class Group
     /**
      * 고유값을 가져온다.
      *
-     * @return int $id
+     * @return string $id
      */
     public function getId(): string
     {
@@ -89,5 +89,19 @@ class Group
     public function getTitle(): string
     {
         return $this->_title;
+    }
+
+    /**
+     * 그룹정보를 JSON 으로 가져온다.
+     *
+     * @return object $json
+     */
+    public function getJson(): object
+    {
+        $group = new \stdClass();
+        $group->group_id = $this->_id;
+        $group->title = $this->_title;
+
+        return $group;
     }
 }

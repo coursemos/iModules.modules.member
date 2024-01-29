@@ -363,7 +363,7 @@ Admin.ready(async () => {
                             '->',
                             new Aui.Button({
                                 iconClass: 'mi mi-group-o',
-                                text: (await me.getText('admin.groups.add_member')),
+                                text: (await me.getText('admin.groups.assign')),
                                 handler: () => {
                                     const groups = Aui.getComponent('groups');
                                     const members = Aui.getComponent('members');
@@ -372,7 +372,7 @@ Admin.ready(async () => {
                                         return;
                                     }
                                     const title = groups.getStore().find({ group_id: group_id })?.get('title') ?? null;
-                                    me.groups.addMembers(group_id, title);
+                                    me.groups.assign(group_id, title);
                                 },
                             }),
                         ],
@@ -431,7 +431,20 @@ Admin.ready(async () => {
                                 text: (await me.getText('admin.members.nickname')),
                                 dataIndex: 'nickname',
                                 sortable: true,
-                                width: 150,
+                                width: 140,
+                            },
+                            {
+                                text: (await me.getText('admin.members.groups')),
+                                dataIndex: 'groups',
+                                width: 160,
+                                renderer: (value) => {
+                                    return value.join(', ');
+                                },
+                            },
+                            {
+                                text: (await me.getText('admin.members.level')),
+                                dataIndex: 'level',
+                                width: 80,
                             },
                             {
                                 text: (await me.getText('admin.members.joined_at')),

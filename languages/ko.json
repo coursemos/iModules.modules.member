@@ -3,6 +3,8 @@
     "password": "패스워드",
     "name": "성명",
     "nickname": "닉네임",
+    "group_manager": "그룹매니저",
+    "group_member": "그룹구성원",
     "level": "레벨",
     "default_level": "기본레벨",
     "oauth": {
@@ -66,6 +68,7 @@
             "password": "패스워드",
             "name": "이름",
             "nickname": "닉네임",
+            "level": "레벨",
             "groups": "소속그룹",
             "groups_help": "선택한 그룹의 상위그룹은 자동으로 포함됩니다.",
             "nogroups": "소속그룹 없음",
@@ -85,7 +88,16 @@
             "members": "인원",
             "all": "전체그룹",
             "parent": "상위그룹",
-            "add_member": "그룹구성원 추가"
+            "assign": "그룹구성원 추가",
+            "defaults": "기본정보",
+            "positions": "직급명칭",
+            "manager": "그룹관리자 명칭",
+            "manager_help": "구성원 목록 등에서 보일 그룹관리자 명칭을 입력하여 주십시오.",
+            "member": "그룹구성원 명칭",
+            "member_help": "구성원 목록 등에서 보일 일반구성원의 명칭을 입력하여 주십시오.",
+            "actions": {
+                "delete": "선택한 그룹을 삭제하시겠습니까?<br>해당 그룹의 모든 하위그룹이 삭제됩니다."
+            }
         },
         "levels": {
             "add": "레벨추가",

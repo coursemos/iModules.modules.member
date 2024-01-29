@@ -95,9 +95,16 @@ if ($sorters !== null) {
 }
 $records = $records->limit($start, $limit)->get();
 foreach ($records as &$record) {
+    $member = $me->getMember($record->member_id);
     if ($is_photo == true) {
         $record->photo = $me->getMemberPhoto($record->member_id);
     }
+    $record->groups = [];
+    foreach ($member->getGroups(true) as $group) {
+        $record->groups[] = $group->getGroup()->getTitle();
+    }
+    sort($record->groups);
+    $record->level = $member->getLevel()->getTitle();
 }
 
 $results->success = true;

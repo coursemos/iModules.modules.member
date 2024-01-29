@@ -660,7 +660,7 @@ class Member extends \Module
      * @param ?int $member_id 회원고유값
      * @return bool $success
      */
-    public function joinGroup(string $group_id, ?int $member_id = null): bool
+    public function assignGroup(string $group_id, ?int $member_id = null): bool
     {
         $member_id ??= $this->getLogged();
         if ($member_id === 0) {
@@ -696,28 +696,28 @@ class Member extends \Module
 
             $group_ids[] = $group_id;
 
-            $joined = $this->db()
+            $assigned = $this->db()
                 ->select()
                 ->from($this->table('group_members'))
                 ->where('group_id', $group_id)
                 ->where('member_id', $member_id)
                 ->getOne();
-            if ($joined === null) {
+            if ($assigned === null) {
                 $this->db()
                     ->insert($this->table('group_members'), [
                         'group_id' => $group_id,
                         'member_id' => $member_id,
-                        'joined_at' => $time,
+                        'assigned_at' => $time,
                     ])
                     ->execute();
             } else {
-                $time = $joined->joined_at;
+                $time = $assigned->assigned_at;
             }
 
-            if ($group->parent === null) {
+            if ($group->parent_id === null) {
                 break;
             } else {
-                $group_id = $group->parent;
+                $group_id = $group->parent_id;
             }
         }
 

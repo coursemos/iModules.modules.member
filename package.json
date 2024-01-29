@@ -185,6 +185,16 @@
                     "length": 30,
                     "comment": "그룹명"
                 },
+                "manager": {
+                    "type": "varchar",
+                    "length": 10,
+                    "comment": "그룹관리자명칭"
+                },
+                "member": {
+                    "type": "varchar",
+                    "length": 10,
+                    "comment": "그룹구성원명칭"
+                },
                 "members": {
                     "type": "int",
                     "default": 0,
@@ -208,6 +218,12 @@
                     "type": "int",
                     "length": 11,
                     "comment": "회원고유값"
+                },
+                "position": {
+                    "type": "enum",
+                    "length": "'MANAGER','MEMBER'",
+                    "default": "MEMBER",
+                    "comment": "그룹내위치"
                 },
                 "assigned_at": {
                     "type": "int",

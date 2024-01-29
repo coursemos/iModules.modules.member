@@ -2,9 +2,9 @@
 /**
  * 이 파일은 아이모듈 관리자모듈의 일부입니다. (https://www.imodules.io)
  *
- * 그룹정보를 가져온다.
+ * 그룹구성원을 저장한다.
  *
- * @file /modules/member/processes/group.get.php
+ * @file /modules/member/processes/group.assign.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
  * @modified 2024. 1. 26.
@@ -24,21 +24,23 @@ if ($me->getAdmin()->checkPermission('members', ['groups']) == false) {
     return;
 }
 
-$group_id = Request::get('group_id', true);
-$data = $me
+$group_id = Input::get('group_id');
+$group = $me
     ->db()
     ->select()
     ->from($me->table('groups'))
     ->where('group_id', $group_id)
     ->getOne();
-
-if ($data === null) {
+if ($group === null) {
     $results->success = false;
     $results->message = $me->getErrorText('NOT_FOUND_DATA');
     return;
 }
 
-$data->parent_id ??= 'all';
+$member_ids = Input::get('member_ids');
+foreach ($member_ids as $member_id) {
+    $me->assignGroup($group_id, $member_id);
+}
 
 $results->success = true;
-$results->data = $data;
+$results->member_ids = $member_ids;

@@ -45,6 +45,11 @@ class Member
     private string $_nickname;
 
     /**
+     * @var int $_level_id 레벨고유값
+     */
+    private int $_level_id;
+
+    /**
      * @var string $_status 상태
      */
     private string $_status;
@@ -84,6 +89,7 @@ class Member
             $this->_email = '';
             $this->_name = 'Unknown';
             $this->_nickname = 'Unknown';
+            $this->_level_id = 0;
             $this->_status = 'DEACTIVATED';
         } else {
             $this->_member = $member;
@@ -91,6 +97,7 @@ class Member
             $this->_email = $member->email;
             $this->_name = $member->name;
             $this->_nickname = $member->nickname;
+            $this->_level_id = $member->level_id;
             $this->_status = $member->status;
             $this->_logged_at = $member->logged_at ?? 0;
             $this->_extras = json_decode($member->extras ?? 'null');
@@ -135,6 +142,20 @@ class Member
     public function getNickname(): string
     {
         return $this->_nickname;
+    }
+
+    /**
+     * 레벨을 가져온다.
+     *
+     * @return \modules\member\dtos\Level $level
+     */
+    public function getLevel(): \modules\member\dtos\Level
+    {
+        /**
+         * @var \modules\members\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        return $mMember->getLevel($this->_level_id);
     }
 
     /**

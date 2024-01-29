@@ -157,14 +157,14 @@ class Member extends \modules\admin\admin\Component
             ->where('group_id', $child_id)
             ->getOne();
 
-        if ($child == null || $child->parent == null) {
+        if ($child == null || $child->parent_id == null) {
             return $parents;
         }
 
-        $parent_id = $child->parent;
+        $parent_id = $child->parent_id;
         while (true) {
             $parent = $this->db()
-                ->select(['group_id', 'title', 'parent'])
+                ->select(['group_id', 'title', 'parent_id'])
                 ->from($this->table('groups'))
                 ->where('group_id', $parent_id)
                 ->getOne();
@@ -172,8 +172,8 @@ class Member extends \modules\admin\admin\Component
                 return $parents;
             }
 
-            $parent_id = $parent->parent;
-            unset($parent->parent);
+            $parent_id = $parent->parent_id;
+            unset($parent->parent_id);
             array_unshift($parents, $parent);
 
             if ($parent_id == null) {
@@ -208,6 +208,45 @@ class Member extends \modules\admin\admin\Component
             ->update($this->table('groups'), ['depth' => count($parents), 'members' => $members])
             ->where('group_id', $group_id)
             ->execute();
+    }
+
+    /**
+     * 그룹을 삭제한다.
+     *
+     * @param string $group_id 삭제할 그룹고유값
+     */
+    public function deleteGroup(string $group_id): void
+    {
+        $group = $this->db()
+            ->select()
+            ->from($this->table('groups'))
+            ->where('group_id', $group_id)
+            ->getOne();
+
+        if ($group === null) {
+            return;
+        }
+
+        $this->db()
+            ->delete($this->table('groups'))
+            ->where('group_id', $group_id)
+            ->execute();
+
+        $this->db()
+            ->delete($this->table('group_members'))
+            ->where('group_id', $group_id)
+            ->execute();
+
+        foreach (
+            $this->db()
+                ->select(['group_id'])
+                ->from($this->table('groups'))
+                ->where('parent_id', $group_id)
+                ->get('group_id')
+            as $child
+        ) {
+            $this->deleteGroup($child);
+        }
     }
 
     /**

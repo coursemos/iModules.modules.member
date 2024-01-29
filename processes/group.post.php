@@ -40,12 +40,15 @@ if ($group_id !== null) {
     }
 } else {
     $group = null;
+    $group_id = Input::get('group_id');
 }
 
 $errors = [];
-$group_id = Input::get('group_id');
 $parent_id = Input::get('parent_id') ?? 'all';
 $title = Input::get('title', $errors);
+$manager = Input::get('manager') ?? $me->getText('group_manager');
+$member = Input::get('member') ?? $me->getText('group_member');
+
 if ($title !== null) {
     $checked = $me
         ->db()
@@ -61,8 +64,8 @@ if ($title !== null) {
 }
 
 if (count($errors) == 0) {
-    $parent = $parent == 'all' ? null : $parent;
-    if ($group !== null && $group->parent != $parent) {
+    $parent_id = $parent_id == 'all' ? null : $parent_id;
+    if ($group !== null && $group->parent_id != $parent_id) {
         // @todo 상위그룹이 변경되었을 경우
     }
 
@@ -70,14 +73,21 @@ if (count($errors) == 0) {
     $me->db()
         ->insert(
             $me->table('groups'),
-            ['group_id' => $group_id, 'parent_id' => $parent_id, 'title' => $title],
-            ['parent_id', 'title']
+            [
+                'group_id' => $group_id,
+                'parent_id' => $parent_id,
+                'title' => $title,
+                'manager' => $manager,
+                'member' => $member,
+            ],
+            ['title', 'manager', 'member'] // @todo 'parent_id'
         )
         ->execute();
 
     /**
      * @var \modules\member\admin\Member $mAdmin
      */
+    $mAdmin = $me->getAdmin();
     $mAdmin->updateGroup($group_id);
 
     $results->success = true;

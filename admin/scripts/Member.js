@@ -25,7 +25,7 @@ var modules;
                     add: (group_id = null, parent = null) => {
                         new Aui.Window({
                             title: this.printText('admin.groups.' + (group_id === null ? 'add' : 'edit')),
-                            width: 500,
+                            width: 400,
                             modal: true,
                             resizable: false,
                             items: [
@@ -33,27 +33,47 @@ var modules;
                                     border: false,
                                     layout: 'fit',
                                     items: [
-                                        new Aui.Form.Field.Select({
-                                            name: 'parent_id',
-                                            store: new Aui.TreeStore.Ajax({
-                                                url: Modules.get('member').getProcessUrl('groups'),
-                                                primaryKeys: ['group_id'],
-                                                params: {
-                                                    mode: 'tree',
-                                                },
-                                                remoteExpand: true,
-                                                sorters: { sort: 'ASC' },
-                                            }),
-                                            listField: 'title',
-                                            displayField: 'title',
-                                            valueField: 'group_id',
-                                            search: true,
-                                            emptyText: this.printText('admin.groups.parent'),
-                                            value: parent,
+                                        new Aui.Form.FieldSet({
+                                            title: this.printText('admin.groups.defaults'),
+                                            items: [
+                                                new Aui.Form.Field.Select({
+                                                    name: 'parent_id',
+                                                    store: new Aui.TreeStore.Ajax({
+                                                        url: Modules.get('member').getProcessUrl('groups'),
+                                                        primaryKeys: ['group_id'],
+                                                        params: {
+                                                            mode: 'tree',
+                                                        },
+                                                        remoteExpand: true,
+                                                        sorters: { sort: 'ASC' },
+                                                    }),
+                                                    listField: 'title',
+                                                    displayField: 'title',
+                                                    valueField: 'group_id',
+                                                    search: true,
+                                                    emptyText: this.printText('admin.groups.parent'),
+                                                    value: parent,
+                                                }),
+                                                new Aui.Form.Field.Text({
+                                                    name: 'title',
+                                                    emptyText: this.printText('admin.groups.title'),
+                                                }),
+                                            ],
                                         }),
-                                        new Aui.Form.Field.Text({
-                                            name: 'title',
-                                            emptyText: this.printText('admin.groups.title'),
+                                        new Aui.Form.FieldSet({
+                                            title: this.printText('admin.groups.positions'),
+                                            items: [
+                                                new Aui.Form.Field.Text({
+                                                    name: 'manager',
+                                                    emptyText: this.printText('admin.groups.manager'),
+                                                    helpText: this.printText('admin.groups.manager_help'),
+                                                }),
+                                                new Aui.Form.Field.Text({
+                                                    name: 'member',
+                                                    emptyText: this.printText('admin.groups.member'),
+                                                    helpText: this.printText('admin.groups.member_help'),
+                                                }),
+                                            ],
                                         }),
                                     ],
                                 }),
@@ -120,9 +140,9 @@ var modules;
                      * @param {string} group_id - 구성원을 추가할 그룹아이디
                      * @param {string} title - 구성원을 추가할 그룹명
                      */
-                    addMembers: (group_id, title = null) => {
+                    assign: (group_id, title = null) => {
                         new Aui.Window({
-                            title: this.printText('admin.groups.add_member') + (title ? ' (' + title + ')' : ''),
+                            title: this.printText('admin.groups.assign') + (title ? ' (' + title + ')' : ''),
                             width: 800,
                             height: 600,
                             modal: true,
@@ -161,7 +181,7 @@ var modules;
                                         }),
                                         '->',
                                         new Aui.Form.Field.Display({
-                                            value: this.printText('text.selected_members', { count: '0' }),
+                                            value: Aui.printText('texts.selected_person', { count: '0' }),
                                         }),
                                     ]),
                                     columns: [
@@ -224,7 +244,7 @@ var modules;
                                             const display = grid
                                                 .getToolbar('bottom')
                                                 .getItemAt(-1);
-                                            display.setValue(this.printText('text.selected_members', {
+                                            display.setValue(Aui.printText('texts.selected_person', {
                                                 count: selections.length.toString(),
                                             }));
                                         },
@@ -258,7 +278,12 @@ var modules;
                                             });
                                             return;
                                         }
-                                        const results = await Aui.Ajax.post(this.getProcessUrl('group.members'), {
+                                        const loading = new Aui.Loading(window, {
+                                            type: 'dot',
+                                            direction: 'column',
+                                            text: Aui.printText('actions.saving'),
+                                        }).show();
+                                        const results = await Aui.Ajax.post(this.getProcessUrl('group.assign'), {
                                             group_id: group_id,
                                             member_ids: member_ids,
                                         });
@@ -278,6 +303,9 @@ var modules;
                                                 },
                                             });
                                         }
+                                        else {
+                                            loading.close();
+                                        }
                                     },
                                 }),
                             ],
@@ -286,10 +314,20 @@ var modules;
                     /**
                      * 그룹을 삭제한다.
                      *
-                     * @param {string} group_id
+                     * @param {string} group_id - 삭제할 그룹고유값
                      */
                     delete: (group_id) => {
-                        //
+                        Aui.Message.delete({
+                            message: this.printText('admin.groups.actions.delete'),
+                            url: this.getProcessUrl('group'),
+                            params: {
+                                group_id: group_id,
+                            },
+                            handler: async () => {
+                                const groups = Aui.getComponent('groups');
+                                groups.getStore().reload();
+                            },
+                        });
                     },
                 };
                 levels = {
@@ -301,7 +339,7 @@ var modules;
                     add: (level_id = null) => {
                         new Aui.Window({
                             title: this.printText('admin.levels.' + (level_id === null ? 'add' : 'edit')),
-                            width: 300,
+                            width: 400,
                             modal: true,
                             resizable: false,
                             items: [
