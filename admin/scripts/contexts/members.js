@@ -410,13 +410,13 @@ Admin.ready(async () => {
                                 sortable: true,
                             },
                             {
-                                text: (await me.getText('admin.members.email')),
+                                text: (await me.getText('email')),
                                 dataIndex: 'email',
                                 sortable: true,
                                 width: 200,
                             },
                             {
-                                text: (await me.getText('admin.members.name')),
+                                text: (await me.getText('name')),
                                 dataIndex: 'name',
                                 width: 150,
                                 sortable: true,
@@ -428,13 +428,13 @@ Admin.ready(async () => {
                                 },
                             },
                             {
-                                text: (await me.getText('admin.members.nickname')),
+                                text: (await me.getText('nickname')),
                                 dataIndex: 'nickname',
                                 sortable: true,
                                 width: 140,
                             },
                             {
-                                text: (await me.getText('admin.members.groups')),
+                                text: (await me.getText('groups')),
                                 dataIndex: 'groups',
                                 width: 160,
                                 renderer: (value) => {
@@ -442,19 +442,19 @@ Admin.ready(async () => {
                                 },
                             },
                             {
-                                text: (await me.getText('admin.members.level')),
+                                text: (await me.getText('level')),
                                 dataIndex: 'level',
                                 width: 80,
                             },
                             {
-                                text: (await me.getText('admin.members.joined_at')),
+                                text: (await me.getText('joined_at')),
                                 dataIndex: 'joined_at',
                                 width: 160,
                                 sortable: true,
                                 renderer: Aui.Grid.Renderer.DateTime(),
                             },
                             {
-                                text: (await me.getText('admin.members.logged_at')),
+                                text: (await me.getText('logged_at')),
                                 dataIndex: 'logged_at',
                                 width: 160,
                                 sortable: true,
@@ -462,8 +462,38 @@ Admin.ready(async () => {
                             },
                         ],
                         listeners: {
-                            openItem: (record) => { },
-                            openMenu: (menu, record) => { },
+                            openItem: (record) => {
+                                me.members.add(record.get('member_id'));
+                            },
+                            openMenu: (menu, record) => {
+                                menu.setTitle(record.get('email'));
+                                menu.add({
+                                    text: me.printText('admin.members.edit'),
+                                    iconClass: 'xi xi-form-checkout',
+                                    handler: () => {
+                                        me.members.add(record.get('member_id'));
+                                    },
+                                });
+                                menu.add({
+                                    text: me.printText('admin.members.deactive'),
+                                    iconClass: 'xi xi-slash-circle',
+                                    handler: () => {
+                                        me.members.deactive();
+                                    },
+                                });
+                            },
+                            openMenus: (menu, selections) => {
+                                menu.setTitle(Aui.printText('texts.selected_person', {
+                                    count: selections.length.toString(),
+                                }));
+                                menu.add({
+                                    text: me.printText('admin.members.deactive'),
+                                    iconClass: 'xi xi-slash-circle',
+                                    handler: () => {
+                                        me.members.deactive();
+                                    },
+                                });
+                            },
                         },
                     }),
                 ],

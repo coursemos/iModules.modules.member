@@ -127,7 +127,7 @@ class Member extends \Module
      * 그룹정보를 가져온다.
      *
      * @param string $group_id 그룹고유값
-     * @return /\modules\member\dtos\Group $group
+     * @return \modules\member\dtos\Group $group
      */
     public function getGroup(string $group_id): ?\modules\member\dtos\Group
     {
@@ -671,30 +671,19 @@ class Member extends \Module
          * @var \modules\member\admin\MemberAdmin $mAdmin
          */
         $mAdmin = $this->getAdmin();
-        $group_ids = [];
+
         $time = time();
-        while (true) {
+        $group_ids = [$group_id];
+        $group_ids = array_merge($group_ids, $this->getGroup($group_id)->getParentIds());
+        foreach ($group_ids as $group_id) {
             $group = $this->db()
                 ->select()
                 ->from($this->table('groups'))
                 ->where('group_id', $group_id)
                 ->getOne();
             if ($group === null) {
-                if (count($group_ids) > 0) {
-                    $this->db()
-                        ->delete($this->table('group_members'))
-                        ->where('group_id', $group_ids, 'in')
-                        ->where('member_id', $member_id)
-                        ->execute();
-
-                    foreach ($group_ids as $group_id) {
-                        $mAdmin->updateGroup($group_id);
-                    }
-                }
                 return false;
             }
-
-            $group_ids[] = $group_id;
 
             $assigned = $this->db()
                 ->select()
@@ -710,19 +699,57 @@ class Member extends \Module
                         'assigned_at' => $time,
                     ])
                     ->execute();
+                $mAdmin->updateGroup($group_id);
             } else {
                 $time = $assigned->assigned_at;
             }
-
-            if ($group->parent_id === null) {
-                break;
-            } else {
-                $group_id = $group->parent_id;
-            }
         }
 
-        foreach ($group_ids as $group_id) {
-            $mAdmin->updateGroup($group_id);
+        return true;
+    }
+
+    /**
+     * 그룹구성원에서 회원을 제외한다.
+     *
+     * @param string $group_id 구성원에서 제외할 그룹고유값
+     * @param ?int $member_id 회원고유값
+     * @return bool $success
+     */
+    public function removeGroup(string $group_id, ?int $member_id = null): bool
+    {
+        $member_id ??= $this->getLogged();
+        if ($member_id === 0) {
+            return false;
+        }
+
+        $assigned = $this->db()
+            ->select()
+            ->from($this->table('group_members'))
+            ->where('group_id', $group_id)
+            ->where('member_id', $member_id)
+            ->getOne();
+        if ($assigned === null) {
+            return false;
+        }
+
+        /**
+         * @var \modules\member\admin\MemberAdmin $mAdmin
+         */
+        $mAdmin = $this->getAdmin();
+        $this->db()
+            ->delete($this->table('group_members'))
+            ->where('group_id', $group_id)
+            ->where('member_id', $member_id)
+            ->execute();
+        $mAdmin->updateGroup($group_id);
+
+        $children = $this->db()
+            ->select(['group_id'])
+            ->from($this->table('groups'))
+            ->where('parent_id', $group_id)
+            ->get('group_id');
+        foreach ($children as $child_id) {
+            $this->removeGroup($child_id, $member_id);
         }
 
         return true;

@@ -7,7 +7,7 @@
  * @file /modules/member/processes/member.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2024. 1. 30.
  *
  * @var \modules\member\Member $me
  */
@@ -26,6 +26,19 @@ if ($me->getAdmin()->checkPermission('members', ['edit']) == false) {
 
 $member_id = Request::get('member_id');
 if ($member_id !== null) {
+    $member = $me
+        ->db()
+        ->select()
+        ->from($me->table('members'))
+        ->where('member_id', $member_id)
+        ->getOne();
+    if ($member === null) {
+        $results->success = false;
+        $results->message = $me->getErrorText('NOT_FOUND_DATA');
+        return;
+    }
+} else {
+    $member = null;
 }
 
 $errors = [];
@@ -34,7 +47,7 @@ $email =
         ? Input::get('email')
         : ($errors['email'] = $me->getErrorText('INVALID_EMAIL'));
 if (isset($errors['email']) == false) {
-    if ($me->hasActiveMember('email', $email, $member_id ?? 0) == true) {
+    if ($me->hasActiveMember('email', $email, $member?->member_id ?? 0) == true) {
         $errors['email'] = $me->getErrorText('DUPLICATED');
     }
 }
@@ -45,22 +58,28 @@ $nickname =
         ? Input::get('nickname')
         : ($errors['nickname'] = $me->getErrorText('INVALID_NICKNAME'));
 if (isset($errors['nickname']) == false) {
-    if ($me->hasActiveMember('nickname', $email, $member_id ?? 0) == true) {
+    if ($me->hasActiveMember('nickname', $email, $member?->member_id ?? 0) == true) {
         $errors['nickname'] = $me->getErrorText('DUPLICATED');
     }
 }
 
-if ($member_id === null) {
+if ($member === null) {
     $password = Input::get('password', $errors);
+}
+
+$level_id = Input::get('level_id') ?? 0;
+if ($me->getLevel($level_id) === null) {
+    $errors['level'] = $me->getErrorText('NOT_FOUND_DATA');
 }
 
 if (count($errors) == 0) {
     $insert = [];
-    if ($member_id === null) {
+    if ($member === null) {
         $insert['email'] = $email;
         $insert['password'] = $password;
         $insert['name'] = $name;
         $insert['nickname'] = $nickname;
+        $insert['level_id'] = $level_id;
         $insert['verified'] = 'TRUE';
         $insert['status'] = 'ACTIVATED';
         $insert['joined_at'] = time();
@@ -72,6 +91,39 @@ if (count($errors) == 0) {
                 $results->errors = $member_id;
             }
             return;
+        }
+    } else {
+        $insert['email'] = $email;
+        if (Input::get('password') !== null) {
+            $insert['password'] = \Password::hash(Input::get('password'));
+        }
+        $insert['name'] = $name;
+        $insert['nickname'] = $nickname;
+        $insert['level_id'] = $level_id;
+
+        $me->db()
+            ->update($me->table('members'), $insert)
+            ->where('member_id', $member->member_id)
+            ->execute();
+
+        $member_id = $member->member_id;
+    }
+
+    $member = $me->getMember($member_id);
+    $group_ids = [];
+    foreach (Input::get('group_ids') ?? [] as $group_id) {
+        $group = $me->getGroup($group_id);
+        $group_ids[] = $group_id;
+        $group_ids = array_merge($group_ids, $group->getParentIds());
+
+        $me->assignGroup($group_id, $member_id);
+    }
+
+    $remove = [];
+    foreach ($me->getMember($member_id)->getGroups() as $group) {
+        if (in_array($group->getGroup()->getId(), $group_ids) == false) {
+            $remove[] = $group->getGroup()->getId();
+            $me->removeGroup($group->getGroup()->getId(), $member_id);
         }
     }
 

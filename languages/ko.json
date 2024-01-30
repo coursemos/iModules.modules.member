@@ -3,9 +3,12 @@
     "password": "패스워드",
     "name": "성명",
     "nickname": "닉네임",
+    "level": "레벨",
+    "groups": "소속그룹",
+    "joined_at": "가입일시",
+    "logged_at": "마지막로그인일시",
     "group_manager": "그룹매니저",
     "group_member": "그룹구성원",
-    "level": "레벨",
     "default_level": "기본레벨",
     "oauth": {
         "label": {
@@ -63,17 +66,12 @@
         "members": {
             "title": "회원목록",
             "add": "회원추가",
+            "edit": "회원정보수정",
+            "active": "회원 활성화",
+            "deactive": "회원 비활성화",
             "id": "고유값",
-            "email": "이메일",
-            "password": "패스워드",
-            "name": "이름",
-            "nickname": "닉네임",
-            "level": "레벨",
-            "groups": "소속그룹",
             "groups_help": "선택한 그룹의 상위그룹은 자동으로 포함됩니다.",
-            "nogroups": "소속그룹 없음",
-            "joined_at": "가입일시",
-            "logged_at": "마지막로그인일시",
+            "password_edit_help": "패스워드를 변경하고자 할 경우에만 변경할 패스워드를 입력하여 주시기 바랍니다.",
             "lists": {
                 "group": "그룹별",
                 "level": "레벨별"

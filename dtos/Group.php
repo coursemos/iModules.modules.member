@@ -44,7 +44,7 @@ class Group
      */
     public function __construct(object $group)
     {
-        $this->_id = 0;
+        $this->_id = $group->group_id;
         $this->_parent_id = $group->parent_id;
         $this->_depth = $group->depth;
         $this->_title = $group->title;
@@ -89,6 +89,48 @@ class Group
     public function getTitle(): string
     {
         return $this->_title;
+    }
+
+    /**
+     * 상위그룹 전체를 가져온다.
+     *
+     * @return \modules\member\dtos\Group[] $parents
+     */
+    public function getParents(): array
+    {
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        if ($this->_parent_id !== null) {
+            $parent = $mMember->getGroup($this->_parent_id);
+            $parents = [$parent, ...$mMember->getGroup($this->_parent_id)?->getParents() ?? []];
+        } else {
+            $parents = [];
+        }
+
+        return $parents;
+    }
+
+    /**
+     * 상위그룹 고유값 전체를 가져온다.
+     *
+     * @return string[] $parent_ids
+     */
+    public function getParentIds(): array
+    {
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        if ($this->_parent_id !== null) {
+            $parent = $mMember->getGroup($this->_parent_id);
+            $parents = [$parent->getId(), ...$mMember->getGroup($this->_parent_id)?->getParentIds() ?? []];
+        } else {
+            $parents = [];
+        }
+
+        return $parents;
     }
 
     /**

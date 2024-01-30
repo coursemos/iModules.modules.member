@@ -191,12 +191,12 @@ namespace modules {
                                             sortable: true,
                                         },
                                         {
-                                            text: this.printText('admin.members.email'),
+                                            text: this.printText('email'),
                                             dataIndex: 'email',
                                             minWidth: 200,
                                         },
                                         {
-                                            text: this.printText('admin.members.name'),
+                                            text: this.printText('name'),
                                             dataIndex: 'name',
                                             width: 150,
                                             renderer: (value, record) => {
@@ -209,12 +209,12 @@ namespace modules {
                                             },
                                         },
                                         {
-                                            text: this.printText('admin.members.nickname'),
+                                            text: this.printText('nickname'),
                                             dataIndex: 'nickname',
                                             width: 150,
                                         },
                                         {
-                                            text: this.printText('admin.members.joined_at'),
+                                            text: this.printText('joined_at'),
                                             dataIndex: 'joined_at',
                                             width: 160,
                                             sortable: true,
@@ -451,10 +451,12 @@ namespace modules {
                 members = {
                     /**
                      * 회원을 추가한다.
+                     *
+                     * @param {number} member_id - 회원정보를 수정할 경우 회원고유값
                      */
-                    add: (): void => {
+                    add: (member_id: number = null): void => {
                         new Aui.Window({
-                            title: this.printText('admin.members.add'),
+                            title: this.printText('admin.members.' + (member_id === null ? 'add' : 'edit')),
                             width: 500,
                             modal: true,
                             resizable: false,
@@ -464,28 +466,42 @@ namespace modules {
                                     border: false,
                                     items: [
                                         new Aui.Form.Field.Text({
-                                            label: this.printText('admin.members.email'),
+                                            label: this.printText('email'),
                                             name: 'email',
                                             inputType: 'email',
                                             allowBlank: false,
                                         }),
                                         new Aui.Form.Field.Text({
-                                            label: this.printText('admin.members.password'),
+                                            label: this.printText('password'),
                                             name: 'password',
-                                            allowBlank: false,
+                                            allowBlank: member_id !== null,
+                                            helpText:
+                                                member_id === null
+                                                    ? null
+                                                    : this.printText('admin.member.password_edit_help'),
                                         }),
                                         new Aui.Form.Field.Text({
-                                            label: this.printText('admin.members.name'),
+                                            label: this.printText('name'),
                                             name: 'name',
                                             allowBlank: false,
                                         }),
                                         new Aui.Form.Field.Text({
-                                            label: this.printText('admin.members.nickname'),
+                                            label: this.printText('nickname'),
                                             name: 'nickname',
                                             allowBlank: false,
                                         }),
                                         new Aui.Form.Field.Select({
-                                            label: this.printText('admin.members.groups'),
+                                            label: this.printText('level'),
+                                            name: 'level_id',
+                                            store: new Aui.Store.Ajax({
+                                                url: this.getProcessUrl('levels'),
+                                            }),
+                                            valueField: 'level_id',
+                                            displayField: 'title',
+                                            value: 0,
+                                        }),
+                                        new Aui.Form.Field.Select({
+                                            label: this.printText('groups'),
                                             name: 'group_ids',
                                             store: new Aui.TreeStore.Ajax({
                                                 url: this.getProcessUrl('groups'),
@@ -494,7 +510,6 @@ namespace modules {
                                             valueField: 'group_id',
                                             displayField: 'title',
                                             search: true,
-                                            emptyText: this.printText('admin.members.nogroups'),
                                             helpText: this.printText('admin.members.groups_help'),
                                         }),
                                     ],
@@ -517,6 +532,7 @@ namespace modules {
                                         const form = button.getParent().getItemAt(0) as Aui.Form.Panel;
                                         const results = await form.submit({
                                             url: this.getProcessUrl('member'),
+                                            params: { member_id: member_id },
                                         });
 
                                         if (results.success == true) {
@@ -538,7 +554,30 @@ namespace modules {
                                     },
                                 }),
                             ],
+                            listeners: {
+                                show: async (window) => {
+                                    const form = window.getItemAt(0) as Aui.Form.Panel;
+
+                                    if (member_id !== null) {
+                                        const results = await form.load({
+                                            url: this.getProcessUrl('member'),
+                                            params: { member_id: member_id },
+                                        });
+
+                                        if (results.success == true) {
+                                        } else {
+                                            window.close();
+                                        }
+                                    }
+                                },
+                            },
                         }).show();
+                    },
+                    /**
+                     * 회원을 비활성화한다.
+                     */
+                    deactive: (): void => {
+                        //
                     },
                 };
 
