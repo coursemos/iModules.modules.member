@@ -420,7 +420,7 @@ class Member extends \Module
                  * 패스워드 검증을 하거나, 검증이 되어 있다면 바로 연동을 처리한다.
                  */
                 if ($this->isPasswordConfirmed() === true) {
-                    $success = $this->setOAuthAccount($account, $this->getLogged());
+                    $success = $this->getMember()->setOAuthAccount($account);
                     if ($success == true) {
                         $account->getOAuth()->redirect();
                     } else {
@@ -437,7 +437,7 @@ class Member extends \Module
                     \ErrorHandler::print($this->error('OAUTH_LINKED_OTHER_ACCOUNT'));
                 }
 
-                $success = $this->setOAuthAccount($account, $this->getLogged());
+                $success = $this->getMember()->setOAuthAccount($account);
                 if ($success == true) {
                     $account->getOAuth()->redirect();
                 } else {
@@ -457,7 +457,7 @@ class Member extends \Module
                 if (count($member_ids) > 1) {
                     $this->printOAuthLinkComponent('select', $account);
                 } else {
-                    $success = $this->setOAuthAccount($account, $member_ids[0]);
+                    $success = $this->getMember($member_ids[0])->setOAuthAccount($account);
                     if ($success == true) {
                         $account->getOAuth()->redirect();
                     } else {
@@ -577,182 +577,6 @@ class Member extends \Module
             $this->setPasswordConfirmed(false);
             $this->storeLog($this, 'logout', 'success', ['auto_login' => $login_id]);
         }
-    }
-
-    /**
-     * OAuth 계정정보를 가져온다.
-     *
-     * @param string $oauth_id 가져올 OAuth 클라이언트 고유값
-     * @param ?int $member_id 가져올 회원고유값
-     * @return ?\modules\member\dtos\OAuthAccount $account
-     */
-    public function getOAuthAccount(string $oauth_id, ?int $member_id = null): ?\modules\member\dtos\OAuthAccount
-    {
-        $client = $this->getOAuthClient($oauth_id);
-        if ($client === null) {
-            return null;
-        }
-
-        $token = $this->db()
-            ->select()
-            ->from($this->table('oauth_tokens'))
-            ->where('oauth_id', $oauth_id)
-            ->where('member_id', $member_id)
-            ->getOne();
-        if ($token === null) {
-            return null;
-        }
-
-        $oauth = new \OAuthClient($client->getClientId(), $client->getClientSecret());
-        $oauth->setScope($client->getScope());
-        $oauth->setAccessToken($token->access_token, $token->access_token_expired_at, $token->scope);
-        $oauth->setRefreshToken($token->refresh_token, $client->getTokenUrl());
-
-        $account = new \modules\member\dtos\OAuthAccount($client, $oauth);
-        return $account;
-    }
-
-    /**
-     * OAuth 계정정보를 특정 회원에게 등록한다.
-     *
-     * @param \modules\member\dtos\OAuthAccount $oauth OAuth 계정객체
-     * @param ?int $member_id 토큰을 등록할 회원고유값
-     * @return bool $success
-     */
-    public function setOAuthAccount(\modules\member\dtos\OAuthAccount $account, ?int $member_id = null): bool
-    {
-        $member_id ??= $this->getLogged();
-        if ($member_id === 0) {
-            return false;
-        }
-
-        $insert = [
-            'oauth_id' => $account->getClient()->getId(),
-            'member_id' => $member_id,
-            'user_id' => $account->getId(),
-            'scope' => $account->getAccessTokenScope(),
-            'access_token' => $account->getAccessToken(),
-            'refresh_token' => $account->getRefreshToken(),
-            'access_token_expired_at' => $account->getAccessTokenExpiredAt(),
-            'latest_access' => time(),
-        ];
-
-        $duplicated = ['access_token', 'scope', 'access_token', 'access_token_expired_at', 'latest_access'];
-        if ($account->getRefreshToken() !== null) {
-            $duplicated[] = 'refresh_token';
-        }
-
-        $results = $this->db()
-            ->insert($this->table('oauth_tokens'), $insert, $duplicated)
-            ->execute();
-
-        if ($results->success == true) {
-            $account->getOAuth()->clear();
-        }
-
-        return $results->success;
-    }
-
-    /**
-     * 그룹 구성원으로 추가한다.
-     *
-     * @param string $group_id 구성원으로 추가할 그룹고유값
-     * @param ?int $member_id 회원고유값
-     * @return bool $success
-     */
-    public function assignGroup(string $group_id, ?int $member_id = null): bool
-    {
-        $member_id ??= $this->getLogged();
-        if ($member_id === 0) {
-            return false;
-        }
-
-        /**
-         * @var \modules\member\admin\MemberAdmin $mAdmin
-         */
-        $mAdmin = $this->getAdmin();
-
-        $time = time();
-        $group_ids = [$group_id];
-        $group_ids = array_merge($group_ids, $this->getGroup($group_id)->getParentIds());
-        foreach ($group_ids as $group_id) {
-            $group = $this->db()
-                ->select()
-                ->from($this->table('groups'))
-                ->where('group_id', $group_id)
-                ->getOne();
-            if ($group === null) {
-                return false;
-            }
-
-            $assigned = $this->db()
-                ->select()
-                ->from($this->table('group_members'))
-                ->where('group_id', $group_id)
-                ->where('member_id', $member_id)
-                ->getOne();
-            if ($assigned === null) {
-                $this->db()
-                    ->insert($this->table('group_members'), [
-                        'group_id' => $group_id,
-                        'member_id' => $member_id,
-                        'assigned_at' => $time,
-                    ])
-                    ->execute();
-                $mAdmin->updateGroup($group_id);
-            } else {
-                $time = $assigned->assigned_at;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 그룹구성원에서 회원을 제외한다.
-     *
-     * @param string $group_id 구성원에서 제외할 그룹고유값
-     * @param ?int $member_id 회원고유값
-     * @return bool $success
-     */
-    public function removeGroup(string $group_id, ?int $member_id = null): bool
-    {
-        $member_id ??= $this->getLogged();
-        if ($member_id === 0) {
-            return false;
-        }
-
-        $assigned = $this->db()
-            ->select()
-            ->from($this->table('group_members'))
-            ->where('group_id', $group_id)
-            ->where('member_id', $member_id)
-            ->getOne();
-        if ($assigned === null) {
-            return false;
-        }
-
-        /**
-         * @var \modules\member\admin\MemberAdmin $mAdmin
-         */
-        $mAdmin = $this->getAdmin();
-        $this->db()
-            ->delete($this->table('group_members'))
-            ->where('group_id', $group_id)
-            ->where('member_id', $member_id)
-            ->execute();
-        $mAdmin->updateGroup($group_id);
-
-        $children = $this->db()
-            ->select(['group_id'])
-            ->from($this->table('groups'))
-            ->where('parent_id', $group_id)
-            ->get('group_id');
-        foreach ($children as $child_id) {
-            $this->removeGroup($child_id, $member_id);
-        }
-
-        return true;
     }
 
     /**

@@ -70,6 +70,28 @@ class Level
     }
 
     /**
+     * 레벨정보를 갱신한다.
+     */
+    public function update(): void
+    {
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        $this->_members = $mMember
+            ->db()
+            ->select()
+            ->from($mMember->table('members'))
+            ->where('level_id', $this->_id)
+            ->count();
+        $mMember
+            ->db()
+            ->update($mMember->table('levels'), ['members' => $this->_members])
+            ->where('level_id', $this->_id)
+            ->execute();
+    }
+
+    /**
      * 그룹정보를 JSON 으로 가져온다.
      *
      * @return object $json

@@ -134,6 +134,135 @@ class Group
     }
 
     /**
+     * 회원을 그룹에 추가한다.
+     *
+     * @param ?int $member_id 회원고유값 (NULL 인 경우 현재 로그인한 회원)
+     * @return bool $success
+     */
+    public function assignMember(?int $member_id = null): bool
+    {
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        $member_id ??= $mMember->getLogged();
+        if ($member_id === 0) {
+            return false;
+        }
+
+        $time = time();
+        $group_ids = [$this->_id];
+        $group_ids = array_merge($group_ids, $this->getParentIds());
+        foreach ($group_ids as $group_id) {
+            $group = $mMember
+                ->db()
+                ->select()
+                ->from($mMember->table('groups'))
+                ->where('group_id', $group_id)
+                ->getOne();
+            if ($group === null) {
+                return false;
+            }
+
+            $assigned = $mMember
+                ->db()
+                ->select()
+                ->from($mMember->table('group_members'))
+                ->where('group_id', $group_id)
+                ->where('member_id', $member_id)
+                ->getOne();
+            if ($assigned === null) {
+                $mMember
+                    ->db()
+                    ->insert($mMember->table('group_members'), [
+                        'group_id' => $group_id,
+                        'member_id' => $member_id,
+                        'assigned_at' => $time,
+                    ])
+                    ->execute();
+                $mMember->getGroup($group_id)->update();
+            } else {
+                $time = $assigned->assigned_at;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 그룹에서 그룹구성원을 제외한다.
+     *
+     * @param ?int $member_id 회원고유값 (NULL 인 경우 현재 로그인한 회원)
+     * @return bool $success
+     */
+    public function removeMember(?int $member_id = null): bool
+    {
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        $member_id ??= $mMember->getLogged();
+        if ($member_id === 0) {
+            return false;
+        }
+
+        $assigned = $mMember
+            ->db()
+            ->select()
+            ->from($mMember->table('group_members'))
+            ->where('group_id', $this->_id)
+            ->where('member_id', $member_id)
+            ->getOne();
+        if ($assigned === null) {
+            return false;
+        }
+
+        $mMember
+            ->db()
+            ->delete($mMember->table('group_members'))
+            ->where('group_id', $this->_id)
+            ->where('member_id', $member_id)
+            ->execute();
+        $this->update();
+
+        $children = $mMember
+            ->db()
+            ->select(['group_id'])
+            ->from($mMember->table('groups'))
+            ->where('parent_id', $this->_id)
+            ->get('group_id');
+        foreach ($children as $child_id) {
+            $mMember->getGroup($child_id)->removeMember($member_id);
+        }
+    }
+
+    /**
+     * 그룹정보를 갱신한다.
+     *
+     * @param string $group_id 그룹고유값
+     */
+    public function update(): void
+    {
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        $this->_depth = count($this->getParents());
+        $this->_members = $mMember
+            ->db()
+            ->select()
+            ->from($mMember->table('group_members'))
+            ->where('group_id', $this->_id)
+            ->count();
+
+        $mMember
+            ->db()
+            ->update($mMember->table('groups'), ['depth' => $this->_depth, 'members' => $this->_members])
+            ->where('group_id', $this->_id)
+            ->execute();
+    }
+
+    /**
      * 그룹정보를 JSON 으로 가져온다.
      *
      * @return object $json

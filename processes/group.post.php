@@ -84,12 +84,6 @@ if (count($errors) == 0) {
         )
         ->execute();
 
-    /**
-     * @var \modules\member\admin\Member $mAdmin
-     */
-    $mAdmin = $me->getAdmin();
-    $mAdmin->updateGroup($group_id);
-
     $results->success = true;
     $results->group_id = $group_id;
 } else {

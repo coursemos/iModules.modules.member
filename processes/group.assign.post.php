@@ -2,7 +2,7 @@
 /**
  * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
- * 그룹구성원을 저장한다.
+ * 그룹구성원을 그룹에 추가한다.
  *
  * @file /modules/member/processes/group.assign.post.php
  * @author Arzz <arzz@arzz.com>
@@ -39,8 +39,7 @@ if ($group === null) {
 
 $member_ids = Input::get('member_ids');
 foreach ($member_ids as $member_id) {
-    $me->assignGroup($group_id, $member_id);
+    $me->getGroup($group_id)->assignMember($member_id);
 }
 
 $results->success = true;
-$results->member_ids = $member_ids;

@@ -116,14 +116,12 @@ if (count($errors) == 0) {
         $group_ids[] = $group_id;
         $group_ids = array_merge($group_ids, $group->getParentIds());
 
-        $me->assignGroup($group_id, $member_id);
+        $group->assignMember($member_id);
     }
 
-    $remove = [];
     foreach ($me->getMember($member_id)->getGroups() as $group) {
         if (in_array($group->getGroup()->getId(), $group_ids) == false) {
-            $remove[] = $group->getGroup()->getId();
-            $me->removeGroup($group->getGroup()->getId(), $member_id);
+            $group->getGroup()->removeMember($member_id);
         }
     }
 

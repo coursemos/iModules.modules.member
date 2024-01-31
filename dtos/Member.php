@@ -316,4 +316,89 @@ class Member
         }
         return $this;
     }
+
+    /**
+     * OAuth 계정정보를 가져온다.
+     *
+     * @param string $oauth_id 가져올 OAuth 클라이언트 고유값
+     * @return ?\modules\member\dtos\OAuthAccount $account
+     */
+    public function getOAuthAccount(string $oauth_id): ?\modules\member\dtos\OAuthAccount
+    {
+        if ($this->_id == 0) {
+            return false;
+        }
+
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        $client = $mMember->getOAuthClient($oauth_id);
+        if ($client === null) {
+            return null;
+        }
+
+        $token = $mMember
+            ->db()
+            ->select()
+            ->from($mMember->table('oauth_tokens'))
+            ->where('oauth_id', $oauth_id)
+            ->where('member_id', $this->_id)
+            ->getOne();
+        if ($token === null) {
+            return null;
+        }
+
+        $oauth = new \OAuthClient($client->getClientId(), $client->getClientSecret());
+        $oauth->setScope($client->getScope());
+        $oauth->setAccessToken($token->access_token, $token->access_token_expired_at, $token->scope);
+        $oauth->setRefreshToken($token->refresh_token, $client->getTokenUrl());
+
+        $account = new \modules\member\dtos\OAuthAccount($client, $oauth);
+        return $account;
+    }
+
+    /**
+     * OAuth 계정정보를 회원에게 등록한다.
+     *
+     * @param \modules\member\dtos\OAuthAccount $oauth OAuth 계정객체
+     * @return bool $success
+     */
+    public function setOAuthAccount(\modules\member\dtos\OAuthAccount $account): bool
+    {
+        if ($this->_id == 0) {
+            return false;
+        }
+
+        /**
+         * @var \modules\member\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+        $insert = [
+            'oauth_id' => $account->getClient()->getId(),
+            'member_id' => $this->_id,
+            'user_id' => $account->getId(),
+            'scope' => $account->getAccessTokenScope(),
+            'access_token' => $account->getAccessToken(),
+            'refresh_token' => $account->getRefreshToken(),
+            'access_token_expired_at' => $account->getAccessTokenExpiredAt(),
+            'latest_access' => time(),
+        ];
+
+        $duplicated = ['access_token', 'scope', 'access_token', 'access_token_expired_at', 'latest_access'];
+        if ($account->getRefreshToken() !== null) {
+            $duplicated[] = 'refresh_token';
+        }
+
+        $results = $mMember
+            ->db()
+            ->insert($mMember->table('oauth_tokens'), $insert, $duplicated)
+            ->execute();
+
+        if ($results->success == true) {
+            $account->getOAuth()->clear();
+        }
+
+        return $results->success;
+    }
 }

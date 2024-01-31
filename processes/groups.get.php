@@ -37,22 +37,6 @@ $child_id = $child?->group_id ?? null;
  * @var \modules\member\admin\Member $mAdmin
  */
 $mAdmin = $me->getAdmin();
-
-if ($is_update == true) {
-    /*
-    foreach (
-        $mAdmin
-            ->db()
-            ->select()
-            ->from($mAdmin->table('groups'))
-            ->get()
-        as $group
-    ) {
-        $mAdmin->updateGroup($group->group_id);
-    }
-    */
-}
-
 if ($parent_id === null && $child_id === null) {
     $groups = [
         'group_id' => 'all',
@@ -81,7 +65,7 @@ if ($parent_id === null && $child_id === null) {
     $results->records = $mAdmin->getGroupTree($parent_id, $filters?->title?->value ?? null, $parent->getDepth() + 1);
 } elseif ($child_id !== null) {
     $results->success = true;
-    $results->records = $mAdmin->getGroupParents($child_id);
+    $results->records = $me->getGroup($child_id)->getParentIds();
 }
 
 $results->filters = $filters;

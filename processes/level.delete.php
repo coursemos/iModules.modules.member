@@ -53,10 +53,6 @@ $me->db()
     ->where('level_id', $level_id)
     ->execute();
 
-/**
- * @var \modules\member\admin\Member $mAdmin
- */
-$mAdmin = $me->getAdmin();
-$mAdmin->updateLevel(0);
+$me->getLevel($level_id)->update();
 
 $results->success = true;

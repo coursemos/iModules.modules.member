@@ -99,11 +99,7 @@ if (count($errors) == 0) {
             ->execute();
     }
 
-    /**
-     * @var \modules\member\admin\Member $mAdmin
-     */
-    $mAdmin = $me->getAdmin();
-    $mAdmin->updateLevel($level_id);
+    $me->getLevel($level_id)->update();
 
     $results->success = true;
     $results->level_id = $level_id;

@@ -143,74 +143,6 @@ class Member extends \modules\admin\admin\Component
     }
 
     /**
-     * 특정 그룹의 부모그룹을 가져온다.
-     *
-     * @param string $child_id 자식그룹아이디
-     * @return array $parents
-     */
-    public function getGroupParents(string $child_id): array
-    {
-        $parents = [];
-        $child = $this->db()
-            ->select()
-            ->from($this->table('groups'))
-            ->where('group_id', $child_id)
-            ->getOne();
-
-        if ($child == null || $child->parent_id == null) {
-            return $parents;
-        }
-
-        $parent_id = $child->parent_id;
-        while (true) {
-            $parent = $this->db()
-                ->select(['group_id', 'title', 'parent_id'])
-                ->from($this->table('groups'))
-                ->where('group_id', $parent_id)
-                ->getOne();
-            if ($parent == null) {
-                return $parents;
-            }
-
-            $parent_id = $parent->parent_id;
-            unset($parent->parent_id);
-            array_unshift($parents, $parent);
-
-            if ($parent_id == null) {
-                return $parents;
-            }
-        }
-    }
-
-    /**
-     * 그룹정보를 갱신한다.
-     *
-     * @param string $group_id 그룹고유값
-     */
-    public function updateGroup(string $group_id): void
-    {
-        $group = $this->db()
-            ->select()
-            ->from($this->table('groups'))
-            ->where('group_id', $group_id)
-            ->getOne();
-        if ($group == null) {
-            return;
-        }
-
-        $parents = $this->getGroupParents($group_id);
-        $members = $this->db()
-            ->select()
-            ->from($this->table('group_members'))
-            ->where('group_id', $group_id)
-            ->count();
-        $this->db()
-            ->update($this->table('groups'), ['depth' => count($parents), 'members' => $members])
-            ->where('group_id', $group_id)
-            ->execute();
-    }
-
-    /**
      * 그룹을 삭제한다.
      *
      * @param string $group_id 삭제할 그룹고유값
@@ -247,33 +179,6 @@ class Member extends \modules\admin\admin\Component
         ) {
             $this->deleteGroup($child);
         }
-    }
-
-    /**
-     * 레벨정보를 갱신한다.
-     *
-     * @param int $level_id 레벨고유값
-     */
-    public function updateLevel(int $level_id): void
-    {
-        $level = $this->db()
-            ->select()
-            ->from($this->table('levels'))
-            ->where('level_id', $level_id)
-            ->getOne();
-        if ($level == null) {
-            return;
-        }
-
-        $members = $this->db()
-            ->select()
-            ->from($this->table('members'))
-            ->where('level_id', $level_id)
-            ->count();
-        $this->db()
-            ->update($this->table('levels'), ['members' => $members])
-            ->where('level_id', $level_id)
-            ->execute();
     }
 
     /**

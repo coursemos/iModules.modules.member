@@ -30,7 +30,7 @@ $group_id = Request::get('group_id');
 
 if ($group_id !== null) {
     foreach ($member_ids as $member_id) {
-        $me->removeGroup($group_id, $member_id);
+        $me->getGroup($group_id)?->removeMember($member_id);
     }
 } else {
 }

@@ -77,7 +77,7 @@ if ($mode == 'password') {
         }
 
         if (\Password::verify($password, $member?->password ?? '') === true) {
-            $success = $me->setOAuthAccount($account, $member->member_id);
+            $success = $me->getMember($member->member_id)->setOAuthAccount($account);
             $results->success = true;
             $results->redirect = $account->getOAuth()->redirect(false);
         } else {
@@ -145,7 +145,7 @@ if ($mode == 'signup') {
     }
 
     $me->loginTo($member_id);
-    $success = $me->setOAuthAccount($account);
+    $success = $me->getMember()->setOAuthAccount($account);
     $results->success = $success;
     if ($success == true) {
         $results->redirect = $account->getOAuth()->redirect(false);
