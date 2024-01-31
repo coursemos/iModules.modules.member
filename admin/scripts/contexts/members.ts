@@ -95,6 +95,45 @@ Admin.ready(async () => {
                                         renderer: Aui.Tree.Renderer.Number(),
                                     },
                                 ],
+                                bottombar: [
+                                    new Aui.Button({
+                                        iconClass: 'mi mi-refresh',
+                                        handler: (button) => {
+                                            const tree = button.getParent().getParent() as Aui.Tree.Panel;
+                                            tree.getStore().reload();
+                                        },
+                                    }),
+                                    '->',
+                                    new Aui.SegmentedButton({
+                                        items: [
+                                            new Aui.Button({
+                                                text: me.printText('admin.members.lists.group'),
+                                                value: 'groups',
+                                                pressed: true,
+                                                handler: (button) => {
+                                                    const tab = button
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent() as Aui.Tab.Panel;
+                                                    tab.active(0);
+                                                },
+                                            }),
+                                            new Aui.Button({
+                                                text: me.printText('admin.members.lists.level'),
+                                                value: 'levels',
+                                                handler: (button) => {
+                                                    const tab = button
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent() as Aui.Tab.Panel;
+                                                    tab.active(1);
+                                                },
+                                            }),
+                                        ],
+                                    }),
+                                ],
                                 listeners: {
                                     update: (tree) => {
                                         if (
@@ -226,6 +265,45 @@ Admin.ready(async () => {
                                         renderer: Aui.Grid.Renderer.Number(),
                                     },
                                 ],
+                                bottombar: [
+                                    new Aui.Button({
+                                        iconClass: 'mi mi-refresh',
+                                        handler: (button) => {
+                                            const grid = button.getParent().getParent() as Aui.Grid.Panel;
+                                            grid.getStore().reload();
+                                        },
+                                    }),
+                                    '->',
+                                    new Aui.SegmentedButton({
+                                        items: [
+                                            new Aui.Button({
+                                                text: me.printText('admin.members.lists.group'),
+                                                value: 'groups',
+                                                handler: (button) => {
+                                                    const tab = button
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent() as Aui.Tab.Panel;
+                                                    tab.active(0);
+                                                },
+                                            }),
+                                            new Aui.Button({
+                                                text: me.printText('admin.members.lists.level'),
+                                                pressed: true,
+                                                value: 'levels',
+                                                handler: (button) => {
+                                                    const tab = button
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent()
+                                                        .getParent() as Aui.Tab.Panel;
+                                                    tab.active(1);
+                                                },
+                                            }),
+                                        ],
+                                    }),
+                                ],
                                 listeners: {
                                     update: (grid) => {
                                         if (
@@ -283,37 +361,6 @@ Admin.ready(async () => {
                                 },
                             }),
                         ],
-                        bottombar: [
-                            new Aui.Button({
-                                iconClass: 'mi mi-refresh',
-                                handler: (button) => {
-                                    const tab = button.getParent().getParent() as Aui.Tab.Panel;
-                                    const type = tab.getItemAt(0) as Aui.Tree.Panel | Aui.Grid.Panel;
-                                    type.getStore().reload();
-                                },
-                            }),
-                            '->',
-                            new Aui.SegmentedButton({
-                                items: [
-                                    new Aui.Button({
-                                        text: me.printText('admin.members.lists.group'),
-                                        value: 'groups',
-                                        handler: (button) => {
-                                            const tab = button.getParent().getParent().getParent() as Aui.Tab.Panel;
-                                            tab.active(0);
-                                        },
-                                    }),
-                                    new Aui.Button({
-                                        text: me.printText('admin.members.lists.level'),
-                                        value: 'levels',
-                                        handler: (button) => {
-                                            const tab = button.getParent().getParent().getParent() as Aui.Tab.Panel;
-                                            tab.active(1);
-                                        },
-                                    }),
-                                ],
-                            }),
-                        ],
                         listeners: {
                             render: (tab) => {
                                 if (Admin.getContextSubUrl(0) == 'lists') {
@@ -324,15 +371,10 @@ Admin.ready(async () => {
                                 }
                             },
                             active: (panel, tab) => {
-                                const buttons = tab.getToolbar('bottom').getItemAt(2) as Aui.SegmentedButton;
-                                buttons.setValue('groups');
-
                                 const members = Aui.getComponent('members') as Aui.Grid.Panel;
                                 const assign = members.getToolbar('top').getItemAt(2);
 
                                 if (panel.getId() == 'groups') {
-                                    buttons.setValue('groups');
-
                                     const groups = panel as Aui.Tree.Panel;
                                     if (groups.getStore().isLoaded() == false) {
                                         groups.getStore().load();
@@ -340,8 +382,6 @@ Admin.ready(async () => {
 
                                     groups.fireEvent('selectionChange', [groups.getSelections()]);
                                 } else {
-                                    buttons.setValue('levels');
-
                                     const levels = panel as Aui.Grid.Panel;
                                     if (levels.getStore().isLoaded() == false) {
                                         levels.getStore().load();
