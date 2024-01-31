@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 23.
+ * @modified 2024. 1. 31.
  */
 var modules;
 (function (modules) {
@@ -332,7 +332,7 @@ var modules;
                 };
                 levels = {
                     /**
-                     * 그룹을 추가한다.
+                     * 레벨을 추가한다.
                      *
                      * @param {number} level_id - 그룹정보를 수정할 경우 수정할 group_id
                      */
@@ -557,6 +557,39 @@ var modules;
                                 },
                             },
                         }).show();
+                    },
+                    /**
+                     * 회원을 그룹에서 제외한다.
+                     */
+                    remove: () => {
+                        const types = Aui.getComponent('types');
+                        if (types?.getActiveTab()?.getId() !== 'groups') {
+                            return;
+                        }
+                        const groups = Aui.getComponent('groups');
+                        const group_id = groups.getSelections().at(0)?.get('group_id') ?? null;
+                        if (group_id === null || group_id === 'all') {
+                            return;
+                        }
+                        const members = Aui.getComponent('members');
+                        const member_ids = [];
+                        for (const record of members.getSelections()) {
+                            member_ids.push(record.get('member_id'));
+                        }
+                        if (member_ids.length == 0) {
+                            return;
+                        }
+                        Aui.Message.delete({
+                            url: this.getProcessUrl('member'),
+                            params: { member_ids: member_ids.join(','), group_id: group_id },
+                            message: this.printText('admin.members.actions.remove'),
+                            handler: async (results) => {
+                                if (results.success == true) {
+                                    await groups.getStore().reload();
+                                    members.getStore().reload();
+                                }
+                            },
+                        });
                     },
                     /**
                      * 회원을 비활성화한다.

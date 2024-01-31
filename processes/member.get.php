@@ -1,6 +1,6 @@
 <?php
 /**
- * 이 파일은 아이모듈 관리자모듈의 일부입니다. (https://www.imodules.io)
+ * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
  * 회원정보를 가져온다.
  *
@@ -42,14 +42,6 @@ $groups = $me->getMember($member_id)->getGroups(true);
 foreach ($groups as $group) {
     $data->group_ids[] = $group->getGroupId();
 }
-
-/*$me
-    ->db()
-    ->select(['group_id'])
-    ->from($me->table('group_members'))
-    ->where('member_id', $member_id)
-    ->get('group_id');
-    */
 
 $results->success = true;
 $results->data = $data;

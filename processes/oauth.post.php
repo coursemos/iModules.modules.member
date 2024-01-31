@@ -1,6 +1,6 @@
 <?php
 /**
- * 이 파일은 아이모듈 관리자모듈의 일부입니다. (https://www.imodules.io)
+ * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
  * OAuth 계정연동을 처리한다.
  *

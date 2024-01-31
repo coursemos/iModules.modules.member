@@ -465,7 +465,7 @@ Admin.ready(async () => {
                             openItem: (record) => {
                                 me.members.add(record.get('member_id'));
                             },
-                            openMenu: (menu, record) => {
+                            openMenu: (menu, record, _rowIndex, grid) => {
                                 menu.setTitle(record.get('email'));
                                 menu.add({
                                     text: me.printText('admin.members.edit'),
@@ -474,6 +474,17 @@ Admin.ready(async () => {
                                         me.members.add(record.get('member_id'));
                                     },
                                 });
+                                menu.add('-');
+                                if (grid.getStore().getParam('group_id') !== null &&
+                                    grid.getStore().getParam('group_id') !== 'user') {
+                                    menu.add({
+                                        text: me.printText('admin.members.remove'),
+                                        iconClass: 'xi xi-folder-remove',
+                                        handler: () => {
+                                            me.members.remove();
+                                        },
+                                    });
+                                }
                                 menu.add({
                                     text: me.printText('admin.members.deactive'),
                                     iconClass: 'xi xi-slash-circle',

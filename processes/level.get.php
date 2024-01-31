@@ -1,6 +1,6 @@
 <?php
 /**
- * 이 파일은 아이모듈 관리자모듈의 일부입니다. (https://www.imodules.io)
+ * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
  * 레벨정보를 가져온다.
  *

@@ -2,7 +2,7 @@
 /**
  * 이 파일은 아이모듈 회원모듈의 일부입니다. (https://www.imodules.io)
  *
- * 관리자접속기록을 가져온다.
+ * 회원 접속기록을 가져온다.
  *
  * @file /modules/member/processes/logs.get.php
  * @author Arzz <arzz@arzz.com>
