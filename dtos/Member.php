@@ -401,4 +401,25 @@ class Member
 
         return $results->success;
     }
+
+    /**
+     * 회원정보를 JSON 으로 가져온다.
+     *
+     * @return object $json
+     */
+    public function getJson(): object
+    {
+        $member = new \stdClass();
+        $member->member_id = $this->_id;
+        $member->name = $this->_name;
+        $member->nickname = $this->_nickname;
+        $member->level = $this->getLevel()->getJson();
+        $member->groups = $this->getGroups(true);
+        foreach ($member->groups as &$group) {
+            $group = $group->getGroup()->getJson();
+        }
+        $member->photo = $this->getPhoto();
+
+        return $member;
+    }
 }
