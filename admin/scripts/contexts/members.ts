@@ -92,7 +92,9 @@ Admin.ready(async () => {
                                         dataIndex: 'members',
                                         sortable: true,
                                         width: 80,
-                                        renderer: Aui.Tree.Renderer.Number(),
+                                        renderer: (value) => {
+                                            return Format.number(value);
+                                        },
                                     },
                                 ],
                                 bottombar: [
@@ -262,7 +264,9 @@ Admin.ready(async () => {
                                         dataIndex: 'members',
                                         sortable: true,
                                         width: 80,
-                                        renderer: Aui.Grid.Renderer.Number(),
+                                        renderer: (value) => {
+                                            return Format.number(value);
+                                        },
                                     },
                                 ],
                                 bottombar: [
@@ -512,14 +516,22 @@ Admin.ready(async () => {
                                 dataIndex: 'joined_at',
                                 width: 160,
                                 sortable: true,
-                                renderer: Aui.Grid.Renderer.DateTime(),
+                                renderer: (value) => {
+                                    return Format.date('Y.m.d(D) H:i', value);
+                                },
                             },
                             {
                                 text: (await me.getText('logged_at')) as string,
                                 dataIndex: 'logged_at',
                                 width: 160,
                                 sortable: true,
-                                renderer: Aui.Grid.Renderer.DateTime(),
+                                renderer: (value) => {
+                                    if (value > 0) {
+                                        return Format.date('Y.m.d(D) H:i', value);
+                                    } else {
+                                        return '';
+                                    }
+                                },
                             },
                         ],
                         listeners: {
@@ -608,7 +620,9 @@ Admin.ready(async () => {
                         width: 180,
                         textAlign: 'center',
                         sortable: true,
-                        renderer: Aui.Grid.Renderer.DateTime('YYYY.MM.DD(dd) HH:mm:ss'),
+                        renderer: (value) => {
+                            return Format.date('Y.m.d(D) H:i:s', value);
+                        },
                     },
                     {
                         text: (await me.getText('admin.administrators.logs.name')) as string,
