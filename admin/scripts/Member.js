@@ -218,7 +218,9 @@ var modules;
                                             dataIndex: 'joined_at',
                                             width: 160,
                                             sortable: true,
-                                            renderer: Aui.Grid.Renderer.DateTime(),
+                                            renderer: (value) => {
+                                                return Format.date('Y.m.d(D) H:i', value);
+                                            },
                                         },
                                     ],
                                     store: new Aui.Store.Ajax({
