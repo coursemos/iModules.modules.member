@@ -36,11 +36,13 @@ $clients = $me
     ->orderBy('sort', 'asc')
     ->get();
 foreach ($clients as &$client) {
-    if (strpos($client->oauth_id, '@') === false) {
-        $client->title = $client->oauth_id;
-    }
     $client->scope = count($client->scope ? explode("\n", $client->scope) : []);
-    $client->members = 0;
+    $client->tokens = $me
+        ->db()
+        ->select()
+        ->from($me->table('oauth_tokens'))
+        ->where('oauth_id', $client->oauth_id)
+        ->count();
 }
 
 $results->success = true;

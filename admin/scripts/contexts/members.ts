@@ -91,7 +91,7 @@ Admin.ready(async () => {
                                         text: (await me.getText('admin.groups.members')) as string,
                                         dataIndex: 'members',
                                         sortable: true,
-                                        width: 80,
+                                        width: 70,
                                         textAlign: 'right',
                                         renderer: (value) => {
                                             return Format.number(value);
@@ -264,7 +264,7 @@ Admin.ready(async () => {
                                         text: (await me.getText('admin.levels.members')) as string,
                                         dataIndex: 'members',
                                         sortable: true,
-                                        width: 80,
+                                        width: 70,
                                         textAlign: 'right',
                                         renderer: (value) => {
                                             return Format.number(value);
@@ -376,7 +376,7 @@ Admin.ready(async () => {
                                     }
                                 }
                             },
-                            active: (panel, tab) => {
+                            active: (panel) => {
                                 const members = Aui.getComponent('members') as Aui.Grid.Panel;
                                 const assign = members.getToolbar('top').getItemAt(2);
 
@@ -468,7 +468,6 @@ Admin.ready(async () => {
                         }),
                         columns: [
                             {
-                                text: '#',
                                 dataIndex: 'member_id',
                                 width: 60,
                                 textAlign: 'right',
@@ -617,7 +616,7 @@ Admin.ready(async () => {
                 ]),
                 columns: [
                     {
-                        text: (await me.getText('admin.administrators.logs.time')) as string,
+                        text: (await me.getText('admin.logs.time')) as string,
                         dataIndex: 'time',
                         width: 180,
                         textAlign: 'center',
@@ -627,7 +626,7 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('admin.administrators.logs.name')) as string,
+                        text: (await me.getText('name')) as string,
                         dataIndex: 'name',
                         width: 150,
                         sortable: true,
@@ -641,7 +640,7 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('admin.members.email')) as string,
+                        text: (await me.getText('email')) as string,
                         dataIndex: 'email',
                         sortable: true,
                         width: 200,
@@ -649,13 +648,13 @@ Admin.ready(async () => {
                     {
                         text: (await me.getText('admin.logs.component')) as string,
                         dataIndex: 'component',
-                        minWidth: 250,
-                        flex: 1,
+                        width: 150,
                     },
                     {
                         text: (await me.getText('admin.logs.message')) as string,
                         dataIndex: 'log_type',
-                        width: 100,
+                        minWidth: 250,
+                        flex: 1,
                     },
                     {
                         text: 'IP',

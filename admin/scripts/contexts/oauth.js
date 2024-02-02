@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/contexts/oauth.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2024. 2. 3.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
@@ -49,8 +49,8 @@ Admin.ready(async () => {
                 }),
                 columns: [
                     {
-                        text: (await me.getText('admin.groups.title')),
-                        dataIndex: 'title',
+                        text: (await me.getText('admin.oauth.clients.oauth_id')),
+                        dataIndex: 'oauth_id',
                         sortable: 'sort',
                         flex: 1,
                     },
@@ -58,15 +58,21 @@ Admin.ready(async () => {
                         text: (await me.getText('admin.oauth.clients.scope')),
                         dataIndex: 'scope',
                         sortable: true,
-                        width: 80,
-                        renderer: Aui.Grid.Renderer.Number(),
+                        width: 70,
+                        textAlign: 'right',
+                        renderer: (value) => {
+                            return Format.number(value);
+                        },
                     },
                     {
-                        text: (await me.getText('admin.groups.members')),
-                        dataIndex: 'members',
+                        text: (await me.getText('admin.oauth.clients.tokens')),
+                        dataIndex: 'tokens',
                         sortable: true,
-                        width: 80,
-                        renderer: Aui.Grid.Renderer.Number(),
+                        width: 70,
+                        textAlign: 'right',
+                        renderer: (value) => {
+                            return Format.number(value);
+                        },
                     },
                 ],
                 listeners: {
@@ -96,30 +102,24 @@ Admin.ready(async () => {
                         });
                     },
                     selectionChange: (selections) => {
-                        const members = Aui.getComponent('members');
-                        const button = members.getToolbar('top').getItemAt(3);
+                        const tokens = Aui.getComponent('tokens');
+                        const button = tokens.getToolbar('top').getItemAt(3);
                         if (selections.length == 1) {
-                            const group_id = selections[0].get('group_id');
-                            members.getStore().setParam('group_id', group_id);
-                            members.getStore().loadPage(1);
-                            members.enable();
+                            const oauth_id = selections[0].get('oauth_id');
+                            tokens.getStore().setParam('oauth_id', oauth_id);
+                            tokens.getStore().loadPage(1);
+                            tokens.enable();
                             Aui.getComponent('oauth-context').properties.setUrl();
-                            if (group_id == 'all') {
-                                button.hide();
-                            }
-                            else {
-                                button.show();
-                            }
                         }
                         else {
-                            members.disable();
+                            tokens.disable();
                             button.hide();
                         }
                     },
                 },
             }),
             new Aui.Grid.Panel({
-                id: 'members',
+                id: 'tokens',
                 border: [false, false, false, true],
                 minWidth: 300,
                 flex: 1,
@@ -131,36 +131,14 @@ Admin.ready(async () => {
                         width: 200,
                         emptyText: (await me.getText('keyword')),
                         handler: async (keyword) => {
-                            const members = Aui.getComponent('members');
+                            const tokens = Aui.getComponent('tokens');
                             if (keyword?.length > 0) {
-                                members.getStore().setParam('keyword', keyword);
+                                tokens.getStore().setParam('keyword', keyword);
                             }
                             else {
-                                members.getStore().setParam('keyword', null);
+                                tokens.getStore().setParam('keyword', null);
                             }
-                            await members.getStore().loadPage(1);
-                        },
-                    }),
-                    '->',
-                    new Aui.Button({
-                        iconClass: 'mi mi-plus',
-                        text: (await me.getText('admin.members.add')),
-                        handler: () => {
-                            me.members.add();
-                        },
-                    }),
-                    new Aui.Button({
-                        iconClass: 'mi mi-group-o',
-                        text: (await me.getText('admin.groups.add_member')),
-                        handler: () => {
-                            const groups = Aui.getComponent('groups');
-                            const members = Aui.getComponent('members');
-                            const group_id = members.getStore().getParam('group_id');
-                            if (group_id === null || group_id === 'all') {
-                                return;
-                            }
-                            const title = groups.getStore().find({ group_id: group_id })?.get('title') ?? null;
-                            me.groups.addMembers(group_id, title);
+                            await tokens.getStore().loadPage(1);
                         },
                     }),
                 ],
@@ -174,68 +152,80 @@ Admin.ready(async () => {
                     }),
                 ]),
                 store: new Aui.Store.Ajax({
-                    url: me.getProcessUrl('members'),
-                    fields: [
-                        'member_id',
-                        'email',
-                        'name',
-                        'nickname',
-                        'photo',
-                        { name: 'joined_at', type: 'int' },
-                        { name: 'logged_at', type: 'int' },
-                    ],
-                    primaryKeys: ['member_id'],
+                    url: me.getProcessUrl('oauth.tokens'),
+                    fields: [{ name: 'latest_access', type: 'int' }],
+                    primaryKeys: ['oauth_id', 'member_id', 'user_id'],
                     limit: 50,
                     remoteSort: true,
-                    sorters: { joined_at: 'DESC' },
+                    sorters: { latest_access: 'DESC' },
                 }),
                 columns: [
                     {
-                        text: '#',
+                        text: '',
                         dataIndex: 'member_id',
                         width: 60,
                         textAlign: 'right',
                         sortable: true,
                     },
                     {
-                        text: (await me.getText('admin.members.email')),
+                        text: (await me.getText('email')),
                         dataIndex: 'email',
-                        sortable: true,
                         width: 200,
                     },
                     {
-                        text: (await me.getText('admin.members.name')),
+                        text: (await me.getText('name')),
                         dataIndex: 'name',
                         width: 150,
-                        sortable: true,
                         renderer: (value, record) => {
                             return ('<i class="photo" style="background-image:url(' + record.data.photo + ')"></i>' + value);
                         },
                     },
                     {
-                        text: (await me.getText('admin.members.nickname')),
-                        dataIndex: 'nickname',
+                        text: (await me.getText('admin.oauth.tokens.user_id')),
+                        dataIndex: 'user_id',
                         sortable: true,
-                        width: 150,
+                        width: 200,
                     },
                     {
-                        text: (await me.getText('admin.members.joined_at')),
-                        dataIndex: 'joined_at',
-                        width: 160,
-                        sortable: true,
-                        renderer: Aui.Grid.Renderer.DateTime(),
+                        text: (await me.getText('admin.oauth.tokens.access_token')),
+                        dataIndex: 'access_token',
+                        width: 200,
                     },
                     {
-                        text: (await me.getText('admin.members.logged_at')),
-                        dataIndex: 'logged_at',
+                        text: (await me.getText('admin.oauth.tokens.refresh_token')),
+                        dataIndex: 'refresh_token',
+                        width: 200,
+                    },
+                    {
+                        text: (await me.getText('admin.oauth.clients.scope')),
+                        dataIndex: 'scope',
+                        width: 70,
+                        textAlign: 'right',
+                    },
+                    {
+                        text: (await me.getText('admin.oauth.tokens.latest_access')),
+                        dataIndex: 'latest_access',
                         width: 160,
                         sortable: true,
-                        renderer: Aui.Grid.Renderer.DateTime(),
+                        renderer: (value) => {
+                            return Format.date('Y.m.d(D) H:i', value);
+                        },
                     },
                 ],
                 listeners: {
-                    openItem: (record) => { },
-                    openMenu: (menu, record) => { },
+                    openItem: (record) => {
+                        me.members.add(record.get('member_id'));
+                    },
+                    openMenu: (menu, record) => {
+                        menu.setTitle(record.get('email'));
+                        menu.add({
+                            text: me.printText('admin.members.edit'),
+                            iconClass: 'xi xi-form-checkout',
+                            handler: () => {
+                                me.members.add(record.get('member_id'));
+                            },
+                        });
+                    },
                 },
             }),
         ],

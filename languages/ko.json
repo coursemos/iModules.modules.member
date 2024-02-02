@@ -115,6 +115,7 @@
         },
         "logs": {
             "title": "회원활동기록",
+            "time": "기록일시",
             "component": "컴포넌트",
             "message": "로그메시지"
         },
@@ -122,6 +123,7 @@
             "clients": {
                 "add": "OAuth추가",
                 "edit": "OAuth수정",
+                "tokens": "토큰",
                 "provider": "OAuth서비스 제공자",
                 "preset": "불러오기",
                 "preset_help": "서비스제공자를 선택하면, 해당 서비스제공자에 따른 기본설정이 자동으로 입력됩니다.<br>또는, 서비스제공자를 선택하지 않고 직접 설정할 수도 있습니다.",
@@ -133,7 +135,7 @@
                 "token_url": "토큰URL",
                 "callback_url": "콜백URL",
                 "callback_url_help": "OAuth 연동시 콜백 URL 인증이 필요한 OAuth제공자의 경우 OAuth 제공자에게 위의 URL을 허용리스트에 추가하여 주시기 바랍니다.",
-                "scope": "요청범위",
+                "scope": "범위",
                 "scope_help": "OAuth 제공자에서 제공하는 정보접근 scope 를 한줄당 한개씩 입력하여 주십시오.",
                 "scope_separator": "범위구분자",
                 "scope_separator_help": "다중 요청범위를 구분하기 위한 구분자를 선택하여 주십시오.<br>해당 구분자는 OAuth제공자에 따라 다릅니다.",
@@ -162,6 +164,12 @@
                 "user_photo_path_help": "유저정보 API 데이터에서 유저 프로필 이미지로 사용할 이미지 URL 데이터가 존재하는 JSON 경로를 점(.)으로 구분하여 입력하여 주십시오.",
                 "allow_signup": "회원가입허용",
                 "allow_signup_help": "회원이 아닌 경우 유저정보를 이용하여 신규회원으로 등록합니다."
+            },
+            "tokens": {
+                "user_id": "유저고유값",
+                "access_token": "액세스토큰",
+                "refresh_token": "갱신토큰",
+                "latest_access": "최근접속시각"
             }
         }
     }

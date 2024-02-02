@@ -168,8 +168,7 @@ class OAuthClient
      */
     public function getScope(): string
     {
-        $separators = ['COMMA' => ',', 'SPACE' => ' ', 'COLONS' => ':', 'SEMICOLONS' => ';', 'PLUS' => '+'];
-        return implode($separators[$this->_scope_separator], $this->_scope);
+        return implode($this->getScopeSeparator(), $this->_scope);
     }
 
     /**
@@ -180,6 +179,17 @@ class OAuthClient
     public function getScopes(): array
     {
         return $this->_scope;
+    }
+
+    /**
+     * 요청범위 구분자를 가져온다.
+     *
+     * @return string $separators
+     */
+    public function getScopeSeparator(): string
+    {
+        $separators = ['COMMA' => ',', 'SPACE' => ' ', 'COLONS' => ':', 'SEMICOLONS' => ';', 'PLUS' => '+'];
+        return $separators[$this->_scope_separator];
     }
 
     /**
