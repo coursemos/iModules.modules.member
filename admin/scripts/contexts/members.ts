@@ -92,6 +92,7 @@ Admin.ready(async () => {
                                         dataIndex: 'members',
                                         sortable: true,
                                         width: 80,
+                                        textAlign: 'right',
                                         renderer: (value) => {
                                             return Format.number(value);
                                         },
@@ -264,6 +265,7 @@ Admin.ready(async () => {
                                         dataIndex: 'members',
                                         sortable: true,
                                         width: 80,
+                                        textAlign: 'right',
                                         renderer: (value) => {
                                             return Format.number(value);
                                         },
