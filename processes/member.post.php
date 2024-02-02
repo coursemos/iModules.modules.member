@@ -106,6 +106,11 @@ if (count($errors) == 0) {
             ->where('member_id', $member->member_id)
             ->execute();
 
+        if ($member->level_id !== $level_id) {
+            $this->getLevel($member->level_id)->update();
+            $this->getLevel($level_id)->update();
+        }
+
         $member_id = $member->member_id;
     }
 

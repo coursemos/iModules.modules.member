@@ -653,6 +653,12 @@ class Member extends \Module
             $member['name'] = $member['nickname'];
         }
 
+        if (array_key_exists('level_id', $member) == false) {
+            $member['level_id'] = $member['level_id'];
+        } else {
+            $member['level_id'] = 0;
+        }
+
         if (array_key_exists('joined_at', $member) == false) {
             $member['joined_at'] = time();
         }
@@ -672,6 +678,8 @@ class Member extends \Module
         $results = $this->db()
             ->insert($this->table('members'), $member)
             ->execute();
+
+        $this->getLevel($member['level_id'])->update();
 
         return $results->insert_id > 0 ? $results->insert_id : false;
     }
