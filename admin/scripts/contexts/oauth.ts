@@ -43,7 +43,7 @@ Admin.ready(async () => {
                         },
                     }),
                 ],
-                store: new Aui.Store.Ajax({
+                store: new Aui.Store.Remote({
                     url: me.getProcessUrl('oauth.clients'),
                     primaryKeys: ['oauth_id'],
                     sorters: { sort: 'ASC' },
@@ -153,7 +153,7 @@ Admin.ready(async () => {
                         },
                     }),
                 ]),
-                store: new Aui.Store.Ajax({
+                store: new Aui.Store.Remote({
                     url: me.getProcessUrl('oauth.tokens'),
                     fields: [{ name: 'latest_access', type: 'int' }],
                     primaryKeys: ['oauth_id', 'member_id', 'user_id'],

@@ -38,7 +38,7 @@ var modules;
                                             items: [
                                                 new Aui.Form.Field.Select({
                                                     name: 'parent_id',
-                                                    store: new Aui.TreeStore.Ajax({
+                                                    store: new Aui.TreeStore.Remote({
                                                         url: Modules.get('member').getProcessUrl('groups'),
                                                         primaryKeys: ['group_id'],
                                                         params: {
@@ -223,7 +223,7 @@ var modules;
                                             },
                                         },
                                     ],
-                                    store: new Aui.Store.Ajax({
+                                    store: new Aui.Store.Remote({
                                         url: Admin.getProcessUrl('module', 'member', 'members'),
                                         fields: [
                                             { name: 'member_id', type: 'int' },
@@ -285,7 +285,7 @@ var modules;
                                             direction: 'column',
                                             text: Aui.printText('actions.saving'),
                                         }).show();
-                                        const results = await Aui.Ajax.post(this.getProcessUrl('group.assign'), {
+                                        const results = await Ajax.post(this.getProcessUrl('group.assign'), {
                                             group_id: group_id,
                                             member_ids: member_ids,
                                         });
@@ -482,7 +482,7 @@ var modules;
                                         new Aui.Form.Field.Select({
                                             label: this.printText('level'),
                                             name: 'level_id',
-                                            store: new Aui.Store.Ajax({
+                                            store: new Aui.Store.Remote({
                                                 url: this.getProcessUrl('levels'),
                                             }),
                                             valueField: 'level_id',
@@ -492,7 +492,7 @@ var modules;
                                         new Aui.Form.Field.Select({
                                             label: this.printText('groups'),
                                             name: 'group_ids',
-                                            store: new Aui.TreeStore.Ajax({
+                                            store: new Aui.TreeStore.Remote({
                                                 url: this.getProcessUrl('groups'),
                                             }),
                                             multiple: true,
@@ -626,7 +626,7 @@ var modules;
                                                     new Aui.Form.Field.Select({
                                                         label: this.printText('admin.oauth.clients.preset'),
                                                         inputName: null,
-                                                        store: new Aui.Store.Ajax({
+                                                        store: new Aui.Store.Remote({
                                                             url: this.getProcessUrl('oauth.presets'),
                                                             primaryKeys: ['oauth_id'],
                                                         }),
@@ -693,7 +693,7 @@ var modules;
                                                     new Aui.Form.Field.Select({
                                                         label: this.printText('admin.oauth.clients.scope_separator'),
                                                         name: 'scope_separator',
-                                                        store: new Aui.Store.Array({
+                                                        store: new Aui.Store.Local({
                                                             fields: ['display', 'value'],
                                                             records: (() => {
                                                                 const separators = [
