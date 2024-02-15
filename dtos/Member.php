@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 6. 24.
+ * @modified 2024. 2. 15.
  */
 namespace modules\member\dtos;
 class Member
@@ -400,6 +400,34 @@ class Member
         }
 
         return $results->success;
+    }
+
+    /**
+     * 네임태그를 출력한다.
+     *
+     * @param bool $menu 유저메뉴 여부
+     * @param bool $is_nickcon 닉이미지 여부
+     */
+    public function printNameTag(bool $is_menu = true, bool $is_nickcon = true): void
+    {
+        $photo = \Html::element(
+            'i',
+            ['data-role' => 'photo', 'style' => 'background-image:url(' . $this->getPhoto() . ')'],
+            ''
+        );
+        $nickname = $this->getDisplayName($is_nickcon);
+        $nametag = \Html::element(
+            'span',
+            [
+                'data-module' => 'member',
+                'data-role' => 'name',
+                'data-member-id' => $this->_id,
+                'data-menu' => $is_menu == true ? 'true' : 'false',
+            ],
+            $photo . '<b>' . $nickname . '</b>'
+        );
+
+        echo $nametag;
     }
 
     /**
