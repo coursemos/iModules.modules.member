@@ -11,20 +11,32 @@
 span[data-module='member'][data-role='name'] {
     font-size: inherit;
     display: inline-flex;
-    vertical-align: middle;
+    line-height: inherit;
+    align-items: stretch;
     gap: 0.4em;
 
     > i[data-role='photo'] {
-        display: inline-block;
-        height: calc(1em * var(--line-height-default));
-        line-height: var(--line-height-default);
-        aspect-ratio: 1;
-        vertical-align: middle;
+        width: fit-content;
+        display: grid;
+        line-height: inherit;
         border-radius: 50%;
         border: 1px solid var(--color-background-100);
         background-clip: padding-box;
         background-size: cover;
         background-position: 50% 50%;
         box-sizing: border-box;
+
+        > b {
+            display: block;
+            height: 100%;
+            aspect-ratio: 1;
+        }
+    }
+
+    > b {
+        white-space: nowrap;
+        flex-shrink: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
 }

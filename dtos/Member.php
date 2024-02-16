@@ -403,17 +403,17 @@ class Member
     }
 
     /**
-     * 네임태그를 출력한다.
+     * 네임태그를 가져온다.
      *
      * @param bool $menu 유저메뉴 여부
      * @param bool $is_nickcon 닉이미지 여부
      */
-    public function printNameTag(bool $is_menu = true, bool $is_nickcon = true): void
+    public function getNameTag(bool $is_menu = true, bool $is_nickcon = true): string
     {
         $photo = \Html::element(
             'i',
             ['data-role' => 'photo', 'style' => 'background-image:url(' . $this->getPhoto() . ')'],
-            ''
+            '<b></b>'
         );
         $nickname = $this->getDisplayName($is_nickcon);
         $nametag = \Html::element(
@@ -427,7 +427,7 @@ class Member
             $photo . '<b>' . $nickname . '</b>'
         );
 
-        echo $nametag;
+        return $nametag;
     }
 
     /**
