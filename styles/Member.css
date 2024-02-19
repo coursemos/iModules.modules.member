@@ -9,34 +9,41 @@
  * @modified 2024. 2. 15.
  */
 span[data-module='member'][data-role='name'] {
+    display: inline;
     font-size: inherit;
-    display: inline-flex;
     line-height: inherit;
-    align-items: stretch;
-    gap: 0.4em;
+    vertical-align: baseline;
+    position: relative;
+    padding-left: calc(1lh + 5px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     > i[data-role='photo'] {
-        width: fit-content;
-        display: grid;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: inline-block;
         line-height: inherit;
+        height: 100%;
         border-radius: 50%;
         border: 1px solid var(--color-background-100);
         background-clip: padding-box;
         background-size: cover;
         background-position: 50% 50%;
         box-sizing: border-box;
+        overflow: hidden;
 
         > b {
             display: block;
+            aspect-ratio: 1/1;
             height: 100%;
-            aspect-ratio: 1;
         }
     }
 
     > b {
-        white-space: nowrap;
-        flex-shrink: 1;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        &.guest {
+            font-weight: normal;
+        }
     }
 }
