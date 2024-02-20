@@ -272,7 +272,7 @@ class Member
      */
     public function isMember(): bool
     {
-        return $this->_id !== 0 || $this->_status !== 'LEAVE';
+        return $this->_id !== 0 && $this->_status !== 'LEAVE';
     }
 
     /**
