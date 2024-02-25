@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/members.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 6. 28.
+ * @modified 2024. 2. 25.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
@@ -160,23 +160,26 @@ Admin.ready(async () => {
                                         menu.add({
                                             text: me.printText('admin.groups.add_child'),
                                             iconClass: 'mi mi-plus',
-                                            handler: () => {
+                                            handler: async () => {
                                                 me.groups.add(null, record.data.group_id);
+                                                return true;
                                             },
                                         });
                                         if (record.get('group_id') != 'all') {
                                             menu.add({
                                                 text: me.printText('admin.groups.edit'),
                                                 iconClass: 'xi xi-form-checkout',
-                                                handler: () => {
+                                                handler: async () => {
                                                     me.groups.add(record.get('group_id'));
+                                                    return true;
                                                 },
                                             });
                                             menu.add({
                                                 text: me.printText('admin.groups.delete'),
                                                 iconClass: 'mi mi-trash',
-                                                handler: () => {
+                                                handler: async () => {
                                                     me.groups.delete(record.get('group_id'));
+                                                    return true;
                                                 },
                                             });
                                         }
@@ -324,15 +327,17 @@ Admin.ready(async () => {
                                         menu.add({
                                             text: me.printText('admin.levels.edit'),
                                             iconClass: 'xi xi-form-checkout',
-                                            handler: () => {
+                                            handler: async () => {
                                                 me.levels.add(record.get('level_id'));
+                                                return true;
                                             },
                                         });
                                         menu.add({
                                             text: me.printText('admin.levels.delete'),
                                             iconClass: 'mi mi-trash',
-                                            handler: () => {
+                                            handler: async () => {
                                                 me.levels.delete(record.get('level_id'));
+                                                return true;
                                             },
                                         });
                                     },
@@ -527,8 +532,9 @@ Admin.ready(async () => {
                                 menu.add({
                                     text: me.printText('admin.members.edit'),
                                     iconClass: 'xi xi-form-checkout',
-                                    handler: () => {
+                                    handler: async () => {
                                         me.members.add(record.get('member_id'));
+                                        return true;
                                     },
                                 });
                                 menu.add('-');
@@ -537,16 +543,18 @@ Admin.ready(async () => {
                                     menu.add({
                                         text: me.printText('admin.members.remove'),
                                         iconClass: 'xi xi-folder-remove',
-                                        handler: () => {
+                                        handler: async () => {
                                             me.members.remove();
+                                            return true;
                                         },
                                     });
                                 }
                                 menu.add({
                                     text: me.printText('admin.members.deactive'),
                                     iconClass: 'xi xi-slash-circle',
-                                    handler: () => {
+                                    handler: async () => {
                                         me.members.deactive();
+                                        return true;
                                     },
                                 });
                             },
@@ -557,8 +565,9 @@ Admin.ready(async () => {
                                 menu.add({
                                     text: me.printText('admin.members.deactive'),
                                     iconClass: 'xi xi-slash-circle',
-                                    handler: () => {
+                                    handler: async () => {
                                         me.members.deactive();
+                                        return true;
                                     },
                                 });
                             },
