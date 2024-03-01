@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/members.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 25.
+ * @modified 2024. 3. 1.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member') as modules.member.admin.Member;
@@ -55,7 +55,7 @@ Admin.ready(async () => {
                                             if (keyword.length > 0) {
                                                 groups.getStore().setFilter('title', keyword, 'like');
                                             } else {
-                                                groups.getStore().resetFilter();
+                                                groups.getStore().resetFilters();
                                             }
                                         },
                                     }),
@@ -231,7 +231,7 @@ Admin.ready(async () => {
                                             if (keyword.length > 0) {
                                                 groups.getStore().setFilter('title', keyword, 'like');
                                             } else {
-                                                groups.getStore().resetFilter();
+                                                groups.getStore().resetFilters();
                                             }
                                         },
                                     }),
