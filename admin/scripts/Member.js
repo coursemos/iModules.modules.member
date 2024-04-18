@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 31.
+ * @modified 2024. 4. 18.
  */
 var modules;
 (function (modules) {
@@ -203,7 +203,7 @@ var modules;
                                             width: 150,
                                             renderer: (value, record) => {
                                                 return ('<i class="photo" style="background-image:url(' +
-                                                    record.data.photo +
+                                                    record.get('photo') +
                                                     ')"></i>' +
                                                     value);
                                             },

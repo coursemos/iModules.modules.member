@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/members.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 3. 1.
+ * @modified 2024. 4. 18.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member') as modules.member.admin.Member;
@@ -167,7 +167,7 @@ Admin.ready(async () => {
                                             text: me.printText('admin.groups.add_child'),
                                             iconClass: 'mi mi-plus',
                                             handler: async () => {
-                                                me.groups.add(null, record.data.group_id);
+                                                me.groups.add(null, record.get('group_id'));
                                                 return true;
                                             },
                                         });
@@ -492,7 +492,7 @@ Admin.ready(async () => {
                                 renderer: (value, record) => {
                                     return (
                                         '<i class="photo" style="background-image:url(' +
-                                        record.data.photo +
+                                        record.get('photo') +
                                         ')"></i>' +
                                         value
                                     );

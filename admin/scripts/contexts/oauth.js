@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/contexts/oauth.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 25.
+ * @modified 2024. 4. 18.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
@@ -85,7 +85,7 @@ Admin.ready(async () => {
                         me.oauth.clients.add(record.get('oauth_id'));
                     },
                     openMenu: (menu, record) => {
-                        menu.setTitle(record.data.title);
+                        menu.setTitle(record.get('title'));
                         menu.add({
                             text: me.printText('admin.oauth.clients.edit'),
                             iconClass: 'xi xi-form',
@@ -179,7 +179,10 @@ Admin.ready(async () => {
                         dataIndex: 'name',
                         width: 150,
                         renderer: (value, record) => {
-                            return ('<i class="photo" style="background-image:url(' + record.data.photo + ')"></i>' + value);
+                            return ('<i class="photo" style="background-image:url(' +
+                                record.get('photo') +
+                                ')"></i>' +
+                                value);
                         },
                     },
                     {
