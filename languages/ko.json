@@ -46,6 +46,10 @@
         "OAUTH_INVALID_ACCOUNT": "OAuth 계정을 확인할 수 없습니다.",
         "OAUTH_NOT_ALLOWED_SIGNUP": "해당 OAuth 계정으로 회원가입을 할 수 없습니다."
     },
+    "permissions": {
+        "all": "전체회원허용",
+        "group": "${group} 그룹회원 허용"
+    },
     "admin": {
         "contexts": {
             "members": "회원관리",

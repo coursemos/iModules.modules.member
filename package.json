@@ -34,6 +34,13 @@
             "default": "default"
         }
     },
+    "listeners": {
+        "afterDoProcess": {
+            "admin": [
+                "permissions.get"
+            ]
+        }
+    },
     "databases": {
         "members": {
             "columns": {
