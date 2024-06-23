@@ -936,7 +936,7 @@ class Member extends \Module
                             $this->table('levels'),
                             [
                                 'level_id' => 0,
-                                'title' => $this->getText('texts.default_level'),
+                                'title' => $this->getText('default_level'),
                                 'members' => -1,
                             ],
                             ['members']

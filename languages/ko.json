@@ -4,6 +4,7 @@
     "name": "성명",
     "nickname": "닉네임",
     "level": "레벨",
+    "default_level": "기본레벨",
     "groups": "소속그룹",
     "joined_at": "가입일시",
     "logged_at": "마지막로그인일시",
