@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/members.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 4. 18.
+ * @modified 2024. 9. 6.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
@@ -396,7 +396,7 @@ Admin.ready(async () => {
                         border: [false, false, false, true],
                         minWidth: 300,
                         flex: 1,
-                        selection: { selectable: true, display: 'check' },
+                        selection: { selectable: true, type: 'check' },
                         autoLoad: false,
                         disabled: true,
                         topbar: [
@@ -416,7 +416,7 @@ Admin.ready(async () => {
                             }),
                             '->',
                             new Aui.Button({
-                                iconClass: 'mi mi-group-o',
+                                iconClass: 'mi mi-users',
                                 text: (await me.getText('admin.groups.assign')),
                                 handler: () => {
                                     const groups = Aui.getComponent('groups');
