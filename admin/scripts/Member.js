@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 4. 18.
+ * @modified 2024. 9. 6.
  */
 var modules;
 (function (modules) {
@@ -150,11 +150,10 @@ var modules;
                             items: [
                                 new Aui.Grid.Panel({
                                     border: [false, true, false, false],
-                                    layout: 'fit',
-                                    width: 400,
-                                    selection: { selectable: true, display: 'check', keepable: true },
+                                    selection: { selectable: true, type: 'check', keepable: true },
                                     autoLoad: true,
                                     freeze: 1,
+                                    layout: 'fit',
                                     topbar: [
                                         new Aui.Form.Field.Search({
                                             width: 200,
@@ -494,6 +493,7 @@ var modules;
                                             name: 'group_ids',
                                             store: new Aui.TreeStore.Remote({
                                                 url: this.getProcessUrl('groups'),
+                                                remoteExpand: true,
                                             }),
                                             multiple: true,
                                             valueField: 'group_id',

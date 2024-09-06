@@ -7,7 +7,7 @@
  * @file /modules/member/processes/groups.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 6. 24.
+ * @modified 2024. 9. 6.
  *
  * @var \modules\member\Member $me
  */
@@ -55,14 +55,24 @@ if ($parent_id === null && $child_id === null) {
     $results->filter = $filters?->title?->value ?? null;
     $results->records = [$groups];
 } elseif ($parent_id !== null) {
-    $parent = $me->getGroup($parent_id);
+    if ($parent_id == 'all') {
+        $results->success = true;
+        $results->records = $mAdmin->getGroupTree(null, $filters?->title?->value ?? null, 1);
+    } else {
+        $parent = $me->getGroup($parent_id);
 
-    if ($parent === null) {
-        $results->success = false;
-        return;
+        if ($parent === null) {
+            $results->success = false;
+            return;
+        }
+
+        $results->success = true;
+        $results->records = $mAdmin->getGroupTree(
+            $parent_id,
+            $filters?->title?->value ?? null,
+            $parent->getDepth() + 1
+        );
     }
-    $results->success = true;
-    $results->records = $mAdmin->getGroupTree($parent_id, $filters?->title?->value ?? null, $parent->getDepth() + 1);
 } elseif ($child_id !== null) {
     $results->success = true;
     $results->records = $me->getGroup($child_id)->getParentIds();
