@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 6.
+ * @modified 2024. 9. 10.
  */
 var modules;
 (function (modules) {
@@ -25,7 +25,7 @@ var modules;
                     add: (group_id = null, parent = null) => {
                         new Aui.Window({
                             title: this.printText('admin.groups.' + (group_id === null ? 'add' : 'edit')),
-                            width: 400,
+                            width: 500,
                             modal: true,
                             resizable: false,
                             items: [
@@ -38,6 +38,7 @@ var modules;
                                             items: [
                                                 new Aui.Form.Field.Select({
                                                     name: 'parent_id',
+                                                    label: this.printText('admin.groups.parent'),
                                                     store: new Aui.TreeStore.Remote({
                                                         url: Modules.get('member').getProcessUrl('groups'),
                                                         primaryKeys: ['group_id'],
@@ -51,12 +52,16 @@ var modules;
                                                     displayField: 'title',
                                                     valueField: 'group_id',
                                                     search: true,
-                                                    emptyText: this.printText('admin.groups.parent'),
                                                     value: parent,
                                                 }),
                                                 new Aui.Form.Field.Text({
                                                     name: 'title',
-                                                    emptyText: this.printText('admin.groups.title'),
+                                                    label: this.printText('admin.groups.title'),
+                                                }),
+                                                new Aui.Form.Field.Text({
+                                                    name: 'group_id',
+                                                    label: this.printText('admin.groups.group_id'),
+                                                    helpText: this.printText('admin.groups.group_id_help'),
                                                 }),
                                             ],
                                         }),
@@ -65,12 +70,12 @@ var modules;
                                             items: [
                                                 new Aui.Form.Field.Text({
                                                     name: 'manager',
-                                                    emptyText: this.printText('admin.groups.manager'),
+                                                    label: this.printText('admin.groups.manager'),
                                                     helpText: this.printText('admin.groups.manager_help'),
                                                 }),
                                                 new Aui.Form.Field.Text({
                                                     name: 'member',
-                                                    emptyText: this.printText('admin.groups.member'),
+                                                    label: this.printText('admin.groups.member'),
                                                     helpText: this.printText('admin.groups.member_help'),
                                                 }),
                                             ],

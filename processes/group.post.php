@@ -7,7 +7,7 @@
  * @file /modules/member/processes/group.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2024. 9. 10.
  *
  * @var \modules\member\Member $me
  */
@@ -40,14 +40,26 @@ if ($group_id !== null) {
     }
 } else {
     $group = null;
-    $group_id = Input::get('group_id');
 }
 
 $errors = [];
 $parent_id = Input::get('parent_id') ?? 'all';
-$title = Input::get('title', $errors);
+$title = Input::get('title', $errors) ?? 'noname';
+$group_id = strlen(Input::get('group_id') ?? '') == 0 ? UUID::v1($title) : Input::get('group_id');
 $manager = Input::get('manager') ?? $me->getText('group_manager');
 $member = Input::get('member') ?? $me->getText('group_member');
+
+$checked = $me
+    ->db()
+    ->select()
+    ->from($me->table('groups'))
+    ->where('group_id', $group_id);
+if ($group !== null) {
+    $checked->where('group_id', $group->group_id, '!=');
+}
+if ($checked->has() == true) {
+    $errors['group_id'] = $me->getErrorText('DUPLICATED');
+}
 
 if ($title !== null) {
     $checked = $me
@@ -65,24 +77,54 @@ if ($title !== null) {
 
 if (count($errors) == 0) {
     $parent_id = $parent_id == 'all' ? null : $parent_id;
-    if ($group !== null && $group->parent_id != $parent_id) {
-        // @todo 상위그룹이 변경되었을 경우
-    }
 
-    $group_id ??= UUID::v1($title);
-    $me->db()
-        ->insert(
-            $me->table('groups'),
-            [
+    if ($group === null) {
+        $me->db()
+            ->insert($me->table('groups'), [
                 'group_id' => $group_id,
                 'parent_id' => $parent_id,
                 'title' => $title,
                 'manager' => $manager,
                 'member' => $member,
-            ],
-            ['title', 'manager', 'member'] // @todo 'parent_id'
-        )
-        ->execute();
+            ])
+            ->execute();
+    } else {
+        $me->db()
+            ->update($me->table('groups'), [
+                'group_id' => $group_id,
+                'parent_id' => $parent_id,
+                'title' => $title,
+                'manager' => $manager,
+                'member' => $member,
+            ])
+            ->where('group_id', $group->group_id)
+            ->execute();
+
+        if ($group->group_id !== $group_id) {
+            $me->db()
+                ->update($me->table('groups'), ['parent_id' => $group_id])
+                ->where('parent_id', $group->group_id)
+                ->execute();
+
+            $me->db()
+                ->update($me->table('group_members'), ['group_id' => $group_id])
+                ->where('group_id', $group->group_id)
+                ->execute();
+        }
+
+        // 상위그룹이 변경된 경우 현재 그룹에 속한 그룹구성원을 변경된 상위그룹에도 추가한다.
+        if ($group->parent_id !== $parent_id) {
+            $members = $me
+                ->db()
+                ->select()
+                ->from($me->table('group_members'))
+                ->where('group_id', $group_id)
+                ->get('member_id');
+            foreach ($members as $member_id) {
+                $me->getGroup($group_id)->assignMember($member_id);
+            }
+        }
+    }
 
     $results->success = true;
     $results->group_id = $group_id;
