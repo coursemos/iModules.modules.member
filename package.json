@@ -177,7 +177,7 @@
                     "comment": "그룹고유값"
                 },
                 "parent_id": {
-                    "type": "char",
+                    "type": "varchar",
                     "length": 36,
                     "is_null": true,
                     "comment": "상위그룹고유값"
@@ -217,7 +217,7 @@
         "group_members": {
             "columns": {
                 "group_id": {
-                    "type": "char",
+                    "type": "varchar",
                     "length": 36,
                     "comment": "그룹고유값"
                 },
