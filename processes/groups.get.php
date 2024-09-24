@@ -7,7 +7,7 @@
  * @file /modules/member/processes/groups.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 6.
+ * @modified 2024. 9. 19.
  *
  * @var \modules\member\Member $me
  */
@@ -77,5 +77,3 @@ if ($parent_id === null && $child_id === null) {
     $results->success = true;
     $results->records = $me->getGroup($child_id)->getParentIds();
 }
-
-$results->filters = $filters;
