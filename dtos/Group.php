@@ -134,6 +134,16 @@ class Group
     }
 
     /**
+     * 하위그룹 고유값 전체를 가져온다.
+     *
+     * @return string[] $child_ids
+     */
+    public function getChildIds(): array
+    {
+        return [];
+    }
+
+    /**
      * 회원을 그룹에 추가한다.
      *
      * @param ?int $member_id 회원고유값 (NULL 인 경우 현재 로그인한 회원)
