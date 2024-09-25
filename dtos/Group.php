@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Group.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 29.
+ * @modified 2024. 9. 26.
  */
 namespace modules\member\dtos;
 class Group
@@ -119,18 +119,40 @@ class Group
      */
     public function getParentIds(): array
     {
+        $parents = $this->getParents();
+        foreach ($parents as &$parent) {
+            $parent = $parent->getId();
+        }
+
+        return $parents;
+    }
+
+    /**
+     * 하위그룹 전체를 가져온다.
+     *
+     * @return \modules\member\dtos\Group[] $parents
+     */
+    public function getChildren(): array
+    {
         /**
          * @var \modules\member\Member $mMember
          */
         $mMember = \Modules::get('member');
-        if ($this->_parent_id !== null) {
-            $parent = $mMember->getGroup($this->_parent_id);
-            $parents = [$parent->getId(), ...$mMember->getGroup($this->_parent_id)?->getParentIds() ?? []];
-        } else {
-            $parents = [];
+        $children = [];
+        foreach (
+            $mMember
+                ->db()
+                ->select(['group_id'])
+                ->from($mMember->table('groups'))
+                ->where('parent_id', $this->_id)
+                ->get('group_id')
+            as $child_id
+        ) {
+            $child = $mMember->getGroup($child_id);
+            $children = [...$children, $child, ...$child->getChildren()];
         }
 
-        return $parents;
+        return $children;
     }
 
     /**
@@ -140,7 +162,12 @@ class Group
      */
     public function getChildIds(): array
     {
-        return [];
+        $children = $this->getChildren();
+        foreach ($children as &$child) {
+            $child = $child->getId();
+        }
+
+        return $children;
     }
 
     /**
