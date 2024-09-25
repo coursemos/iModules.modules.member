@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2024. 9. 26.
  */
 namespace modules\member;
 class Member extends \Module
@@ -29,7 +29,7 @@ class Member extends \Module
 
     /**
      *
-     * @var int $_logged 로그인정보
+     * @var ?int $_logged 로그인정보
      */
     private static ?int $_logged = null;
 
@@ -85,10 +85,10 @@ class Member extends \Module
         if (self::$_logged === null) {
             $logged = \Request::session('MODULE_MEMBER_LOGGED');
             $logged = $logged !== null ? json_decode($logged) : null;
-            self::$_logged = $logged?->member_id ?? 0;
+            self::$_logged = $logged?->member_id ?? null;
         }
 
-        return self::$_logged;
+        return self::$_logged ?? 0;
     }
 
     /**
