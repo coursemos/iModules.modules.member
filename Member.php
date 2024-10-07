@@ -68,11 +68,39 @@ class Member extends \Module
 
         $content = '';
         switch ($context) {
+            case 'edit':
+                $content = $this->getEditContext($configs);
+                break;
+
             default:
                 $content = \ErrorHandler::get(\ErrorHandler::error('NOT_FOUND_URL'));
         }
 
         return $this->getTemplate()->getLayout($content);
+    }
+
+    /**
+     * 회원정보수정 컨텍스트를 가져온다.
+     *
+     * @param object $configs
+     * @return string $html
+     */
+    public function getEditContext($configs = null): string
+    {
+        /**
+         * 컨텍스트 템플릿을 설정한다.
+         */
+        if (isset($configs?->template) == true && $configs->template->name !== '#') {
+            $this->setTemplate($configs->template);
+        } else {
+            $this->setTemplate($this->getConfigs('template'));
+        }
+
+        $template = $this->getTemplate();
+
+        $header = $footer = '';
+
+        return $template->getContext('edit', $header, $footer);
     }
 
     /**
