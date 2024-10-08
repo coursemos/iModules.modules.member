@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/members.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 6.
+ * @modified 2024. 10. 8.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
@@ -629,7 +629,25 @@ Admin.ready(async () => {
                     {
                         text: (await me.getText('admin.logs.component')),
                         dataIndex: 'component',
-                        width: 150,
+                        width: 200,
+                        filter: new Aui.Grid.Filter.List({
+                            store: new Aui.TreeStore.Remote({
+                                url: Admin.getModule('admin').getProcessUrl('components'),
+                                sorters: { sort: 'ASC', title: 'ASC' },
+                            }),
+                            multiple: true,
+                            search: true,
+                            valueField: 'name',
+                            displayField: 'title',
+                            hideEdgeIcon: true,
+                            width: 240,
+                            renderer: (_display, record) => {
+                                return record.get('icon') + record.get('title');
+                            },
+                        }),
+                        renderer: (value) => {
+                            return value.icon + value.title;
+                        },
                     },
                     {
                         text: (await me.getText('admin.logs.message')),
@@ -649,6 +667,7 @@ Admin.ready(async () => {
                     fields: [{ name: 'time', type: 'float' }],
                     limit: 50,
                     remoteSort: true,
+                    remoteFilter: true,
                     sorters: { time: 'DESC' },
                 }),
                 listeners: {

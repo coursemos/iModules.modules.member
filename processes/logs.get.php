@@ -7,7 +7,7 @@
  * @file /modules/member/processes/logs.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2024. 10. 8.
  *
  * @var \modules\member\Member $me
  */
@@ -24,9 +24,10 @@ if ($me->getAdmin()->checkPermission('members', ['logs']) == false) {
     return;
 }
 
-$sorters = Request::getJson('sorters');
 $start = Request::getInt('start') ?? 0;
 $limit = Request::getInt('limit') ?? 50;
+$sorters = Request::getJson('sorters');
+$filters = Request::getJson('filters');
 $keyword = Request::get('keyword');
 
 $records = $me
@@ -43,6 +44,24 @@ $records = $me
     ])
     ->from($me->table('logs'), 'l')
     ->join($me->table('members'), 'm', 'm.member_id=l.member_id', 'LEFT');
+if ($filters !== null) {
+    if (isset($filters->component) == true) {
+        $records->where('(');
+        foreach ($filters->component->value as $value) {
+            $temp = explode('@', $value);
+            if (count($temp) == 2) {
+                $records->orWhere('(');
+                $records->where('l.component_type', $temp[0]);
+                $records->where('l.component_name', $temp[1]);
+                $records->where(')');
+            } else {
+                $records->orWhere('l.component_type', $temp[0]);
+            }
+        }
+        $records->where(')');
+    }
+}
+
 $total = $records->copy()->count();
 if ($sorters !== null) {
     foreach ($sorters as $field => $direction) {
@@ -51,13 +70,11 @@ if ($sorters !== null) {
 }
 $records = $records->limit($start, $limit)->get();
 foreach ($records as &$record) {
-    $record->component = null;
-    if ($record->component_type == 'module') {
-        $component = \Modules::get($record->component_name);
-        $record->component = $component?->getIcon() ?? '';
-        $record->component .= $component?->getTitle() ?? '';
-    }
-
+    $component = Component::get($record->component_type, $record->component_name);
+    $record->component = [
+        'icon' => $component?->getIcon() ?? '',
+        'title' => $component?->getTitle() ?? '',
+    ];
     $record->photo = $me->getMemberPhoto($record->member_id);
 }
 
