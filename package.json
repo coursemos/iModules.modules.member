@@ -21,6 +21,7 @@
     "global": true,
     "admin": true,
     "context": true,
+    "listeners": true,
     "configs": {
         "template": {
             "type": "template",
@@ -32,13 +33,6 @@
                 "name": "member"
             },
             "default": "default"
-        }
-    },
-    "listeners": {
-        "afterDoProcess": {
-            "admin": [
-                "permissions.get"
-            ]
         }
     },
     "databases": {
