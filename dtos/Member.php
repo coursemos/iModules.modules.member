@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 2. 15.
+ * @modified 2024. 10. 13.
  */
 namespace modules\member\dtos;
 class Member
@@ -43,6 +43,16 @@ class Member
      * @var string $_nickname 닉네임
      */
     private string $_nickname;
+
+    /**
+     * @var ?string $telephone 전화번호
+     */
+    private ?string $_telephone = null;
+
+    /**
+     * @var ?string $cellphone 휴대전화번호
+     */
+    private ?string $_cellphone = null;
 
     /**
      * @var int $_level_id 레벨고유값
@@ -97,6 +107,8 @@ class Member
             $this->_email = $member->email;
             $this->_name = $member->name;
             $this->_nickname = $member->nickname;
+            $this->_telephone = $member->telephone;
+            $this->_cellphone = $member->cellphone;
             $this->_level_id = $member->level_id;
             $this->_status = $member->status;
             $this->_logged_at = $member->logged_at ?? 0;
@@ -142,6 +154,26 @@ class Member
     public function getNickname(): string
     {
         return $this->_nickname;
+    }
+
+    /**
+     * 전화번호를 가져온다.
+     *
+     * @return ?string $telephone
+     */
+    public function getTelephone(): ?string
+    {
+        return $this->_telephone;
+    }
+
+    /**
+     * 휴대전화번호를 가져온다.
+     *
+     * @return ?string $cellphone
+     */
+    public function getCellphone(): ?string
+    {
+        return $this->_cellphone;
     }
 
     /**
