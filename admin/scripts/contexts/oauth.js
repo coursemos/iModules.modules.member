@@ -6,14 +6,14 @@
  * @file /modules/member/admin/scripts/contexts/oauth.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 6.
+ * @modified 2024. 10. 22.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
     return new Aui.Panel({
         id: 'oauth-context',
         iconClass: 'xi xi-user-lock',
-        title: (await me.getText('admin.contexts.oauth')),
+        title: await me.getText('admin.contexts.oauth'),
         layout: 'column',
         border: false,
         scrollable: true,
@@ -27,7 +27,7 @@ Admin.ready(async () => {
                 topbar: [
                     new Aui.Button({
                         iconClass: 'mi mi-plus',
-                        text: (await me.getText('admin.oauth.clients.add')),
+                        text: await me.getText('admin.oauth.clients.add'),
                         handler: () => {
                             me.oauth.clients.add();
                         },
@@ -49,13 +49,13 @@ Admin.ready(async () => {
                 }),
                 columns: [
                     {
-                        text: (await me.getText('admin.oauth.clients.oauth_id')),
+                        text: await me.getText('admin.oauth.clients.oauth_id'),
                         dataIndex: 'oauth_id',
                         sortable: 'sort',
                         flex: 1,
                     },
                     {
-                        text: (await me.getText('admin.oauth.clients.scope')),
+                        text: await me.getText('admin.oauth.clients.scope'),
                         dataIndex: 'scope',
                         sortable: true,
                         width: 70,
@@ -65,7 +65,7 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('admin.oauth.clients.tokens')),
+                        text: await me.getText('admin.oauth.clients.tokens'),
                         dataIndex: 'tokens',
                         sortable: true,
                         width: 70,
@@ -131,7 +131,7 @@ Admin.ready(async () => {
                 topbar: [
                     new Aui.Form.Field.Search({
                         width: 200,
-                        emptyText: (await me.getText('keyword')),
+                        emptyText: await me.getText('keyword'),
                         handler: async (keyword) => {
                             const tokens = Aui.getComponent('tokens');
                             if (keyword?.length > 0) {
@@ -170,12 +170,12 @@ Admin.ready(async () => {
                         sortable: true,
                     },
                     {
-                        text: (await me.getText('email')),
+                        text: await me.getText('email'),
                         dataIndex: 'email',
                         width: 200,
                     },
                     {
-                        text: (await me.getText('name')),
+                        text: await me.getText('name'),
                         dataIndex: 'name',
                         width: 150,
                         renderer: (value, record) => {
@@ -186,29 +186,29 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('admin.oauth.tokens.user_id')),
+                        text: await me.getText('admin.oauth.tokens.user_id'),
                         dataIndex: 'user_id',
                         sortable: true,
                         width: 200,
                     },
                     {
-                        text: (await me.getText('admin.oauth.tokens.access_token')),
+                        text: await me.getText('admin.oauth.tokens.access_token'),
                         dataIndex: 'access_token',
                         width: 200,
                     },
                     {
-                        text: (await me.getText('admin.oauth.tokens.refresh_token')),
+                        text: await me.getText('admin.oauth.tokens.refresh_token'),
                         dataIndex: 'refresh_token',
                         width: 200,
                     },
                     {
-                        text: (await me.getText('admin.oauth.clients.scope')),
+                        text: await me.getText('admin.oauth.clients.scope'),
                         dataIndex: 'scope',
                         width: 70,
                         textAlign: 'right',
                     },
                     {
-                        text: (await me.getText('admin.oauth.tokens.latest_access')),
+                        text: await me.getText('admin.oauth.tokens.latest_access'),
                         dataIndex: 'latest_access',
                         width: 160,
                         sortable: true,

@@ -6,27 +6,27 @@
  * @file /modules/member/admin/scripts/members.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 10. 8.
+ * @modified 2024. 10. 22.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
     return new Aui.Tab.Panel({
         id: 'members-context',
         iconClass: 'xi xi-users',
-        title: (await me.getText('admin.contexts.members')),
+        title: await me.getText('admin.contexts.members'),
         border: false,
         layout: 'fit',
         items: [
             new Aui.Panel({
                 id: 'lists',
                 iconClass: 'xi xi-users',
-                title: (await me.getText('admin.members.title')),
+                title: await me.getText('admin.members.title'),
                 layout: 'column',
                 border: false,
                 topbar: [
                     new Aui.Button({
                         iconClass: 'mi mi-plus',
-                        text: (await me.getText('admin.members.add')),
+                        text: await me.getText('admin.members.add'),
                         handler: () => {
                             me.members.add();
                         },
@@ -48,7 +48,7 @@ Admin.ready(async () => {
                                 topbar: [
                                     new Aui.Form.Field.Search({
                                         flex: 1,
-                                        emptyText: (await me.getText('keyword')),
+                                        emptyText: await me.getText('keyword'),
                                         handler: async (keyword) => {
                                             const groups = Aui.getComponent('groups');
                                             if (keyword.length > 0) {
@@ -61,7 +61,7 @@ Admin.ready(async () => {
                                     }),
                                     new Aui.Button({
                                         iconClass: 'mi mi-plus',
-                                        text: (await me.getText('admin.groups.add')),
+                                        text: await me.getText('admin.groups.add'),
                                         handler: () => {
                                             me.groups.add();
                                         },
@@ -82,13 +82,13 @@ Admin.ready(async () => {
                                 }),
                                 columns: [
                                     {
-                                        text: (await me.getText('admin.groups.title')),
+                                        text: await me.getText('admin.groups.title'),
                                         dataIndex: 'title',
                                         sortable: 'sort',
                                         flex: 1,
                                     },
                                     {
-                                        text: (await me.getText('admin.groups.members')),
+                                        text: await me.getText('admin.groups.members'),
                                         dataIndex: 'members',
                                         sortable: true,
                                         width: 70,
@@ -217,7 +217,7 @@ Admin.ready(async () => {
                                 topbar: [
                                     new Aui.Form.Field.Search({
                                         flex: 1,
-                                        emptyText: (await me.getText('keyword')),
+                                        emptyText: await me.getText('keyword'),
                                         handler: async (keyword) => {
                                             const groups = Aui.getComponent('groups');
                                             if (keyword.length > 0) {
@@ -230,7 +230,7 @@ Admin.ready(async () => {
                                     }),
                                     new Aui.Button({
                                         iconClass: 'mi mi-plus',
-                                        text: (await me.getText('admin.levels.add')),
+                                        text: await me.getText('admin.levels.add'),
                                         handler: () => {
                                             me.levels.add();
                                         },
@@ -248,7 +248,7 @@ Admin.ready(async () => {
                                 }),
                                 columns: [
                                     {
-                                        text: (await me.getText('admin.levels.title')),
+                                        text: await me.getText('admin.levels.title'),
                                         dataIndex: 'title',
                                         sortable: 'level_id',
                                         flex: 1,
@@ -257,7 +257,7 @@ Admin.ready(async () => {
                                         },
                                     },
                                     {
-                                        text: (await me.getText('admin.levels.members')),
+                                        text: await me.getText('admin.levels.members'),
                                         dataIndex: 'members',
                                         sortable: true,
                                         width: 70,
@@ -402,7 +402,7 @@ Admin.ready(async () => {
                         topbar: [
                             new Aui.Form.Field.Search({
                                 width: 200,
-                                emptyText: (await me.getText('keyword')),
+                                emptyText: await me.getText('keyword'),
                                 handler: async (keyword) => {
                                     const members = Aui.getComponent('members');
                                     if (keyword?.length > 0) {
@@ -417,7 +417,7 @@ Admin.ready(async () => {
                             '->',
                             new Aui.Button({
                                 iconClass: 'mi mi-users',
-                                text: (await me.getText('admin.groups.assign')),
+                                text: await me.getText('admin.groups.assign'),
                                 handler: () => {
                                     const groups = Aui.getComponent('groups');
                                     const members = Aui.getComponent('members');
@@ -463,13 +463,13 @@ Admin.ready(async () => {
                                 sortable: true,
                             },
                             {
-                                text: (await me.getText('email')),
+                                text: await me.getText('email'),
                                 dataIndex: 'email',
                                 sortable: true,
                                 width: 200,
                             },
                             {
-                                text: (await me.getText('name')),
+                                text: await me.getText('name'),
                                 dataIndex: 'name',
                                 width: 150,
                                 sortable: true,
@@ -481,13 +481,13 @@ Admin.ready(async () => {
                                 },
                             },
                             {
-                                text: (await me.getText('nickname')),
+                                text: await me.getText('nickname'),
                                 dataIndex: 'nickname',
                                 sortable: true,
                                 width: 140,
                             },
                             {
-                                text: (await me.getText('groups')),
+                                text: await me.getText('groups'),
                                 dataIndex: 'groups',
                                 width: 160,
                                 renderer: (value) => {
@@ -495,12 +495,12 @@ Admin.ready(async () => {
                                 },
                             },
                             {
-                                text: (await me.getText('level')),
+                                text: await me.getText('level'),
                                 dataIndex: 'level',
                                 width: 80,
                             },
                             {
-                                text: (await me.getText('joined_at')),
+                                text: await me.getText('joined_at'),
                                 dataIndex: 'joined_at',
                                 width: 160,
                                 sortable: true,
@@ -509,7 +509,7 @@ Admin.ready(async () => {
                                 },
                             },
                             {
-                                text: (await me.getText('logged_at')),
+                                text: await me.getText('logged_at'),
                                 dataIndex: 'logged_at',
                                 width: 160,
                                 sortable: true,
@@ -578,14 +578,14 @@ Admin.ready(async () => {
             new Aui.Grid.Panel({
                 id: 'logs',
                 iconClass: 'xi xi-time-back',
-                title: (await me.getText('admin.logs.title')),
+                title: await me.getText('admin.logs.title'),
                 border: false,
                 layout: 'fit',
                 autoLoad: false,
                 topbar: [
                     new Aui.Form.Field.Search({
                         width: 200,
-                        emptyText: (await me.getText('keyword')),
+                        emptyText: await me.getText('keyword'),
                     }),
                 ],
                 bottombar: new Aui.Grid.Pagination([
@@ -599,7 +599,7 @@ Admin.ready(async () => {
                 ]),
                 columns: [
                     {
-                        text: (await me.getText('admin.logs.time')),
+                        text: await me.getText('admin.logs.time'),
                         dataIndex: 'time',
                         width: 180,
                         textAlign: 'center',
@@ -609,7 +609,7 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('name')),
+                        text: await me.getText('name'),
                         dataIndex: 'name',
                         width: 150,
                         sortable: true,
@@ -621,13 +621,13 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('email')),
+                        text: await me.getText('email'),
                         dataIndex: 'email',
                         sortable: true,
                         width: 200,
                     },
                     {
-                        text: (await me.getText('admin.logs.component')),
+                        text: await me.getText('admin.logs.component'),
                         dataIndex: 'component',
                         width: 200,
                         filter: new Aui.Grid.Filter.List({
@@ -650,7 +650,7 @@ Admin.ready(async () => {
                         },
                     },
                     {
-                        text: (await me.getText('admin.logs.message')),
+                        text: await me.getText('admin.logs.message'),
                         dataIndex: 'log_type',
                         minWidth: 250,
                         flex: 1,
