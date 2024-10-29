@@ -471,7 +471,7 @@ var modules;
                                             allowBlank: member_id !== null,
                                             helpText: member_id === null
                                                 ? null
-                                                : this.printText('admin.member.password_edit_help'),
+                                                : this.printText('admin.members.password_edit_help'),
                                         }),
                                         new Aui.Form.Field.Text({
                                             label: this.printText('name'),
