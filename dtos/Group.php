@@ -5,9 +5,9 @@
  * 그룹 구조체를 정의한다.
  *
  * @file /modules/member/dtos/Group.php
- * @author Arzz <arzz@arzz.com>
+ * @author parkyoula <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 9. 26.
+ * @modified 2024. 10. 29.
  */
 namespace modules\member\dtos;
 class Group
@@ -271,6 +271,8 @@ class Group
         foreach ($children as $child_id) {
             $mMember->getGroup($child_id)->removeMember($member_id);
         }
+
+        return true;
     }
 
     /**
