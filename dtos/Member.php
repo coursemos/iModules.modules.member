@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 10. 13.
+ * @modified 2024. 10. 30.
  */
 namespace modules\member\dtos;
 class Member
@@ -310,11 +310,15 @@ class Member
     /**
      * 회원이 아닌 경우 이메일 표시정보를 수정한다.
      *
-     * @param string $email 표시할 이메일주소
+     * @param ?string $email 표시할 이메일주소
      * @return \modules\member\dtos\Member $member
      */
-    public function setEmailPlaceHolder(string $email): \modules\member\dtos\Member
+    public function setEmailPlaceHolder(?string $email = null): \modules\member\dtos\Member
     {
+        if ($email === null) {
+            return $this;
+        }
+
         if ($this->isMember() === false) {
             $this->_email = $email;
         }
@@ -324,11 +328,15 @@ class Member
     /**
      * 회원이 아닌 경우 닉네임 표시정보를 수정한다.
      *
-     * @param string $nickname 표시할 닉네임
+     * @param ?string $nickname 표시할 닉네임
      * @return \modules\member\dtos\Member $member
      */
-    public function setNicknamePlaceHolder(string $nickname): \modules\member\dtos\Member
+    public function setNicknamePlaceHolder(?string $nickname = null): \modules\member\dtos\Member
     {
+        if ($nickname === null) {
+            return $this;
+        }
+
         if ($this->isMember() === false) {
             $this->_nickname = $nickname;
         }
@@ -338,11 +346,15 @@ class Member
     /**
      * 회원이 아닌 경우 이메일 표시정보를 수정한다.
      *
-     * @param string $photo_url 표시할 사진 URL
+     * @param ?string $photo_url 표시할 사진 URL
      * @return \modules\member\dtos\Member $member
      */
-    public function setPhotoPlaceHolder(string $photo_url): \modules\member\dtos\Member
+    public function setPhotoPlaceHolder(?string $photo_url = null): \modules\member\dtos\Member
     {
+        if ($photo_url === null) {
+            return $this;
+        }
+
         if ($this->isMember() === false) {
             $this->_photo = $photo_url;
         }
