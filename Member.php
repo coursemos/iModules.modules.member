@@ -5,9 +5,9 @@
  * 회원모듈 클래스 정의한다.
  *
  * @file /modules/member/Member.php
- * @author Arzz <arzz@arzz.com>
+ * @author parkyoula <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 9. 26.
+ * @modified 2024. 10. 31.
  */
 namespace modules\member;
 class Member extends \Module
@@ -87,6 +87,13 @@ class Member extends \Module
      */
     public function getEditContext($configs = null): string
     {
+        \Html::color('light'); // TODO 임시처리
+
+        $member = $this->getMember($this->getLogged());
+        if ($member === null) {
+            return \ErrorHandler::get(\ErrorHandler::error('NOT_FOUND_URL'));
+        }
+
         /**
          * 컨텍스트 템플릿을 설정한다.
          */
@@ -97,8 +104,10 @@ class Member extends \Module
         }
 
         $template = $this->getTemplate();
+        $template->assign('member', $member);
 
-        $header = $footer = '';
+        $header = '<link href="/modules/member/styles/cropper.min.css" rel="stylesheet">';
+        $footer = '<script src="/modules/member/scripts/cropper.min.js"></script>';
 
         return $template->getContext('edit', $header, $footer);
     }
