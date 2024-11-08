@@ -4,13 +4,15 @@
  * 회원모듈 클래스를 정의한다.
  *
  * @file /modules/member/scripts/Member.ts
- * @author parkyoula <youlapark@naddle.net>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 4.
+ * @modified 2024. 11. 8.
  */
 namespace modules {
     export namespace member {
         export class Member extends Module {
+            $dom: Dom;
+
             /**
              * 모듈의 DOM 이벤트를 초기화한다.
              *
@@ -24,8 +26,26 @@ namespace modules {
                         this.initOAuthLink($dom);
                         break;
                     case 'edit':
-                        this.initCropper();
-                        break;
+                        /**
+                         * @TODO section의 data-role에 따른 분기 처리
+                         * data-role="edit" - 회원 검증
+                         * data-role="edit" - 회원 정보 수정
+                         */
+                        const $view = Html.get('section').getAttr('data-role');
+
+                        const $profile = Html.get('section[data-role="profile"]');
+                        const member_id = $profile.getAttr('data-user-id');
+
+                        switch ($view) {
+                            case 'edit':
+                                this.showEdit();
+                                break;
+
+                            case 'profile':
+                                this.showProfile(member_id);
+                                this.showPassword(member_id);
+                                break;
+                        }
                 }
 
                 super.init($dom);
