@@ -63,6 +63,7 @@ if (isset($errors['nickname']) == false) {
     }
 }
 
+$cellphone = Input::get('cellphone');
 if ($member === null) {
     $password = Input::get('password', $errors);
 }
