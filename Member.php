@@ -5,9 +5,9 @@
  * 회원모듈 클래스 정의한다.
  *
  * @file /modules/member/Member.php
- * @author parkyoula <youlapark@naddle.net>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 10. 31.
+ * @modified 2024. 11. 8.
  */
 namespace modules\member;
 class Member extends \Module
@@ -87,29 +87,39 @@ class Member extends \Module
      */
     public function getEditContext($configs = null): string
     {
-        \Html::color('light'); // TODO 임시처리
-
-        $member = $this->getMember($this->getLogged());
-        if ($member === null) {
-            return \ErrorHandler::get(\ErrorHandler::error('NOT_FOUND_URL'));
-        }
+        \Html::color('light');
 
         /**
-         * 컨텍스트 템플릿을 설정한다.
+         * 현재 로그인한 상태일 경우 컨텍스트를 가져온다.
          */
-        if (isset($configs?->template) == true && $configs->template->name !== '#') {
-            $this->setTemplate($configs->template);
+        if ($this->isLogged() == true) {
+            $member = $this->getMember($this->getLogged());
+            if ($member === null) {
+                return \ErrorHandler::get(\ErrorHandler::error('NOT_FOUND_URL'));
+            }
+
+            /**
+             * 컨텍스트 템플릿을 설정한다.
+             */
+            if (isset($configs?->template) == true && $configs->template->name !== '#') {
+                $this->setTemplate($configs->template);
+            } else {
+                $this->setTemplate($this->getConfigs('template'));
+            }
+
+            $template = $this->getTemplate();
+            $template->assign('member', $member);
+
+            $photo = $this->getPhoto();
+            $template->assign('photo', $photo);
+
+            $header = '<link href="/modules/member/styles/cropper.min.css" rel="stylesheet">';
+            $footer = '<script src="/modules/member/scripts/cropper.min.js"></script>';
+
+            return $template->getContext('edit', $header, $footer);
         } else {
-            $this->setTemplate($this->getConfigs('template'));
+            return \ErrorHandler::get(\ErrorHandler::error('NOT_FOUND_URL'));
         }
-
-        $template = $this->getTemplate();
-        $template->assign('member', $member);
-
-        $header = '<link href="/modules/member/styles/cropper.min.css" rel="stylesheet">';
-        $footer = '<script src="/modules/member/scripts/cropper.min.js"></script>';
-
-        return $template->getContext('edit', $header, $footer);
     }
 
     /**
@@ -328,6 +338,23 @@ class Member extends \Module
         }
 
         return \iModules::getUrl($is_full_url) . '/members/' . $member_id . '/photo.jpg';
+    }
+
+    /**
+     * 회원사진 URL 을 가져온다.
+     *
+     * @param ?int $member_id 회원고유값 (NULL 인 경우 현재 로그인한 사용자)
+     * @param bool $is_full_url 도메인을 포함한 전체 URL 여부
+     * @return string $url
+     */
+    public function getPhoto(?int $member_id = null, bool $is_full_url = false): string
+    {
+        $member_id ??= $this->getLogged();
+        if ($member_id === 0) {
+            return $this->getDir() . '/images/photo.webp';
+        }
+
+        return '/attachments/member/photos/' . $member_id . '.webp';
     }
 
     /**
