@@ -4,11 +4,12 @@
  * 기본 템플릿 - 스타일시트
  *
  * @file /modules/member/templates/default/styles/style.css
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2023. 3. 6.
+ * @modified 2024. 11. 8.
  */
 div[data-role='module'][data-module='member'][data-template='default'] {
+
     /**
      * OAuth 계정연결
      */
@@ -119,6 +120,226 @@ div[data-role='module'][data-module='member'][data-template='default'] {
 
             > form + label {
                 margin-top: 20px;
+            }
+        }
+    }
+
+    &[data-context='edit'][data-popup='true'] {
+        min-height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > section[data-role='edit'] {
+            > div[data-role='container'] {
+                margin-bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                padding: 20px;
+                background: var(--im-color-background-400);
+                text-align: center;
+                border-top: 2px solid var(--im-color-danger-600);
+                width: 360px;
+
+                > form {
+                    > div[data-role='profile'] {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10px;
+                        padding-bottom: 10px;
+
+                        > i {
+                            display: block;
+                            width: 100px;
+                            height: 100px;
+                            border: 1px solid var(--im-color-accent-backward-400);
+                            border-radius: 50%;
+                            background-size: cover;
+                            background-position: 50%;
+                        }
+
+                        > h4 {
+                            font-size: var(--im-font-size-h5);
+                            line-height: 18px;
+                            color: var(--im-color-foreground-600);
+                        }
+
+                        > small {
+                            font-size: var(--im-font-size-h6);
+                            color: var(--im-color-foreground-200);
+                        }
+                    }
+
+                    > div[data-role='input'] {
+                        padding-top: 20px;
+                        border-top: 1px solid var(--im-color-background-300);
+                        line-height: 18px;
+                        font-size: var(--im-font-size-h6);
+
+                        > input {
+                            width: 100%;
+                            padding: 10px;
+                            border: 1px solid var(--im-color-background-200);
+                            line-height: 18px;
+                        }
+                    }
+
+                    > div[data-role='button'] {
+                        margin-top: 10px;
+
+                        > button {
+                            width: 100%;
+                            padding: 10px;
+                            background-color: var(--im-color-accent-400);
+                            color: var(--im-color-accent-backward-600);
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: var(--im-font-size-h6);
+                            box-sizing: border-box;
+                        }
+                    }
+                }
+            }
+        }
+
+        > section[data-role='profile'] {
+            --profile-photo-size: 80px;
+
+            > div[data-role='container'] {
+                > div[data-role='update'] {
+                    display: block;
+                    padding: 20px;
+                    background: #fff;
+                    border: 1px solid #c8caca;
+                    border-top: 2px solid #f44336;
+                    width: 100%;
+                    box-sizing: border-box;
+                    text-align: left;
+
+                    > h4 {
+                        font-size: var(--im-font-size-h5);
+                        line-height: 24px;
+                        margin-bottom: 10px;
+                        color: var(--im-color-foreground-600);
+                    }
+
+                    > form {
+                        > ul[data-role='form'] {
+                            list-style: none;
+                            border-top: 2px solid black;
+
+                            > li {
+                                border-bottom: 1px solid #e3e4e5;
+
+                                &[data-role='photo'] {
+                                    > ul {
+                                        height: calc(var(--profile-photo-size) * 1.25);
+
+                                        > li {
+                                            > button {
+                                                position: relative;
+                                                display: block;
+                                                width: var(--profile-photo-size);
+                                                height: var(--profile-photo-size);
+                                                border: 1px solid var(--im-color-accent-backward-400);
+                                                border-radius: 50%;
+                                                background-size: contain;
+                                                background-position: 50%;
+
+                                                background-image: linear-gradient(to bottom,
+                                                        rgba(0, 0, 0, 0) 60%,
+                                                        rgba(0, 0, 0, 0.7) 100%);
+
+                                                &::after {
+                                                    position: relative;
+                                                    top: calc(var(--profile-photo-size) * 0.3);
+                                                    content: '편집';
+                                                    font-size: 14px;
+                                                    color: white;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                > ul {
+                                    list-style: none;
+                                    font-size: 14px;
+                                    display: flex;
+                                    align-items: center;
+
+                                    > li {
+                                        &:nth-child(1) {
+                                            padding: 20px;
+                                            height: 100%;
+                                            background: #f4f4f4;
+                                            min-width: 150px;
+                                            line-height: 20px;
+                                        }
+
+                                        &:nth-child(2) {
+                                            padding: 10px;
+                                            flex: 1;
+
+                                            > input {
+                                                border: 1px solid #d1d1d1;
+                                                background: #fff;
+                                                box-sizing: border-box;
+                                                width: 100%;
+                                                height: 40px;
+                                                padding: 10px;
+                                                line-height: 18px;
+                                                border-radius: 0px;
+                                            }
+
+                                            > button[data-role='password'] {
+                                                white-space: nowrap;
+                                                height: 40px;
+                                                line-height: 40px;
+                                                padding: 0px 15px;
+                                                box-sizing: border-box;
+                                                cursor: pointer;
+                                                color: #fff;
+                                                background: #b5b7c0;
+                                                border: 0;
+                                            }
+                                        }
+
+                                        > b.require {
+                                            &::after {
+                                                content: '*';
+                                                color: red;
+                                                font-size: 14px;
+                                                padding-left: 2px;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        > div[data-role='button'] {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-top: 10px;
+
+                            > button {
+                                padding: 10px;
+                                background-color: var(--im-color-accent-400);
+                                color: var(--im-color-accent-backward-600);
+                                border: none;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: var(--im-font-size-h6);
+                                box-sizing: border-box;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

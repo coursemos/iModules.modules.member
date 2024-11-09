@@ -5,9 +5,9 @@
  * 회원정보를 가져온다.
  *
  * @file /modules/member/processes/member.get.php
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2024. 11. 7.
  *
  * @var \modules\member\Member $me
  */
@@ -27,7 +27,7 @@ if ($me->getAdmin()->checkPermission('members', ['edit']) == false) {
 $member_id = Request::get('member_id', true);
 $data = $me
     ->db()
-    ->select(['member_id', 'email', 'name', 'nickname', 'level_id'])
+    ->select(['member_id', 'email', 'name', 'nickname', 'level_id', 'cellphone'])
     ->from($me->table('members'))
     ->where('member_id', $member_id)
     ->getOne();

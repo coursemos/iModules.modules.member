@@ -5,9 +5,9 @@
  * 회원정보를 저장한다.
  *
  * @file /modules/member/processes/member.post.php
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 1. 30.
+ * @modified 2024. 11. 8.
  *
  * @var \modules\member\Member $me
  */
@@ -63,6 +63,24 @@ if (isset($errors['nickname']) == false) {
     }
 }
 
+$photo = Input::get('photo');
+if ($photo !== null) {
+    $photo_decode = str_replace('data:image/png;base64,', '', $photo);
+    $photo = base64_decode($photo_decode);
+
+    /**
+     * @var \modules\attachment\Attachment $mAttachment
+     */
+    $mAttachment = Modules::get('attachment');
+    $path = \Configs::attachment() . '/member/photos/' . $member_id . '.webp';
+
+    file_put_contents($path, $photo);
+    @chmod($path, 0707);
+
+    $mAttachment->createThumbnail($path, $path, 500, false, 'webp');
+}
+
+$cellphone = Input::get('cellphone');
 if ($member === null) {
     $password = Input::get('password', $errors);
 }
@@ -100,6 +118,7 @@ if (count($errors) == 0) {
         $insert['name'] = $name;
         $insert['nickname'] = $nickname;
         $insert['level_id'] = $level_id;
+        $insert['cellphone'] = $cellphone;
 
         $me->db()
             ->update($me->table('members'), $insert)
