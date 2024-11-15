@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 8.
+ * @modified 2024. 11. 15.
  */
 namespace modules\member;
 class Member extends \Module
@@ -28,7 +28,6 @@ class Member extends \Module
     private static array $_levels;
 
     /**
-     *
      * @var ?int $_logged 로그인정보
      */
     private static ?int $_logged = null;
