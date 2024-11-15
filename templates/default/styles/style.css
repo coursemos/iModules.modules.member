@@ -6,7 +6,7 @@
  * @file /modules/member/templates/default/styles/style.css
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 8.
+ * @modified 2024. 11. 15.
  */
 div[data-role='module'][data-module='member'][data-template='default'] {
 
@@ -177,13 +177,6 @@ div[data-role='module'][data-module='member'][data-template='default'] {
                         border-top: 1px solid var(--im-color-background-300);
                         line-height: 18px;
                         font-size: var(--im-font-size-h6);
-
-                        > input {
-                            width: 100%;
-                            padding: 10px;
-                            border: 1px solid var(--im-color-background-200);
-                            line-height: 18px;
-                        }
                     }
 
                     > div[data-role='button'] {
