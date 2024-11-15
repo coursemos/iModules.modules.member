@@ -5,9 +5,9 @@
  * 회원 구조체를 정의한다.
  *
  * @file /modules/member/dtos/Member.php
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 10. 30.
+ * @modified 2024. 11. 14.
  */
 namespace modules\member\dtos;
 class Member
@@ -28,6 +28,11 @@ class Member
      * @var string $_email 이메일
      */
     private string $_email;
+
+    /**
+     * @var string $_password 패스워드
+     */
+    private string $_password;
 
     /**
      * @var ?string $_code 회원추가코드
@@ -105,6 +110,7 @@ class Member
             $this->_member = $member;
             $this->_id = intval($member->member_id);
             $this->_email = $member->email;
+            $this->_password = $member->password;
             $this->_name = $member->name;
             $this->_nickname = $member->nickname;
             $this->_telephone = $member->telephone;
@@ -134,6 +140,16 @@ class Member
     public function getEmail(): string
     {
         return $this->_email;
+    }
+
+    /**
+     * 패스워드를 가져온다.
+     *
+     * @return string $password
+     */
+    public function getPassword(): string
+    {
+        return $this->_password;
     }
 
     /**
