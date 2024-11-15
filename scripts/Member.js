@@ -6,7 +6,7 @@
  * @file /modules/member/scripts/Member.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 8.
+ * @modified 2024. 11. 15.
  */
 var modules;
 (function (modules) {
@@ -26,83 +26,9 @@ var modules;
                         this.initOAuthLink($dom);
                         break;
                     case 'edit':
-                        /**
-                         * @TODO section의 data-role에 따른 분기 처리
-                         * data-role="edit" - 회원 검증
-                         * data-role="edit" - 회원 정보 수정
-                         */
-                        const $view = Html.get('section').getAttr('data-role');
-                        const $profile = Html.get('section[data-role="profile"]');
-                        const member_id = $profile.getAttr('data-user-id');
-                        switch ($view) {
-                            case 'edit':
-                                this.showEdit();
-                                break;
-                            case 'profile':
-                                this.showProfile(member_id);
-                                this.showPassword(member_id);
-                                break;
-                        }
+                        this.showAuthCheck($dom);
                 }
                 super.init($dom);
-            }
-            /**
-             * 로그인한 회원이 맞는지 검증을 한다.
-             */
-            async showEdit() {
-                const $form = Html.get('form', this.$dom);
-                const form = Form.get($form);
-                Html.get('input', $form).on('input', () => {
-                    const $message = Html.get('div[data-role=message]', $form);
-                    $message.remove();
-                });
-                form.onSubmit(async () => {
-                    const results = await form.submit(iModules.getProcessUrl('module', 'admin', 'login'));
-                    if (results.success == true) {
-                        // @TODO 로그인한 회원의 비밀번호 검증이 끝나면, 정보수정 페이지 로드하기.
-                        iModules.Modal.show('로그인성공', '로그인 성공. 이제 정보수정하러가자', [
-                            {
-                                text: '닫기',
-                                class: 'confirm',
-                                handler: () => {
-                                    iModules.Modal.close();
-                                },
-                            },
-                        ]);
-                    }
-                    else {
-                        if (results.message) {
-                            const $message = Html.create('div', { 'data-role': 'message' });
-                            $message.html(results.message);
-                            $form.append($message);
-                        }
-                        $form.shake();
-                    }
-                });
-            }
-            /**
-             * 기본정보수정 페이지를 호출한다.
-             *
-             * @param {string} member_id - 접속한 회원의 멤버아이디
-             */
-            async getProfile(member_id) {
-                const results = await Ajax.get(this.getProcessUrl('member'), {
-                    member_id: member_id,
-                });
-                if (results.success == false) {
-                    iModules.Modal.show('문제가 발생하였습니다.', (results.message ?? '요청을 처리하던 중 문제가 발생하였습니다.') +
-                        '<br>페이지를 새로고침하여 재시도해보시기 바랍니다.', [
-                        {
-                            text: '페이지 새로고침',
-                            class: 'confirm',
-                            handler: () => {
-                                location.reload();
-                            },
-                        },
-                    ]);
-                    return false;
-                }
-                return true;
             }
             /**
              * OAuth 계정연결 컴포넌트 이벤트를 초기화한다.
@@ -119,11 +45,186 @@ var modules;
                 });
             }
             /**
-             * 프로필사진을 수정한다.
+             * 로그인한 회원이 맞는지 비밀번호를 통해 검증한다.
              *
-             * @param {string} member_id - 회원 고유번호
+             * @param {Dom} $dom - 모듈 DOM 객체
              */
-            async showProfile(member_id) {
+            async showAuthCheck($dom) {
+                const $form = Html.get('form', $dom);
+                const form = Form.get($form);
+                const $message = Html.get('div[data-role="message"]');
+                form.onSubmit(async () => {
+                    const results = await form.submit(this.getProcessUrl('login.check'));
+                    if (results.success == true) {
+                        const $edit = Html.get('section[data-role="edit"]');
+                        $edit.empty();
+                        this.showProfile();
+                    }
+                    else {
+                        $message.setStyle('padding', '10px 0px 5px 0px');
+                        $message.setStyle('font-size', '14px');
+                        $message.setStyle('color', 'var(--im-color-danger-600)');
+                        $message.html(results.message);
+                        $form.shake();
+                    }
+                });
+            }
+            /**
+             * 프로필을 수정하는 페이지를 호출한다.
+             */
+            async showProfile() {
+                const $profile = Html.get('section[data-role="profile"]');
+                const member_id = $profile.getAttr('data-user-id');
+                const $container = Html.create('div', { 'data-role': 'container' });
+                const $update = Html.create('div', { 'data-role': 'update' });
+                const $h4 = Html.create('h4', null, '기본정보수정');
+                $update.append($h4);
+                const $form = Html.create('form');
+                const $ul = Html.create('ul', { 'data-role': 'form' });
+                const photo = $profile.getAttr('data-photo');
+                const $photo_li = Html.create('li', { 'data-role': 'photo' });
+                const $photo_ul = Html.create('ul');
+                const $photo_li_label = Html.create('li');
+                const $photo_b_label = Html.create('b', null, '회원사진');
+                $photo_li_label.append($photo_b_label);
+                const $photo_li_button = Html.create('li');
+                const $photo_button = Html.create('button', {
+                    type: 'button',
+                    'data-action': 'photo',
+                    style: `background-image:linear-gradient(to bottom,
+                            rgba(0, 0, 0, 0) 60%,
+                            rgba(0, 0, 0, 0.7) 100%),url("${photo}")`,
+                });
+                $photo_button.on('click', async () => {
+                    await this.updatePhoto();
+                });
+                $photo_li_button.append($photo_button);
+                $photo_ul.append($photo_li_label);
+                $photo_ul.append($photo_li_button);
+                $photo_li.append($photo_ul);
+                $ul.append($photo_li);
+                const results = await Ajax.get(this.getProcessUrl('member'), { member_id: member_id });
+                const data = {
+                    name: '이름',
+                    email: '이메일',
+                    password: '패스워드변경',
+                    nickname: '닉네임',
+                    cellphone: '휴대전화번호',
+                };
+                if (results.success === true) {
+                    Object.entries(results.data).forEach(([key, value]) => {
+                        if (data[key]) {
+                            const $li = Html.create('li', { 'data-role': `${key}` });
+                            const $innerUl = Html.create('ul');
+                            const $left = Html.create('li');
+                            const $left_text = Html.create('b', { class: 'require' }, data[key]);
+                            $left.append($left_text);
+                            $innerUl.append($left);
+                            const $right = Html.create('li');
+                            const $right_text = Html.create('input', {
+                                type: 'text',
+                                name: key,
+                                value: value,
+                            });
+                            $right.append($right_text);
+                            $innerUl.append($right);
+                            $li.append($innerUl);
+                            $ul.append($li);
+                            /**
+                             * 이메일 아래 열에 패스워드를 입력하기 위해서 기재했다.
+                             */
+                            if (key === 'email') {
+                                const $li = Html.create('li');
+                                const $password = Html.create('ul', { class: 'password' });
+                                const $text = Html.create('li');
+                                const $b = Html.create('b', null, '패스워드');
+                                $text.append($b);
+                                $password.append($text);
+                                const $button_li = Html.create('li');
+                                const $button = Html.create('button', {
+                                    'data-role': 'password',
+                                    'data-action': 'password',
+                                    type: 'button',
+                                }, '패스워드변경');
+                                $button_li.append($button);
+                                $password.append($button_li);
+                                $button.on('click', async () => {
+                                    iModules.Modal.show('패스워드 변경', `<form class="password"><input type="hidden"><input name="password" type="password" style="width: 100%; padding: 10px; border: 1px solid #9c9c9c; line-height: 18px;" placeholder="변경할 패스워드"><input name="password_confirm" type="password" style="width: 100%; margin-top: 10px;padding: 10px; border: 1px solid #9c9c9c; line-height: 18px;" placeholder="패스워드확인"></form>`, [
+                                        {
+                                            text: '취소',
+                                            class: 'close',
+                                            handler: () => {
+                                                iModules.Modal.close();
+                                            },
+                                        },
+                                        {
+                                            text: '확인',
+                                            class: 'confirm',
+                                            handler: async () => {
+                                                this.updatePassword();
+                                            },
+                                        },
+                                    ]);
+                                });
+                                $li.append($password);
+                                $ul.append($li);
+                            }
+                        }
+                    });
+                }
+                $form.append($ul);
+                const $buttonDiv = Html.create('div', { 'data-role': 'button' });
+                const $submitButton = Html.create('button', { type: 'submit' }, '확인');
+                $submitButton.on('click', async () => {
+                    this.updateUser(member_id);
+                });
+                $buttonDiv.append($submitButton);
+                $form.append($buttonDiv);
+                $update.append($form);
+                $container.append($update);
+                $profile.append($container);
+            }
+            /**
+             * 회원정보를 수정한다.
+             *
+             * @param {string} member_id - 멤버 고유값
+             */
+            async updateUser(member_id) {
+                const $form = Html.get('form', this.$dom);
+                const form = Form.get($form);
+                form.onSubmit(async () => {
+                    const results = await form.submit(this.getProcessUrl('member'), {
+                        member_id: member_id,
+                    });
+                    if (results.success == true) {
+                        iModules.Modal.show('확인', '회원정보가 성공적으로 수정되었습니다.', [
+                            {
+                                text: '확인',
+                                class: 'confirm',
+                                handler: () => {
+                                    iModules.Modal.close();
+                                    location.reload();
+                                },
+                            },
+                        ]);
+                    }
+                    if (results.success == false) {
+                        iModules.Modal.show('문제가 발생하였습니다.', results.message ?? '요청을 처리하던 중 문제가 발생하였습니다.', [
+                            {
+                                text: '확인',
+                                class: 'confirm',
+                                handler: () => {
+                                    iModules.Modal.close();
+                                },
+                            },
+                        ]);
+                    }
+                });
+            }
+            /**
+             * 프로필사진을 수정한다.
+             */
+            async updatePhoto() {
                 let cropper = null;
                 /**
                  * @TODO 기존 프로필 사진을 가져오기 위해, Attrbute로 설정한 데이터를 가져온다.
@@ -278,100 +379,36 @@ var modules;
                         },
                     ]);
                 });
-                /**
-                 * Form 전송
-                 */
-                const $form = Html.get('form', this.$dom);
-                const form = Form.get($form);
-                form.onSubmit(async () => {
-                    const results = await form.submit(this.getProcessUrl('member'), {
-                        member_id: member_id,
-                    });
-                    if (results.success == true) {
-                        iModules.Modal.show('확인', '회원정보가 성공적으로 수정되었습니다.', [
-                            {
-                                text: '확인',
-                                class: 'confirm',
-                                handler: () => {
-                                    iModules.Modal.close();
-                                    location.reload();
-                                },
-                            },
-                        ]);
-                    }
-                    if (results.success == false) {
-                        iModules.Modal.show('문제가 발생하였습니다.', results.message ?? '요청을 처리하던 중 문제가 발생하였습니다.', [
-                            {
-                                text: '확인',
-                                class: 'confirm',
-                                handler: () => {
-                                    iModules.Modal.close();
-                                },
-                            },
-                        ]);
-                    }
-                });
-            }
-            /**
-             * 비밀번호 모달창을 띄운다.
-             *
-             * @param {string} member_id 회원 고유값
-             */
-            showPassword(member_id) {
-                const $button = Html.get('button[data-action="password"]').getEl();
-                $button.addEventListener('click', () => {
-                    iModules.Modal.show('패스워드 변경', '<div><form><input name="new_password" type="password" style="width: 100%; padding: 10px; border: 1px solid #9c9c9c; line-height: 18px;" placeholder="변경할 패스워드"><input data-name="new_password_confirm" type="password" style="width: 100%; margin-top: 10px;padding: 10px; border: 1px solid #9c9c9c; line-height: 18px;" placeholder="패스워드확인"></form></div>', [
-                        {
-                            text: '취소',
-                            class: 'close',
-                            handler: () => {
-                                iModules.Modal.close();
-                            },
-                        },
-                        {
-                            text: '확인',
-                            class: 'confirm',
-                            handler: () => {
-                                this.updatePassword(member_id);
-                            },
-                        },
-                    ]);
-                });
             }
             /**
              * 비밀번호를 변경한다.
              */
-            updatePassword(member_id) {
-                const $form = Html.get('form', this.$dom);
+            async updatePassword() {
+                const $form = Html.get('form.password');
                 const form = Form.get($form);
-                form.onSubmit(async () => {
-                    const results = await form.submit(this.getProcessUrl('member'), {
-                        member_id: member_id,
-                    });
-                    if (results.success == true) {
-                        iModules.Modal.show('확인', '패스워드가 성공적으로 변경되었습니다.<br>다음 로그인시 부터 변경된 패스워드로 로그인이 가능합니다.', [
-                            {
-                                text: '확인',
-                                class: 'confirm',
-                                handler: () => {
-                                    iModules.Modal.close();
-                                    location.reload();
-                                },
+                const results = await form.submit(this.getProcessUrl('password'));
+                if (results.success == true) {
+                    iModules.Modal.show('확인', '패스워드가 성공적으로 변경되었습니다.<br>다음 로그인시 부터 변경된 패스워드로 로그인이 가능합니다.', [
+                        {
+                            text: '확인',
+                            class: 'confirm',
+                            handler: () => {
+                                iModules.Modal.close();
                             },
-                        ]);
-                    }
-                    if (results.success == false) {
-                        iModules.Modal.show('문제가 발생하였습니다.', results.message ?? '요청을 처리하던 중 문제가 발생하였습니다.', [
-                            {
-                                text: '확인',
-                                class: 'confirm',
-                                handler: () => {
-                                    iModules.Modal.close();
-                                },
+                        },
+                    ]);
+                }
+                else {
+                    iModules.Modal.show('문제가 발생하였습니다.', '요청을 처리하던 중 문제가 발생하였습니다.<br>다시 시도해주세요.', [
+                        {
+                            text: '확인',
+                            class: 'confirm',
+                            handler: () => {
+                                iModules.Modal.close();
                             },
-                        ]);
-                    }
-                });
+                        },
+                    ]);
+                }
             }
             /**
              * 로그아웃을 처리한다.
