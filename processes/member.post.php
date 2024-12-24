@@ -7,7 +7,7 @@
  * @file /modules/member/processes/member.post.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 8.
+ * @modified 2024. 12. 24.
  *
  * @var \modules\member\Member $me
  */
@@ -149,6 +149,10 @@ if (count($errors) == 0) {
         }
     }
 
+    if ($member_id == $me->getLogged()) {
+        $_SESSION['OAUTH_SYNC'] = null;
+        \Events::fireEvent($me, 'beforeAdminLayout', []);
+    }
     $results->success = true;
     $results->member_id = $member_id;
 } else {
