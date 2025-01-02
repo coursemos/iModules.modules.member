@@ -5,9 +5,9 @@
  * 회원정보를 저장한다.
  *
  * @file /modules/member/processes/member.post.php
- * @author youlapark <youlapark@naddle.net>
+ * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 12. 24.
+ * @modified 2025. 1. 2.
  *
  * @var \modules\member\Member $me
  */
@@ -149,10 +149,8 @@ if (count($errors) == 0) {
         }
     }
 
-    if ($member_id == $me->getLogged()) {
-        $_SESSION['OAUTH_SYNC'] = null;
-        \Events::fireEvent($me, 'beforeAdminLayout', []);
-    }
+    \Events::fireEvent($me, 'updateMember', [$member_id]);
+
     $results->success = true;
     $results->member_id = $member_id;
 } else {
