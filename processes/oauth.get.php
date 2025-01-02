@@ -7,7 +7,7 @@
  * @file /modules/member/processes/oauth.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 7. 17.
+ * @modified 2024. 12. 24.
  *
  * @var \modules\member\Member $me
  * @var string $path
@@ -25,7 +25,7 @@ if ($client === null) {
 }
 $oauth = new OAuthClient($client->getClientId(), $client->getClientSecret());
 $oauth->setScope($client->getScope());
-$oauth->setRedirectUrl(isset($_SERVER['HTTP_REFERER']) == true ? $_SERVER['HTTP_REFERER'] : null);
+$oauth->setRedirectUrl(isset($_GET['referer']) == true ? $_GET['referer'] : null, true);
 
 if ($oauth->getAccessToken() === null) {
     if (Request::get('error') !== null) {

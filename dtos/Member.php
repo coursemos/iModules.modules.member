@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 14.
+ * @modified 2024. 12. 24.
  */
 namespace modules\member\dtos;
 class Member
@@ -454,10 +454,6 @@ class Member
             ->db()
             ->insert($mMember->table('oauth_tokens'), $insert, $duplicated)
             ->execute();
-
-        if ($results->success == true) {
-            $account->getOAuth()->clear();
-        }
 
         return $results->success;
     }
