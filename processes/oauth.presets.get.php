@@ -7,7 +7,7 @@
  * @file /modules/member/processes/oauth.presets.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2023. 7. 17.
+ * @modified 2025. 01. 6.
  *
  * @var \modules\member\Member $me
  */
@@ -30,7 +30,7 @@ if (
 }
 
 /**
- * @var \modules\member\admin\MemberAdmin $mAdmin
+ * @var \modules\member\admin\Member $mAdmin
  */
 $mAdmin = $me->getAdmin();
 

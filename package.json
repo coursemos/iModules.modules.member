@@ -385,10 +385,21 @@
                     "is_null": true,
                     "comment": "토큰요청 URL"
                 },
+                "token_path": {
+                    "type": "varchar",
+                    "length": 200,
+                    "comment": "토큰발급 경로"
+                },
                 "scope": {
                     "type": "text",
                     "is_null": true,
                     "comment": "OAuth 요청범위"
+                },
+                "scope_type": {
+                    "type": "enum",
+                    "length": "'BASIC','USER'",
+                    "default": "BASIC",
+                    "comment": "OAuth 요청범위 종류"
                 },
                 "scope_separator": {
                     "type": "enum",

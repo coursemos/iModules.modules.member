@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 18.
+ * @modified 2025. 01. 6.
  */
 namespace modules\member;
 class Member extends \Module
@@ -301,10 +301,10 @@ class Member extends \Module
      * @param ?int $member_id 회원고유값
      * @return \modules\member\dtos\Member $member
      */
-    public function getMember(?int $member_id = null): \modules\member\dtos\Member
+    public function getMember(?int $member_id = null, bool $is_refresh = false): \modules\member\dtos\Member
     {
         $member_id ??= $this->getLogged();
-        if ($member_id !== 0 && isset(self::$_members[$member_id]) == true) {
+        if ($member_id !== 0 && $is_refresh == false && isset(self::$_members[$member_id]) == true) {
             return self::$_members[$member_id];
         }
 

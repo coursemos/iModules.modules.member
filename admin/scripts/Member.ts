@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 9. 10.
+ * @modified 2025. 01. 6.
  */
 namespace modules {
     export namespace member {
@@ -675,8 +675,14 @@ namespace modules {
                                                                 form.getField('token_url').setValue(
                                                                     record.get('token_url')
                                                                 );
+                                                                form.getField('token_path').setValue(
+                                                                    record.get('token_path')
+                                                                );
                                                                 form.getField('scope').setValue(
                                                                     record.get('scope').join('\n')
+                                                                );
+                                                                form.getField('scope_type').setValue(
+                                                                    record.get('scope_type')
                                                                 );
                                                                 form.getField('scope_separator').setValue(
                                                                     record.get('scope_separator')
@@ -712,6 +718,11 @@ namespace modules {
                                                         name: 'token_url',
                                                         allowBlank: false,
                                                     }),
+                                                    new Aui.Form.Field.Text({
+                                                        label: this.printText('admin.oauth.clients.token_path'),
+                                                        name: 'token_path',
+                                                        allowBlank: false,
+                                                    }),
                                                 ],
                                             }),
                                             new Aui.Form.FieldSet({
@@ -740,6 +751,29 @@ namespace modules {
                                                         label: this.printText('admin.oauth.clients.scope'),
                                                         name: 'scope',
                                                         helpText: this.printText('admin.oauth.clients.scope_help'),
+                                                    }),
+                                                    new Aui.Form.Field.Select({
+                                                        label: this.printText('admin.oauth.clients.scope_type'),
+                                                        name: 'scope_type',
+                                                        store: new Aui.Store.Local({
+                                                            fields: ['display', 'value'],
+                                                            records: (() => {
+                                                                const types = ['BASIC', 'USER'];
+                                                                const records = [];
+                                                                for (const type of types) {
+                                                                    records.push([
+                                                                        this.printText(
+                                                                            'admin.oauth.clients.scope_types.' + type
+                                                                        ),
+                                                                        type,
+                                                                    ]);
+                                                                }
+                                                                return records;
+                                                            })(),
+                                                        }),
+                                                        value: 'BASIC',
+                                                        allowBlank: false,
+                                                        helpText: this.printText('admin.oauth.clients.scope_type_help'),
                                                     }),
                                                     new Aui.Form.Field.Select({
                                                         label: this.printText('admin.oauth.clients.scope_separator'),

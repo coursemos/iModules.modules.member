@@ -7,7 +7,7 @@
  * @file /modules/member/admin/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 12. 24.
+ * @modified 2025. 01. 6.
  */
 namespace modules\member\admin;
 class Member extends \modules\admin\admin\Component
@@ -194,10 +194,12 @@ class Member extends \modules\admin\admin\Component
         $google->oauth_id = 'google';
         $google->auth_url = 'https://accounts.google.com/o/oauth2/v2/auth';
         $google->token_url = 'https://oauth2.googleapis.com/token';
+        $google->token_path = 'access_token';
         $google->scope = [
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
         ];
+        $google->scope_type = 'BASIC';
         $google->scope_separator = 'SPACE';
         $google->user_url = 'https://www.googleapis.com/oauth2/v2/userinfo';
         $google->user_id_path = 'id';
@@ -211,7 +213,9 @@ class Member extends \modules\admin\admin\Component
         $salesforce->oauth_id = 'salesforce';
         $salesforce->auth_url = 'https://[YOUR_DOMAIN].my.salesforce.com/services/oauth2/authorize';
         $salesforce->token_url = 'https://[YOUR_DOMAIN].my.salesforce.com/services/oauth2/token';
+        $salesforce->token_path = 'access_token';
         $salesforce->scope = ['chatter_api'];
+        $salesforce->scope_type = 'BASIC';
         $salesforce->scope_separator = 'SPACE';
         $salesforce->user_url = 'https://[YOUR_DOMAIN].my.salesforce.com/services/data/v59.0/chatter/users/me';
         $salesforce->user_id_path = 'id';
@@ -225,10 +229,19 @@ class Member extends \modules\admin\admin\Component
         $slack->oauth_id = 'slack';
         $slack->auth_url = 'https://slack.com/oauth/v2/authorize';
         $slack->token_url = 'https://slack.com/api/oauth.v2.access';
-        $slack->scope = ['users.profile:write', 'usergroups:read', 'chat:write'];
+        $slack->token_path = 'authed_user.access_token';
+        $slack->scope = [
+            'users.profile:write',
+            'usergroups:read',
+            'chat:write',
+            'channels:read',
+            'groups:read',
+            'mpim:read',
+            'im:read',
+        ];
+        $slack->scope_type = 'USER';
         $slack->scope_separator = ',';
         $slack->user_url = 'https://slack.com/api/users.identity';
-        //@TODO :  아래 모든 정보를 가진 슬랙 엔드포인트가 없음
         $slack->user_id_path = 'user.id';
         $slack->user_email_path = 'user.email';
         $slack->user_name_path = 'user.name';
