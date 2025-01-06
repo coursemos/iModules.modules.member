@@ -3,10 +3,10 @@
  *
  * 회원관리화면을 구성한다.
  *
- * @file /modules/member/admin/scripts/members.ts
- * @author Arzz <arzz@arzz.com>
+ * @file /modules/member/admin/scripts/contexts/members.ts
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 10. 22.
+ * @modified 2025. 1. 6.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member') as modules.member.admin.Member;
@@ -580,6 +580,34 @@ Admin.ready(async () => {
                                         return true;
                                     },
                                 });
+
+                                menu.add('-');
+
+                                if (grid.getStore().getParam('group_id') !== null) {
+                                    menu.add({
+                                        text: me.printText('admin.position.manager'),
+                                        iconClass: 'mi mi-user',
+                                        handler: async () => {
+                                            const group_id = grid.getStore().getParam('group_id');
+                                            const member_id = record.get('member_id');
+                                            const position = 'MANAGER';
+                                            await me.position.add(group_id, member_id, position);
+                                            return true;
+                                        },
+                                    });
+
+                                    menu.add({
+                                        text: me.printText('admin.position.member'),
+                                        iconClass: 'mi mi-users',
+                                        handler: async () => {
+                                            const group_id = grid.getStore().getParam('group_id');
+                                            const member_id = record.get('member_id');
+                                            const position = 'MEMBER';
+                                            await me.position.add(group_id, member_id, position);
+                                            return true;
+                                        },
+                                    });
+                                }
                             },
                             openMenus: (menu, selections) => {
                                 menu.setTitle(

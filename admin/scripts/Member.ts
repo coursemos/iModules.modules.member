@@ -4,9 +4,9 @@
  * 관리자 UI 이벤트를 관리하는 클래스를 정의한다.
  *
  * @file /modules/member/admin/scripts/Member.ts
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 9. 10.
+ * @modified 2025. 1. 6.
  */
 namespace modules {
     export namespace member {
@@ -897,6 +897,36 @@ namespace modules {
                         delete: (oauth_id: string): void => {
                             //
                         },
+                    },
+                };
+
+                position = {
+                    /**
+                     * 권한을 추가한다.
+                     *
+                     * @param {string} group_id - 해당 그룹의 그룹 고유번호
+                     * @param {string} parent - 해당 회원의 회원 고유번호
+                     * @param {string} position - 권한
+                     */
+                    add: async (group_id: string, member_id: string, position: string) => {
+                        const results = await Ajax.post(
+                            this.getProcessUrl('role'),
+                            {},
+                            { group_id: group_id, member_id: member_id, position: position }
+                        );
+                        if (results.success == true) {
+                            Aui.Message.show({
+                                title: Aui.getErrorText('INFO'),
+                                message: Aui.printText('actions.saved'),
+                                icon: Aui.Message.INFO,
+                                buttons: Aui.Message.OK,
+                                handler: async (button) => {
+                                    button.setLoading(true);
+                                    Aui.Message.close();
+                                    window.close();
+                                },
+                            });
+                        }
                     },
                 };
             }
