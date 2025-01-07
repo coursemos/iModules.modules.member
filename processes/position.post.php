@@ -4,7 +4,7 @@
  *
  * 그룹의 권한을 수정한다.
  *
- * @file /modules/member/processes/role.post.php
+ * @file /modules/member/processes/position.post.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
  * @modified 2025. 1. 6.
@@ -43,6 +43,7 @@ $me->db()
     ->update($me->table('group_members'), [
         'position' => $position,
     ])
+    ->where('member_id', $member_id)
     ->where('group_id', $group_id)
     ->execute();
 
