@@ -4,6 +4,7 @@
     "name": "성명",
     "nickname": "닉네임",
     "level": "레벨",
+    "position": "권한",
     "default_level": "기본레벨",
     "groups": "소속그룹",
     "joined_at": "가입일시",
@@ -122,8 +123,9 @@
             }
         },
         "position": {
-            "manager": "팀장으로 변경",
-            "member": "팀원으로 변경"
+            "actions": {
+                "change": "&nbsp;권한부여"
+            }
         },
         "logs": {
             "title": "회원활동기록",
