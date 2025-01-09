@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 12. 24.
+ * @modified 2025. 1. 9.
  */
 namespace modules\member\dtos;
 class Member
@@ -484,6 +484,75 @@ class Member
         );
 
         return $nametag;
+    }
+
+    /**
+     * 회원이 속한 그룹에서의 포지션을 가져온다.
+     *
+     * @param string $group_id 포지션을 가져올 그룹 고유값
+     * @param int $member_id 조회할 멤버 고유값
+     * @return string $group_id
+     */
+    public function getGroupPositionTitle(string $group_id, string $member_id): string
+    {
+        /**
+         * @var \modules\members\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+
+        $position = $mMember
+            ->db()
+            ->select(['position'])
+            ->from($mMember->table('group_members'))
+            ->where('member_id', $member_id)
+            ->where('group_id', $group_id)
+            ->get();
+
+        $position = $position[0]->position;
+        $position_title = $this->getGroupPositionLabels($group_id);
+
+        if ($position == 'MANAGER') {
+            $manager = $position_title['manager'];
+            return $manager;
+        } elseif ($position == 'MEMBER') {
+            $member = $position_title['member'];
+            return $member;
+        }
+    }
+
+    /**
+     * 그룹의 권한 명칭을 가져온다.
+     *
+     * @param string $group_id 조회할 그룹 고유값
+     * @return array $position
+     */
+    public function getGroupPositionLabels(string $group_id): array
+    {
+        /**
+         * @var \modules\members\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+
+        $position_title = $mMember
+            ->db()
+            ->select(['manager', 'member'])
+            ->from($mMember->table('groups'))
+            ->where('group_id', $group_id)
+            ->getOne();
+
+        if ($position_title === null) {
+            return [
+                'manager' => null,
+                'member' => null,
+            ];
+        }
+
+        $position = [
+            'manager' => $position_title->manager,
+            'member' => $position_title->member,
+        ];
+
+        return $position;
     }
 
     /**

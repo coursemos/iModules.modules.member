@@ -7,7 +7,7 @@
  * @file /modules/member/processes/members.get.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 8.
+ * @modified 2025. 1. 9.
  *
  * @var \modules\member\Member $me
  */
@@ -102,7 +102,7 @@ foreach ($records as &$record) {
     $record->groups = [];
     foreach ($member->getGroups(true) as $group) {
         $title = $group->getGroup()->getTitle();
-        $group_name = $member->getGroupPositions($group_id);
+        $group_name = $member->getGroupPositionLabels($group_id);
         $record->groups[] = [
             'title' => $title,
             'manager' => $group_name['manager'] ?? null,
@@ -113,7 +113,7 @@ foreach ($records as &$record) {
     $record->level = $member->getLevel()->getTitle();
 
     if ($group_id !== null && $group_id !== 'all') {
-        $record->position = $member->getMembersPosition($group_id, $record->member_id);
+        $record->position = $member->getGroupPositionTitle($group_id, $record->member_id);
     }
 }
 
