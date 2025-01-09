@@ -5,9 +5,9 @@
  * 회원이 속한 그룹구조체를 정의한다.
  *
  * @file /modules/member/dtos/MemberGroup.php
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2025. 1. 9.
  */
 namespace modules\member\dtos;
 class MemberGroup
@@ -28,6 +28,11 @@ class MemberGroup
     private int $_assigned_at;
 
     /**
+     * @var string $position 그룹 내 권한
+     */
+    private string $_position;
+
+    /**
      * @var \modules\member\dtos\Group $_group 그룹정보
      */
     private \modules\member\dtos\Group $_group;
@@ -42,6 +47,7 @@ class MemberGroup
         $this->_member_id = $assigned->member_id;
         $this->_group_id = $assigned->group_id;
         $this->_assigned_at = $assigned->assigned_at;
+        $this->_position = $assigned->position;
     }
 
     /**
@@ -62,6 +68,16 @@ class MemberGroup
     public function getGroupId(): string
     {
         return $this->_group_id;
+    }
+
+    /**
+     * 그룹 내 권한을 가져온다.
+     *
+     * @return string $position
+     */
+    public function getPosition(): string
+    {
+        return $this->_position;
     }
 
     /**
