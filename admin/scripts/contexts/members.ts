@@ -513,6 +513,11 @@ Admin.ready(async () => {
                                 },
                             },
                             {
+                                text: await me.getText('position'),
+                                dataIndex: 'position',
+                                width: 80,
+                            },
+                            {
                                 text: await me.getText('level'),
                                 dataIndex: 'level',
                                 width: 80,
@@ -581,34 +586,38 @@ Admin.ready(async () => {
                                     },
                                 });
 
-                                menu.add('-');
-
-                                if (grid.getStore().getParam('group_id') !== null) {
+                                if (
+                                    grid.getStore().getParam('group_id') !== null &&
+                                    grid.getStore().getParam('group_id') !== 'all'
+                                ) {
+                                    const position = record.get('groups')[0];
+                                    menu.add('-');
                                     menu.add({
-                                        text: me.printText('admin.position.manager'),
+                                        text: position.manager + me.printText('admin.position.actions.change'),
                                         iconClass: 'mi mi-user',
                                         handler: async () => {
                                             const group_id = grid.getStore().getParam('group_id');
                                             const member_id = record.get('member_id');
                                             const position = 'MANAGER';
-                                            await me.position.add(group_id, member_id, position);
+                                            await me.positions.add(group_id, member_id, position);
                                             return true;
                                         },
                                     });
 
                                     menu.add({
-                                        text: me.printText('admin.position.member'),
+                                        text: position.member + me.printText('admin.position.actions.change'),
                                         iconClass: 'mi mi-users',
                                         handler: async () => {
                                             const group_id = grid.getStore().getParam('group_id');
                                             const member_id = record.get('member_id');
                                             const position = 'MEMBER';
-                                            await me.position.add(group_id, member_id, position);
+                                            await me.positions.add(group_id, member_id, position);
                                             return true;
                                         },
                                     });
                                 }
                             },
+
                             openMenus: (menu, selections) => {
                                 menu.setTitle(
                                     Aui.printText('texts.selected_person', {
