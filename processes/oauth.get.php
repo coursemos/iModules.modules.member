@@ -7,7 +7,7 @@
  * @file /modules/member/processes/oauth.get.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 12. 24.
+ * @modified 2025. 01. 6.
  *
  * @var \modules\member\Member $me
  * @var string $path
@@ -24,7 +24,7 @@ if ($client === null) {
     ErrorHandler::print($me->error('NOT_FOUND_OAUTH_CLIENT'));
 }
 $oauth = new OAuthClient($client->getClientId(), $client->getClientSecret());
-$oauth->setScope($client->getScope());
+$oauth->setScope($client->getScope(), $client->getScopeType());
 $oauth->setRedirectUrl(isset($_GET['referer']) == true ? $_GET['referer'] : null, true);
 
 if ($oauth->getAccessToken() === null) {
@@ -44,7 +44,11 @@ if ($oauth->getAccessToken() === null) {
     if (Request::get('code') === null) {
         $oauth->redirectAuthenticationUrl($client->getAuthUrl());
     } else {
-        $access_token = $oauth->getAccessTokenByCode($client->getTokenUrl(), Request::get('code'));
+        $access_token = $oauth->getAccessTokenByCode(
+            $client->getTokenUrl(),
+            $client->getTokenPath(),
+            Request::get('code')
+        );
         if ($access_token === null) {
             ErrorHandler::print($me->error('OAUTH_AUTHENTICATION_FAILED'));
         }
