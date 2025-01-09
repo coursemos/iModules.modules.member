@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/contexts/members.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 6.
+ * @modified 2025. 1. 9.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member');
@@ -491,7 +491,7 @@ Admin.ready(async () => {
                                 dataIndex: 'groups',
                                 width: 160,
                                 renderer: (value) => {
-                                    return value.join(', ');
+                                    return value.map((group) => group.title).join(', ');
                                 },
                             },
                             {
