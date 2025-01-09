@@ -487,6 +487,63 @@ class Member
     }
 
     /**
+     * 회원의 권한에 따라 소속된 그룹의 ID를 반환한다.
+     *
+     * @return string $group_id
+     */
+    public function getGroupPosition(): string
+    {
+        /**
+         * @var \modules\members\Member $mMember
+         */
+        $mMember = \Modules::get('member');
+
+        $groups = $this->getGroups();
+
+        foreach ($groups as &$group) {
+            $group_id = $group->getGroupId();
+            $position = $group->getPosition();
+            $depth = $group->getGroup()->getDepth();
+
+            if ($position === 'MANAGER') {
+                $managers[] = [
+                    'group_id' => $group_id,
+                    'position' => $position,
+                    'depth' => $depth,
+                ];
+            }
+
+            if ($position === 'MEMBER') {
+                $members[] = [
+                    'group_id' => $group_id,
+                    'position' => $position,
+                    'depth' => $depth,
+                ];
+            }
+        }
+
+        if (empty($managers) == true) {
+            $groups = $this->getGroups(true);
+            return $groups[0]->getGroupId();
+        } else {
+            if (count($managers) === 1) {
+                return $managers[0]['group_id'];
+            }
+            foreach ($managers as $manager) {
+                $depth = PHP_INT_MAX;
+                $result = null;
+                foreach ($managers as $manager) {
+                    if ($manager['depth'] < $depth) {
+                        $depth = $manager['depth'];
+                        $result = $manager;
+                    }
+                }
+                return $result['group_id'];
+            }
+        }
+    }
+
+    /**
      * 회원이 속한 그룹에서의 포지션을 가져온다.
      *
      * @param string $group_id 포지션을 가져올 그룹 고유값
