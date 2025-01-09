@@ -4,6 +4,7 @@
     "name": "성명",
     "nickname": "닉네임",
     "level": "레벨",
+    "position": "권한",
     "default_level": "기본레벨",
     "groups": "소속그룹",
     "joined_at": "가입일시",
@@ -119,6 +120,11 @@
             "members": "인원",
             "actions": {
                 "delete": "선택한 레벨을 삭제하시겠습니까?<br>해당 레벨을 가진 회원이 모두 기본레벨(0)으로 변경됩니다."
+            }
+        },
+        "position": {
+            "actions": {
+                "change": "&nbsp;권한부여"
             }
         },
         "logs": {

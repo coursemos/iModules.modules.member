@@ -3,10 +3,10 @@
  *
  * 회원관리화면을 구성한다.
  *
- * @file /modules/member/admin/scripts/members.ts
- * @author Arzz <arzz@arzz.com>
+ * @file /modules/member/admin/scripts/contexts/members.ts
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 10. 22.
+ * @modified 2025. 1. 9.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member') as modules.member.admin.Member;
@@ -509,8 +509,13 @@ Admin.ready(async () => {
                                 dataIndex: 'groups',
                                 width: 160,
                                 renderer: (value) => {
-                                    return value.join(', ');
+                                    return value.map((group: { title: string }) => group.title).join(', ');
                                 },
+                            },
+                            {
+                                text: await me.getText('position'),
+                                dataIndex: 'position',
+                                width: 80,
                             },
                             {
                                 text: await me.getText('level'),
@@ -580,7 +585,39 @@ Admin.ready(async () => {
                                         return true;
                                     },
                                 });
+
+                                if (
+                                    grid.getStore().getParam('group_id') !== null &&
+                                    grid.getStore().getParam('group_id') !== 'all'
+                                ) {
+                                    const position = record.get('groups')[0];
+                                    menu.add('-');
+                                    menu.add({
+                                        text: position.manager + me.printText('admin.position.actions.change'),
+                                        iconClass: 'mi mi-user',
+                                        handler: async () => {
+                                            const group_id = grid.getStore().getParam('group_id');
+                                            const member_id = record.get('member_id');
+                                            const position = 'MANAGER';
+                                            await me.positions.add(group_id, member_id, position);
+                                            return true;
+                                        },
+                                    });
+
+                                    menu.add({
+                                        text: position.member + me.printText('admin.position.actions.change'),
+                                        iconClass: 'mi mi-users',
+                                        handler: async () => {
+                                            const group_id = grid.getStore().getParam('group_id');
+                                            const member_id = record.get('member_id');
+                                            const position = 'MEMBER';
+                                            await me.positions.add(group_id, member_id, position);
+                                            return true;
+                                        },
+                                    });
+                                }
                             },
+
                             openMenus: (menu, selections) => {
                                 menu.setTitle(
                                     Aui.printText('texts.selected_person', {

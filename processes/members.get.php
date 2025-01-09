@@ -5,9 +5,9 @@
  * 회원목록을 가져온다.
  *
  * @file /modules/member/processes/members.get.php
- * @author Arzz <arzz@arzz.com>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2025. 1. 9.
  *
  * @var \modules\member\Member $me
  */
@@ -101,10 +101,20 @@ foreach ($records as &$record) {
     }
     $record->groups = [];
     foreach ($member->getGroups(true) as $group) {
-        $record->groups[] = $group->getGroup()->getTitle();
+        $title = $group->getGroup()->getTitle();
+        $group_name = $member->getGroupPositionLabels($group_id);
+        $record->groups[] = [
+            'title' => $title,
+            'manager' => $group_name['manager'] ?? null,
+            'member' => $group_name['member'] ?? null,
+        ];
     }
     sort($record->groups);
     $record->level = $member->getLevel()->getTitle();
+
+    if ($group_id !== null && $group_id !== 'all') {
+        $record->position = $member->getGroupPositionTitle($group_id, $record->member_id);
+    }
 }
 
 $results->success = true;
