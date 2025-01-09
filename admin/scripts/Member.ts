@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 6.
+ * @modified 2025. 1. 9.
  */
 namespace modules {
     export namespace member {
@@ -900,17 +900,17 @@ namespace modules {
                     },
                 };
 
-                position = {
+                positions = {
                     /**
                      * 권한을 추가한다.
                      *
-                     * @param {string} group_id - 해당 그룹의 그룹 고유번호
-                     * @param {string} parent - 해당 회원의 회원 고유번호
-                     * @param {string} position - 권한
+                     * @param {string} group_id - 권한을 추가할 그룹 고유값
+                     * @param {string} member_id - 권한을 추가할 회원 고유값
+                     * @param {string} position - 권한 (MANAGER, MEMBER)
                      */
                     add: async (group_id: string, member_id: string, position: string) => {
                         const results = await Ajax.post(
-                            this.getProcessUrl('role'),
+                            this.getProcessUrl('position'),
                             {},
                             { group_id: group_id, member_id: member_id, position: position }
                         );
@@ -920,8 +920,9 @@ namespace modules {
                                 message: Aui.printText('actions.saved'),
                                 icon: Aui.Message.INFO,
                                 buttons: Aui.Message.OK,
-                                handler: async (button) => {
-                                    button.setLoading(true);
+                                handler: () => {
+                                    const members = Aui.getComponent('members') as Aui.Grid.Panel;
+                                    members.getStore().reload();
                                     Aui.Message.close();
                                     window.close();
                                 },
