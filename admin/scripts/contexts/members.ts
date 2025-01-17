@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/contexts/members.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 17.
+ * @modified 2025. 1. 9.
  */
 Admin.ready(async () => {
     const me = Admin.getModule('member') as modules.member.admin.Member;
@@ -461,6 +461,7 @@ Admin.ready(async () => {
                                 'member_id',
                                 'email',
                                 'name',
+                                'nickname',
                                 'photo',
                                 { name: 'joined_at', type: 'int' },
                                 { name: 'logged_at', type: 'int' },
@@ -496,6 +497,12 @@ Admin.ready(async () => {
                                         value
                                     );
                                 },
+                            },
+                            {
+                                text: await me.getText('nickname'),
+                                dataIndex: 'nickname',
+                                sortable: true,
+                                width: 140,
                             },
                             {
                                 text: await me.getText('groups'),

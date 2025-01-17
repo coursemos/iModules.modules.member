@@ -119,6 +119,7 @@ namespace modules {
                     name: '이름',
                     email: '이메일',
                     password: '패스워드변경',
+                    nickname: '닉네임',
                     cellphone: '휴대전화번호',
                 };
 
