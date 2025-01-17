@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 9.
+ * @modified 2025. 1. 17.
  */
 namespace modules\member\dtos;
 class Member
@@ -43,11 +43,6 @@ class Member
      * @var string $_name 이름
      */
     private string $_name;
-
-    /**
-     * @var string $_nickname 닉네임
-     */
-    private string $_nickname;
 
     /**
      * @var ?string $telephone 전화번호
@@ -103,7 +98,6 @@ class Member
             $this->_id = 0;
             $this->_email = '';
             $this->_name = 'Unknown';
-            $this->_nickname = 'Unknown';
             $this->_level_id = 0;
             $this->_status = 'DEACTIVATED';
         } else {
@@ -112,7 +106,6 @@ class Member
             $this->_email = $member->email;
             $this->_password = $member->password;
             $this->_name = $member->name;
-            $this->_nickname = $member->nickname;
             $this->_telephone = $member->telephone;
             $this->_cellphone = $member->cellphone;
             $this->_level_id = $member->level_id;
@@ -160,16 +153,6 @@ class Member
     public function getName(): string
     {
         return $this->_name;
-    }
-
-    /**
-     * 닉네임을 가져온다.
-     *
-     * @return string $nickname
-     */
-    public function getNickname(): string
-    {
-        return $this->_nickname;
     }
 
     /**
@@ -347,17 +330,17 @@ class Member
      * @param ?string $nickname 표시할 닉네임
      * @return \modules\member\dtos\Member $member
      */
-    public function setNicknamePlaceHolder(?string $nickname = null): \modules\member\dtos\Member
-    {
-        if ($nickname === null) {
-            return $this;
-        }
-
-        if ($this->isMember() === false) {
-            $this->_nickname = $nickname;
-        }
-        return $this;
-    }
+    //     public function setNicknamePlaceHolder(?string $nickname = null): \modules\member\dtos\Member
+    //     {
+    //         if ($nickname === null) {
+    //             return $this;
+    //         }
+    //
+    //         if ($this->isMember() === false) {
+    //             $this->_name = $nickname;
+    //         }
+    //         return $this;
+    //     }
 
     /**
      * 회원이 아닌 경우 이메일 표시정보를 수정한다.
@@ -471,7 +454,6 @@ class Member
             ['data-role' => 'photo', 'style' => 'background-image:url(' . $this->getPhoto() . ')'],
             '<b></b>'
         );
-        $nickname = $this->getDisplayName($is_nickcon);
         $nametag = \Html::element(
             'span',
             [
@@ -480,7 +462,7 @@ class Member
                 'data-member-id' => $this->_id,
                 'data-menu' => $is_menu == true ? 'true' : 'false',
             ],
-            $photo . '<b>' . $nickname . '</b>'
+            $photo
         );
 
         return $nametag;
@@ -622,7 +604,6 @@ class Member
         $member = new \stdClass();
         $member->member_id = $this->_id;
         $member->name = $this->_name;
-        $member->nickname = $this->_nickname;
         $member->level = $this->getLevel()->getJson();
         $member->groups = $this->getGroups(true);
         foreach ($member->groups as &$group) {
