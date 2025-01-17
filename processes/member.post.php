@@ -5,9 +5,9 @@
  * 회원정보를 저장한다.
  *
  * @file /modules/member/processes/member.post.php
- * @author youlapark <youlapark@naddle.net>
+ * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 1. 17.
+ * @modified 2025. 1. 2.
  *
  * @var \modules\member\Member $me
  */
@@ -53,6 +53,16 @@ if (isset($errors['email']) == false) {
 }
 
 $name = Input::get('name', $errors);
+$nickname =
+    Format::checkNickname(Input::get('nickname')) == true
+        ? Input::get('nickname')
+        : ($errors['nickname'] = $me->getErrorText('INVALID_NICKNAME'));
+if (isset($errors['nickname']) == false) {
+    if ($me->hasActiveMember('nickname', $email, $member?->member_id ?? 0) == true) {
+        $errors['nickname'] = $me->getErrorText('DUPLICATED');
+    }
+}
+
 $photo = Input::get('photo');
 if ($photo !== null) {
     $photo_decode = str_replace('data:image/png;base64,', '', $photo);
@@ -86,6 +96,7 @@ if (count($errors) == 0) {
         $insert['email'] = $email;
         $insert['password'] = $password;
         $insert['name'] = $name;
+        $insert['nickname'] = $nickname;
         $insert['level_id'] = $level_id;
         $insert['verified'] = 'TRUE';
         $insert['status'] = 'ACTIVATED';
@@ -105,6 +116,7 @@ if (count($errors) == 0) {
             $insert['password'] = \Password::hash(Input::get('password'));
         }
         $insert['name'] = $name;
+        $insert['nickname'] = $nickname;
         $insert['level_id'] = $level_id;
         $insert['cellphone'] = $cellphone;
 
