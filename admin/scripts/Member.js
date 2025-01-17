@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 9.
+ * @modified 2025. 1. 17.
  */
 var modules;
 (function (modules) {
@@ -213,11 +213,6 @@ var modules;
                                             },
                                         },
                                         {
-                                            text: this.printText('nickname'),
-                                            dataIndex: 'nickname',
-                                            width: 150,
-                                        },
-                                        {
                                             text: this.printText('joined_at'),
                                             dataIndex: 'joined_at',
                                             width: 160,
@@ -233,7 +228,6 @@ var modules;
                                             { name: 'member_id', type: 'int' },
                                             'email',
                                             'name',
-                                            'nickname',
                                             'photo',
                                             'joined_at',
                                             'logged_at',
@@ -476,11 +470,6 @@ var modules;
                                         new Aui.Form.Field.Text({
                                             label: this.printText('name'),
                                             name: 'name',
-                                            allowBlank: false,
-                                        }),
-                                        new Aui.Form.Field.Text({
-                                            label: this.printText('nickname'),
-                                            name: 'nickname',
                                             allowBlank: false,
                                         }),
                                         new Aui.Form.Field.Select({
