@@ -7,7 +7,7 @@
  * @file /modules/member/processes/members.get.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 13.
+ * @modified 2025. 1. 17.
  *
  * @var \modules\member\Member $me
  */
@@ -30,7 +30,6 @@ $columns = [
     'password',
     'code',
     'name',
-    'nickname',
     'homepage',
     'telephone',
     'cellphone',
@@ -84,7 +83,7 @@ if ($filters !== null) {
 }
 
 if ($keyword !== null) {
-    $records->where('(name like ? or nickname like ? or email like ?)', array_fill(0, 3, '%' . $keyword . '%'));
+    $records->where('(name like ? or email like ?)', array_fill(0, 3, '%' . $keyword . '%'));
 }
 
 $total = $records->copy()->count();
