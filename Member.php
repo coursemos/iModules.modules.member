@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 17.
+ * @modified 2024. 11. 18.
  */
 namespace modules\member;
 class Member extends \Module
@@ -686,7 +686,7 @@ class Member extends \Module
      */
     public function addMember(array $member): int|array|bool
     {
-        $requires = ['email', 'password'];
+        $requires = ['email', 'password', 'nickname'];
         foreach ($requires as $require) {
             if (array_key_exists($require, $member) == false) {
                 return false;
@@ -701,6 +701,19 @@ class Member extends \Module
             if ($this->hasActiveMember('email', $member['email']) == true) {
                 $errors['email'] = $this->getErrorText('DUPLICATED');
             }
+        }
+
+        if (\Format::checkNickname($member['nickname']) == false) {
+            $errors['nickname'] = $this->getErrorText('INVALID_NICKNAME');
+        }
+        if (isset($errors['nickname']) == false) {
+            if ($this->hasActiveMember('nickname', $member['nickname']) == true) {
+                $errors['nickname'] = $this->getErrorText('DUPLICATED');
+            }
+        }
+
+        if (array_key_exists('name', $member) == false) {
+            $member['name'] = $member['nickname'];
         }
 
         if (array_key_exists('level_id', $member) == false) {
@@ -815,6 +828,10 @@ class Member extends \Module
                         ->getLayout(),
                     \Form::input('password', 'text')
                         ->placeholder($this->getText('password'))
+                        ->getLayout(),
+                    \Form::input('nickname', 'text')
+                        ->placeholder($this->getText('nickname'))
+                        ->value($account->getNickname())
                         ->getLayout()
                 );
                 $signup->buttonText = $this->getText('oauth.button.signup');
@@ -969,10 +986,11 @@ class Member extends \Module
                                 'member_id' => 1,
                                 'email' => $token->admin_email,
                                 'name' => $token->admin_name,
+                                'nickname' => $token->admin_name,
                                 'password' => \Password::hash($token->admin_password),
                                 'joined_at' => time(),
                             ],
-                            ['email', 'password', 'name']
+                            ['email', 'password', 'name', 'nickname']
                         )
                         ->execute();
 
