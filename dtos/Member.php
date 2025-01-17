@@ -366,7 +366,7 @@ class Member
      * @param string $oauth_id 가져올 OAuth 클라이언트 고유값
      * @return ?\modules\member\dtos\OAuthAccount $account
      */
-    public function getOAuthAccount(string $oauth_id): ?\modules\member\dtos\OAuthAccount
+    public function getOAuthAccount(string $oauth_id): bool|null|\modules\member\dtos\OAuthAccount
     {
         if ($this->_id == 0) {
             return false;
@@ -378,7 +378,7 @@ class Member
         $mMember = \Modules::get('member');
         $client = $mMember->getOAuthClient($oauth_id);
         if ($client === null) {
-            return null;
+            return false;
         }
 
         $token = $mMember
@@ -393,7 +393,7 @@ class Member
         }
 
         $oauth = new \OAuthClient($client->getClientId(), $client->getClientSecret());
-        $oauth->setScope($client->getScope());
+        $oauth->setScope($client->getScope(), $client->getScopeType());
         $oauth->setAccessToken($token->access_token, $token->access_token_expired_at, $token->scope);
         $oauth->setRefreshToken($token->refresh_token, $client->getTokenUrl());
 
