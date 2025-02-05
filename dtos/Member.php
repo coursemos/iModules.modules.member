@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 9.
+ * @modified 2025. 2. 4.
  */
 namespace modules\member\dtos;
 class Member
@@ -487,60 +487,58 @@ class Member
     }
 
     /**
-     * 회원의 권한에 따라 소속된 그룹의 ID를 반환한다.
+     * 팀 업무보기에 맞는 역할을 가져온다.
      *
-     * @return string $group_id
+     * @param string $group_id 그룹 고유값
+     * @return string|array
      */
-    public function getGroupPosition(): string
+    public function getGroupPosition(string $group_id = null): string|array
     {
         /**
          * @var \modules\members\Member $mMember
          */
         $mMember = \Modules::get('member');
 
+        if ($group_id !== null) {
+            $position = $mMember->getGroup($group_id)->getPosition();
+            return $position;
+        }
+
         $groups = $this->getGroups();
-
-        foreach ($groups as &$group) {
-            $group_id = $group->getGroupId();
-            $position = $group->getPosition();
-            $depth = $group->getGroup()->getDepth();
-
-            if ($position === 'MANAGER') {
-                $managers[] = [
-                    'group_id' => $group_id,
-                    'position' => $position,
-                    'depth' => $depth,
-                ];
-            }
-
-            if ($position === 'MEMBER') {
-                $members[] = [
-                    'group_id' => $group_id,
-                    'position' => $position,
-                    'depth' => $depth,
-                ];
-            }
+        $groups_info = [];
+        foreach ($groups as $group) {
+            $groups_info[] = [
+                'group_id' => $group->getGroupId(),
+                'position' => $group->getPosition(),
+                'depth' => $group->getGroup()->getDepth(),
+            ];
         }
 
-        if (empty($managers) == true) {
-            $groups = $this->getGroups(true);
-            return $groups[0]->getGroupId();
-        } else {
-            if (count($managers) === 1) {
-                return $managers[0]['group_id'];
-            }
-            foreach ($managers as $manager) {
-                $depth = PHP_INT_MAX;
-                $result = null;
-                foreach ($managers as $manager) {
-                    if ($manager['depth'] < $depth) {
-                        $depth = $manager['depth'];
-                        $result = $manager;
-                    }
-                }
-                return $result['group_id'];
-            }
+        $manager_groups = array_filter($groups_info, function ($group) {
+            return $group['position'] === 'MANAGER';
+        });
+
+        if (empty($manager_groups) !== true) {
+            usort($manager_groups, function ($a, $b) {
+                return $a['depth'] <=> $b['depth'];
+            });
+
+            $results = $manager_groups[0];
+            return [
+                'group_id' => $results['group_id'],
+                'position' => $results['position'],
+            ];
         }
+
+        usort($groups_info, function ($a, $b) {
+            return $b['depth'] <=> $a['depth'];
+        });
+
+        $results = $groups_info[0];
+        return [
+            'group_id' => $results['group_id'],
+            'position' => $results['position'],
+        ];
     }
 
     /**
