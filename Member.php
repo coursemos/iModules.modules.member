@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 18.
+ * @modified 2025. 2. 3.
  */
 namespace modules\member;
 class Member extends \Module
@@ -205,7 +205,7 @@ class Member extends \Module
         $groups = $this->db()
             ->select()
             ->from($this->table('groups'))
-            ->where('parent', null)
+            ->where('parent_id', null)
             ->get();
 
         $sort = 0;
