@@ -5,9 +5,9 @@
  * 회원모듈 클래스 정의한다.
  *
  * @file /modules/member/Member.php
- * @author youlapark <youlapark@naddle.net>
+ * @author sungjin <esung246@naddle.net>
  * @license MIT License
- * @modified 2025. 2. 3.
+ * @modified 2025. 3. 19.
  */
 namespace modules\member;
 class Member extends \Module
@@ -896,7 +896,7 @@ class Member extends \Module
     /**
      * 회원관련 이미지 라우팅을 처리한다.
      *
-     * @param Route $route 현재경로
+     * @param \Route $route 현재경로
      * @param int $member_id 회원고유값
      * @param string $type 이미지종류
      */

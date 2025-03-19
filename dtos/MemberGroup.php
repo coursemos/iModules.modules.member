@@ -5,17 +5,17 @@
  * 회원이 속한 그룹구조체를 정의한다.
  *
  * @file /modules/member/dtos/MemberGroup.php
- * @author youlapark <youlapark@naddle.net>
+ * @author sungjin <esung246@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 9.
+ * @modified 2025. 3. 19.
  */
 namespace modules\member\dtos;
 class MemberGroup
 {
     /**
-     * @var string $_member_id 회원고유값
+     * @var int $_member_id 회원고유값
      */
-    private string $_member_id;
+    private int $_member_id;
 
     /**
      * @var string $_group_id 그룹고유값

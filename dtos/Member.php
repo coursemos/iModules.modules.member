@@ -5,9 +5,9 @@
  * 회원 구조체를 정의한다.
  *
  * @file /modules/member/dtos/Member.php
- * @author youlapark <youlapark@naddle.net>
+ * @author sungjin <esung246@naddle.net>
  * @license MIT License
- * @modified 2025. 2. 4.
+ * @modified 2025. 3. 19.
  */
 namespace modules\member\dtos;
 class Member
@@ -200,7 +200,7 @@ class Member
     public function getLevel(): \modules\member\dtos\Level
     {
         /**
-         * @var \modules\members\Member $mMember
+         * @var \modules\member\Member $mMember
          */
         $mMember = \Modules::get('member');
         return $mMember->getLevel($this->_level_id);
@@ -227,7 +227,7 @@ class Member
     {
         if (isset($this->_groups) == false) {
             /**
-             * @var \modules\members\Member $mMember
+             * @var \modules\member\Member $mMember
              */
             $mMember = \Modules::get('member');
             $groups = $mMember
@@ -272,7 +272,7 @@ class Member
     public function isAssignedGroup(string $group_id): bool
     {
         /**
-         * @var \modules\members\Member $mMember
+         * @var \modules\member\Member $mMember
          */
         $mMember = \Modules::get('member');
         return $mMember
@@ -495,7 +495,7 @@ class Member
     public function getGroupPosition(string $group_id = null): string|array
     {
         /**
-         * @var \modules\members\Member $mMember
+         * @var \modules\member\Member $mMember
          */
         $mMember = \Modules::get('member');
 
@@ -551,7 +551,7 @@ class Member
     public function getGroupPositionTitle(string $group_id, string $member_id): string
     {
         /**
-         * @var \modules\members\Member $mMember
+         * @var \modules\member\Member $mMember
          */
         $mMember = \Modules::get('member');
 
@@ -584,7 +584,7 @@ class Member
     public function getGroupPositionLabels(string $group_id): array
     {
         /**
-         * @var \modules\members\Member $mMember
+         * @var \modules\member\Member $mMember
          */
         $mMember = \Modules::get('member');
 
