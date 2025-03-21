@@ -18,6 +18,7 @@ var modules;
              * 회원정보를 위한 팝업을 호출한다.
              */
             async getPopup() {
+                // @Todo popup사용시 우측하단 고정되어 열리는 현상
                 iModules.popup('/module/member/context/@edit', 700, 800, true);
             }
             /**
@@ -210,6 +211,7 @@ var modules;
                                 handler: () => {
                                     window.close();
                                     if (window.opener !== null) {
+                                        // @Todo header 리로드
                                         window.opener.location.reload();
                                     }
                                 },
