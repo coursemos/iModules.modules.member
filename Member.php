@@ -910,7 +910,7 @@ class Member extends \Module
      * @param int $member_id 회원고유값
      * @param string $type 이미지종류
      */
-    public function doRoute(\Route $route, string $member_id, string $type): void
+    public function doRoute(\Route $route, int $member_id, string $type): void
     {
         $temp = explode('.', $type);
         $type = $temp[0];
