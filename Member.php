@@ -5,9 +5,9 @@
  * 회원모듈 클래스 정의한다.
  *
  * @file /modules/member/Member.php
- * @author sungjin <esung246@naddle.net>
+ * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 3. 19.
+ * @modified 2025. 3. 21.
  */
 namespace modules\member;
 class Member extends \Module
@@ -48,6 +48,16 @@ class Member extends \Module
     }
 
     /**
+     * 모듈의 컨텍스트 목록을 가져온다.
+     *
+     * @return array $contexts 컨텍스트목록
+     */
+    public function getContexts(): array
+    {
+        return [['name' => 'edit', 'title' => '회원정보수정']];
+    }
+
+    /**
      * 컨텍스트를 가져온다.
      *
      * @param string $context 컨텍스트명
@@ -68,7 +78,7 @@ class Member extends \Module
         $content = '';
         switch ($context) {
             case 'edit':
-                $content = $this->getEditContext($configs);
+                $content = $this->getEditContext($configs ?? null);
                 break;
 
             default:
@@ -84,7 +94,7 @@ class Member extends \Module
      * @param object $configs
      * @return string $html
      */
-    public function getEditContext($configs = null): string
+    public function getEditContext(object $configs = null): string
     {
         \Html::color('light');
 

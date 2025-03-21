@@ -6,7 +6,7 @@
  * @file /modules/member/scripts/Member.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2024. 11. 15.
+ * @modified 2025. 3. 21.
  */
 namespace modules {
     export namespace member {
@@ -14,18 +14,25 @@ namespace modules {
             $dom: Dom;
 
             /**
+             * 회원정보를 위한 팝업을 호출한다.
+             */
+            async getPopup() {
+                iModules.popup('/module/member/context/@edit', 700, 800, true);
+            }
+
+            /**
              * 모듈의 DOM 이벤트를 초기화한다.
              *
              * @param {Dom} $dom - 모듈 DOM 객체
              */
-            init($dom: Dom): void {
+            async init($dom: Dom) {
                 const context = $dom.getData('context');
                 switch (context) {
                     case 'oauth.link':
                         this.initOAuthLink($dom);
                         break;
                     case 'edit':
-                        this.showAuthCheck($dom);
+                        await this.showAuthCheck($dom);
                 }
                 super.init($dom);
             }
@@ -62,7 +69,7 @@ namespace modules {
                     if (results.success == true) {
                         const $edit = Html.get('section[data-role="edit"]');
                         $edit.empty();
-                        this.showProfile();
+                        await this.showProfile();
                     } else {
                         $message.setStyle('padding', '10px 0px 5px 0px');
                         $message.setStyle('font-size', '14px');
@@ -236,8 +243,10 @@ namespace modules {
                                 text: '확인',
                                 class: 'confirm',
                                 handler: () => {
-                                    iModules.Modal.close();
-                                    location.reload();
+                                    window.close();
+                                    if (window.opener !== null) {
+                                        window.opener.location.reload();
+                                    }
                                 },
                             },
                         ]);
