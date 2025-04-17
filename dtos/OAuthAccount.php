@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/OAuthAccount.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2024. 1. 26.
+ * @modified 2025. 4. 17.
  */
 namespace modules\member\dtos;
 class OAuthAccount
@@ -301,6 +301,10 @@ class OAuthAccount
     public function isValid(): bool
     {
         if ($this->getAccessToken() === null || $this->getId() === null || $this->getEmail() === null) {
+            echo '1: ' . $this->getAccessToken();
+            echo '2: ' . $this->getId();
+            echo '3: ' . $this->getEmail();
+            exit();
             return false;
         }
 
