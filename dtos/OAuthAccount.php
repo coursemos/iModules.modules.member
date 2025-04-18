@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/OAuthAccount.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 4. 17.
+ * @modified 2025. 4. 18.
  */
 namespace modules\member\dtos;
 class OAuthAccount
@@ -138,7 +138,8 @@ class OAuthAccount
     public function getUser(): ?object
     {
         if (isset($this->_user) == false) {
-            $this->_user = $this->_oauth->get($this->_client->getUserUrl());
+            $user_url = str_replace('${id}', $this->_oauth->getId(), $this->_client->getUserUrl());
+            $this->_user = $this->_oauth->get($user_url);
         }
 
         return $this->_user;

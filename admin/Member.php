@@ -7,7 +7,7 @@
  * @file /modules/member/admin/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 01. 6.
+ * @modified 2025. 4. 18.
  */
 namespace modules\member\admin;
 class Member extends \modules\admin\admin\Component
@@ -238,15 +238,17 @@ class Member extends \modules\admin\admin\Component
             'groups:read',
             'mpim:read',
             'im:read',
+            'users:read',
+            'users:read.email',
         ];
         $slack->scope_type = 'USER';
         $slack->scope_separator = ',';
-        $slack->user_url = 'https://slack.com/api/users.identity';
+        $slack->user_url = 'https://slack.com/api/users.info?user=${id}';
         $slack->user_id_path = 'user.id';
-        $slack->user_email_path = 'user.email';
-        $slack->user_name_path = 'user.name';
-        $slack->user_nickname_path = 'user.name'; // 없음
-        $slack->user_photo_path = 'team.image_34'; // 없음
+        $slack->user_email_path = 'user.profile.email';
+        $slack->user_name_path = 'user.real_name';
+        $slack->user_nickname_path = 'user.profile.display_name';
+        $slack->user_photo_path = 'user.profile.image_512';
         $presets[] = $slack;
 
         return $presets;
