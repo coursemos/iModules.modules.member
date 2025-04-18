@@ -138,8 +138,7 @@ class OAuthAccount
     public function getUser(): ?object
     {
         if (isset($this->_user) == false) {
-            $user_url = str_replace('${id}', $this->_oauth->getId(), $this->_client->getUserUrl());
-            $this->_user = $this->_oauth->get($user_url);
+            $this->_user = $this->_oauth->get($this->_client->getUserUrl());
         }
 
         return $this->_user;

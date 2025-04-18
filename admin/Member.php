@@ -243,12 +243,12 @@ class Member extends \modules\admin\admin\Component
         ];
         $slack->scope_type = 'USER';
         $slack->scope_separator = ',';
-        $slack->user_url = 'https://slack.com/api/users.info?user=${id}';
+        $slack->user_url = 'https://slack.com/api/users.identity';
         $slack->user_id_path = 'user.id';
-        $slack->user_email_path = 'user.profile.email';
-        $slack->user_name_path = 'user.real_name';
-        $slack->user_nickname_path = 'user.profile.display_name';
-        $slack->user_photo_path = 'user.profile.image_512';
+        $slack->user_email_path = 'user.email';
+        $slack->user_name_path = 'user.name';
+        $slack->user_nickname_path = 'user.name';
+        $slack->user_photo_path = 'user.image_24';
         $presets[] = $slack;
 
         return $presets;
