@@ -6,7 +6,7 @@
  * @file /modules/member/admin/scripts/Member.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 1. 9.
+ * @modified 2025. 4. 21.
  */
 var modules;
 (function (modules) {
@@ -649,7 +649,7 @@ var modules;
                                                                 form.getField('token_url').setValue(record.get('token_url'));
                                                                 form.getField('token_path').setValue(record.get('token_path'));
                                                                 form.getField('scope').setValue(record.get('scope').join('\n'));
-                                                                form.getField('scope_type').setValue(record.get('scope_type'));
+                                                                form.getField('user_scope').setValue(record.get('user_scope').join('\n'));
                                                                 form.getField('scope_separator').setValue(record.get('scope_separator'));
                                                                 form.getField('user_url').setValue(record.get('user_url'));
                                                                 form.getField('user_id_path').setValue(record.get('user_id_path'));
@@ -702,26 +702,10 @@ var modules;
                                                         name: 'scope',
                                                         helpText: this.printText('admin.oauth.clients.scope_help'),
                                                     }),
-                                                    new Aui.Form.Field.Select({
-                                                        label: this.printText('admin.oauth.clients.scope_type'),
-                                                        name: 'scope_type',
-                                                        store: new Aui.Store.Local({
-                                                            fields: ['display', 'value'],
-                                                            records: (() => {
-                                                                const types = ['BASIC', 'USER'];
-                                                                const records = [];
-                                                                for (const type of types) {
-                                                                    records.push([
-                                                                        this.printText('admin.oauth.clients.scope_types.' + type),
-                                                                        type,
-                                                                    ]);
-                                                                }
-                                                                return records;
-                                                            })(),
-                                                        }),
-                                                        value: 'BASIC',
-                                                        allowBlank: false,
-                                                        helpText: this.printText('admin.oauth.clients.scope_type_help'),
+                                                    new Aui.Form.Field.TextArea({
+                                                        label: this.printText('admin.oauth.clients.user_scope'),
+                                                        name: 'user_scope',
+                                                        helpText: this.printText('admin.oauth.clients.user_scope_help'),
                                                     }),
                                                     new Aui.Form.Field.Select({
                                                         label: this.printText('admin.oauth.clients.scope_separator'),

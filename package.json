@@ -395,11 +395,10 @@
                     "is_null": true,
                     "comment": "OAuth 요청범위"
                 },
-                "scope_type": {
-                    "type": "enum",
-                    "length": "'BASIC','USER'",
-                    "default": "BASIC",
-                    "comment": "OAuth 요청범위 종류"
+                "user_scope": {
+                    "type": "text",
+                    "is_null": true,
+                    "comment": "OAuth 유저요청범위"
                 },
                 "scope_separator": {
                     "type": "enum",
@@ -482,6 +481,11 @@
                     "type": "text",
                     "is_null": true,
                     "comment": "OAuth 요청범위"
+                },
+                "user_scope": {
+                    "type": "text",
+                    "is_null": true,
+                    "comment": "OAuth 유저 요청범위"
                 },
                 "access_token": {
                     "type": "text",

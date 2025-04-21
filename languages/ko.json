@@ -152,13 +152,8 @@
                 "callback_url_help": "OAuth 연동시 콜백 URL 인증이 필요한 OAuth제공자의 경우 OAuth 제공자에게 위의 URL을 허용리스트에 추가하여 주시기 바랍니다.",
                 "scope": "범위",
                 "scope_help": "OAuth 제공자에서 제공하는 정보접근 scope 를 한줄당 한개씩 입력하여 주십시오.",
-                "scope_type": "범위 종류",
-                "scope_type_help": "요청/응답 종류를 구분하기 위한 구분자를 선택하여 주십시오.<br>해당 구분자는 OAuth제공자에 따라 다릅니다.",
-                "scope_types": {
-                    "BASIC": "기본",
-                    "USER": "유저"
-                },
-                "scope_separator": "범위구분자",
+                "user_scope": "유저범위",
+                "user_scope_help": "OAuth 제공자에서 제공하는 정보접근 user_scope 를 한줄당 한개씩 입력하여 주십시오.",
                 "scope_separator_help": "다중 요청범위를 구분하기 위한 구분자를 선택하여 주십시오.<br>해당 구분자는 OAuth제공자에 따라 다릅니다.",
                 "scope_separators": {
                     "COMMA": "콤마(,)",

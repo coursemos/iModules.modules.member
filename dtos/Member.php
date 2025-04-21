@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author sungjin <esung246@naddle.net>
  * @license MIT License
- * @modified 2025. 3. 19.
+ * @modified 2025. 4. 21.
  */
 namespace modules\member\dtos;
 class Member
@@ -410,7 +410,8 @@ class Member
         }
 
         $oauth = new \OAuthClient($client->getClientId(), $client->getClientSecret());
-        $oauth->setScope($client->getScope(), $client->getScopeType());
+        $oauth->setScope($client->getScope());
+        $oauth->setUserScope($client->getUserScope());
         $oauth->setAccessToken($token->access_token, $token->access_token_expired_at, $token->scope);
         $oauth->setRefreshToken($token->refresh_token, $client->getTokenUrl());
 
@@ -439,6 +440,7 @@ class Member
             'member_id' => $this->_id,
             'user_id' => $account->getId(),
             'scope' => $account->getAccessTokenScope(),
+            'user_scope' => $account->getAccessTokenUserScope(),
             'access_token' => $account->getAccessToken(),
             'refresh_token' => $account->getRefreshToken(),
             'access_token_expired_at' => $account->getAccessTokenExpiredAt(),

@@ -7,7 +7,7 @@
  * @file /modules/member/admin/Member.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 4. 18.
+ * @modified 2025. 4. 21.
  */
 namespace modules\member\admin;
 class Member extends \modules\admin\admin\Component
@@ -199,7 +199,6 @@ class Member extends \modules\admin\admin\Component
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
         ];
-        $google->scope_type = 'BASIC';
         $google->scope_separator = 'SPACE';
         $google->user_url = 'https://www.googleapis.com/oauth2/v2/userinfo';
         $google->user_id_path = 'id';
@@ -215,7 +214,6 @@ class Member extends \modules\admin\admin\Component
         $salesforce->token_url = 'https://[YOUR_DOMAIN].my.salesforce.com/services/oauth2/token';
         $salesforce->token_path = 'access_token';
         $salesforce->scope = ['chatter_api'];
-        $salesforce->scope_type = 'BASIC';
         $salesforce->scope_separator = 'SPACE';
         $salesforce->user_url = 'https://[YOUR_DOMAIN].my.salesforce.com/services/data/v59.0/chatter/users/me';
         $salesforce->user_id_path = 'id';
@@ -231,7 +229,6 @@ class Member extends \modules\admin\admin\Component
         $slack->token_url = 'https://slack.com/api/oauth.v2.access';
         $slack->token_path = 'authed_user.access_token';
         $slack->scope = [
-            'users.profile:write',
             'usergroups:read',
             'chat:write',
             'channels:read',
@@ -241,7 +238,7 @@ class Member extends \modules\admin\admin\Component
             'users:read',
             'users:read.email',
         ];
-        $slack->scope_type = 'USER';
+        $slack->user_scope = ['identity.avatar', 'identity.basic', 'identity.email'];
         $slack->scope_separator = ',';
         $slack->user_url = 'https://slack.com/api/users.identity';
         $slack->user_id_path = 'user.id';

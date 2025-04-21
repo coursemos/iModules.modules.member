@@ -7,7 +7,7 @@
  * @file /modules/member/processes/oauth.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 01. 6.
+ * @modified 2025. 4. 21.
  *
  * @var \modules\member\Member $me
  */
@@ -39,7 +39,8 @@ if ($client === null) {
 
 $oauth = new OAuthClient($client->getClientId(), $client->getClientSecret());
 $oauth
-    ->setScope($client->getScope(), $client->getScopeType())
+    ->setScope($client->getScope())
+    ->setUserScope($client->getUserScope())
     ->setAccessToken($code->access_token ?? null, $code->access_token_expired_at ?? 0, $code->scope ?? null)
     ->setRefreshToken($code->refresh_token ?? null);
 

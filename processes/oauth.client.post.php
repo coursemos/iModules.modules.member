@@ -7,7 +7,7 @@
  * @file /modules/member/processes/oauth.client.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 01. 6.
+ * @modified 2025. 4. 21.
  *
  * @var \modules\member\Member $me
  */
@@ -55,8 +55,8 @@ $token_path = Input::get('token_path', $errors);
 $client_id = Input::get('client_id', $errors);
 $client_secret = Input::get('client_secret', $errors);
 $scope = Input::get('scope') ? explode("\n", Input::get('scope')) : [];
+$user_scope = Input::get('user_scope') ? explode("\n", Input::get('user_scope')) : [];
 $scope_separator = Input::get('scope_separator') ?? ' ';
-$scope_type = Input::get('scope_type');
 $user_url = Input::get('user_url', $errors);
 $user_id_path = Input::get('user_id_path', $errors);
 $user_email_path = Input::get('user_email_path', $errors);
@@ -67,6 +67,11 @@ $allow_signup = Input::get('allow_signup') ? 'TRUE' : 'FALSE';
 
 $scope = array_values(
     array_filter(array_unique($scope), function ($s) {
+        return strlen(trim($s)) > 0;
+    })
+);
+$user_scope = array_values(
+    array_filter(array_unique($user_scope), function ($s) {
         return strlen(trim($s)) > 0;
     })
 );
@@ -94,7 +99,7 @@ if (count($errors) == 0) {
     $insert['client_id'] = $client_id;
     $insert['client_secret'] = $client_secret;
     $insert['scope'] = count($scope) == 0 ? '' : implode("\n", $scope);
-    $insert['scope_type'] = $scope_type;
+    $insert['user_scope'] = count($user_scope) == 0 ? '' : implode("\n", $user_scope);
     $insert['scope_separator'] = $scope_separator;
     $insert['user_url'] = $user_url;
     $insert['user_id_path'] = $user_id_path;

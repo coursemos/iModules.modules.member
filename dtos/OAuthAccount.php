@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/OAuthAccount.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 4. 18.
+ * @modified 2025. 4. 21.
  */
 namespace modules\member\dtos;
 class OAuthAccount
@@ -107,6 +107,16 @@ class OAuthAccount
     public function getAccessTokenScope(): ?string
     {
         return $this->_oauth->getOAuthSession()?->scope ?? null;
+    }
+
+    /**
+     * 현재 액세스토큰의 요청범위를 가져온다.
+     *
+     * @return ?string $scope
+     */
+    public function getAccessTokenUserScope(): ?string
+    {
+        return $this->_oauth->getOAuthSession()?->user_scope ?? null;
     }
 
     /**

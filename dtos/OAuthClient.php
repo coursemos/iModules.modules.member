@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/OAuthClient.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 01. 6.
+ * @modified 2025. 4. 21.
  */
 namespace modules\member\dtos;
 class OAuthClient
@@ -48,9 +48,9 @@ class OAuthClient
     private array $_scope;
 
     /**
-     * @var string $_scope_type 접근범위 종류
+     * @var string[] $_scope 접근범위
      */
-    private string $_scope_type;
+    private array $_user_scope;
 
     /**
      * @var string $_scope_separator 접근범위 구분값
@@ -111,7 +111,7 @@ class OAuthClient
         $this->_token_url = $client->token_url;
         $this->_token_path = $client->token_path;
         $this->_scope = $client->scope ? explode("\n", $client->scope) : [];
-        $this->_scope_type = $client->scope_type;
+        $this->_user_scope = $client->user_scope ? explode("\n", $client->user_scope) : [];
         $this->_scope_separator = $client->scope_separator;
         $this->_user_url = $client->user_url;
         $this->_user_id_path = $client->user_id_path;
@@ -194,23 +194,13 @@ class OAuthClient
     }
 
     /**
-     * 요청범위를 배열로 가져온다.
+     * 요청범위를 인증요청 URL 에 사용할 문자열로 가져온다.
      *
-     * @return string[] $scope
+     * @return string $scope
      */
-    public function getScopes(): array
+    public function getUserScope(): string
     {
-        return $this->_scope;
-    }
-
-    /**
-     * 요청범위 구분자를 가져온다.
-     *
-     * @return string $separators
-     */
-    public function getScopeType(): string
-    {
-        return $this->_scope_type;
+        return implode($this->getScopeSeparator(), $this->_user_scope);
     }
 
     /**
