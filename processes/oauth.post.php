@@ -7,7 +7,7 @@
  * @file /modules/member/processes/oauth.post.php
  * @author Arzz <arzz@arzz.com>
  * @license MIT License
- * @modified 2025. 4. 21.
+ * @modified 2025. 4. 22.
  *
  * @var \modules\member\Member $me
  */
@@ -41,7 +41,12 @@ $oauth = new OAuthClient($client->getClientId(), $client->getClientSecret());
 $oauth
     ->setScope($client->getScope())
     ->setUserScope($client->getUserScope())
-    ->setAccessToken($code->access_token ?? null, $code->access_token_expired_at ?? 0, $code->scope ?? null)
+    ->setAccessToken(
+        $code->access_token ?? null,
+        $code->access_token_expired_at ?? 0,
+        $code->scope ?? null,
+        $code->user_scope ?? null
+    )
     ->setRefreshToken($code->refresh_token ?? null);
 
 $account = new \modules\member\dtos\OAuthAccount($client, $oauth);
