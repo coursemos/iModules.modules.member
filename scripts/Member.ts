@@ -6,7 +6,7 @@
  * @file /modules/member/scripts/Member.ts
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 3. 21.
+ * @modified 2025. 4. 22.
  */
 namespace modules {
     export namespace member {
@@ -49,7 +49,10 @@ namespace modules {
 
                     form.onSubmit(async () => {
                         const results = await form.submit(this.getProcessUrl('oauth'));
-                        console.log(results);
+
+                        if (results?.success && results.redirect) {
+                            window.location.href = results.redirect;
+                        }
                     });
                 });
             }

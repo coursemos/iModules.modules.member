@@ -7,7 +7,7 @@
  * @file /modules/member/Member.php
  * @author youlapark <youlapark@naddle.net>
  * @license MIT License
- * @modified 2025. 3. 21.
+ * @modified 2025. 4. 22.
  */
 namespace modules\member;
 class Member extends \Module
@@ -799,6 +799,7 @@ class Member extends \Module
             'access_token_expired_at' => $account->getAccessTokenExpiredAt(),
             'refresh_token' => $account->getRefreshToken(),
             'scope' => $account->getAccessTokenScope(),
+            'user_scope' => $account->getAccessTokenUserScope(),
             'user' => $account->getUser(),
         ];
         $code = \Password::encode(json_encode($code));
