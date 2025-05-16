@@ -33,7 +33,10 @@
     "buttons": {
         "edit": "회원정보수정",
         "login": "로그인",
-        "logout": "로그아웃"
+        "logout": "로그아웃",
+        "actions": {
+            "edit": "회원정보 수정은 구모모를 통해 진행해주시기 바랍니다.<br><i class=\"mi mi-link\"></i> <a href=\"https://momo.coursemos.kr/\">https://momo.coursemos.kr</a>"
+        }
     },
     "errors": {
         "LOGIN_FAILED": "이메일 또는 패스워드가 일치하지 않습니다.",
