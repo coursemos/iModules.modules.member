@@ -122,6 +122,7 @@ class Member
             $this->_cellphone = $member->cellphone;
             $this->_level_id = $member->level_id;
             $this->_status = $member->status;
+            $this->_is_test = $member->is_test;
             $this->_logged_at = $member->logged_at ?? 0;
             $this->_extras = json_decode($member->extras ?? 'null');
         }
