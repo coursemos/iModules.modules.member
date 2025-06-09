@@ -148,6 +148,12 @@
                     "default": "ACTIVATED",
                     "comment": "상태"
                 },
+                "is_test": {
+                    "type": "enum",
+                    "length": "'TRUE','FALSE'",
+                    "default": "FALSE",
+                    "comment": "테스트계정 여부"
+                },
                 "extras": {
                     "type": "json",
                     "is_null": true,

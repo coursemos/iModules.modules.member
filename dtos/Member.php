@@ -7,7 +7,7 @@
  * @file /modules/member/dtos/Member.php
  * @author sungjin <esung246@naddle.net>
  * @license MIT License
- * @modified 2025. 4. 22.
+ * @modified 2025. 6. 9.
  */
 namespace modules\member\dtos;
 class Member
@@ -68,6 +68,11 @@ class Member
      * @var string $_status 상태
      */
     private string $_status;
+
+    /**
+     * @var string $_is_test 테스트 계졍 여부
+     */
+    private string $_is_test;
 
     /**
      * @var ?string $_photo 회원사진 URL
@@ -190,6 +195,16 @@ class Member
     public function getCellphone(): ?string
     {
         return $this->_cellphone;
+    }
+
+    /**
+     * 테스트 계정 여부를 가져온다.
+     *
+     * @return ?string $cellphone
+     */
+    public function getIsTest(): ?string
+    {
+        return $this->_is_test;
     }
 
     /**
